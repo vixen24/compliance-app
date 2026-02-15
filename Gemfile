@@ -19,7 +19,7 @@ gem "thruster", require: false           # Add HTTP asset caching/compression an
 gem "sqlite3", ">= 2.1"
 gem "pg"
 
-# gem "image_processing", "~> 1.2"       # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
+gem "image_processing", "~> 1.2"       # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 
 # Features
 gem "jbuilder"
