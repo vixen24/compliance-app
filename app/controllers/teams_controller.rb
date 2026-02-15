@@ -8,7 +8,7 @@ class TeamsController < ApplicationController
   layout "admin"
 
   def index
-    @teams = Current.user.account.teams.all.order(:name)
+    @teams = Current.user.account.teams.includes(:users, :assessments).order(:name)
   end
 
   def new

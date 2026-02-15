@@ -7,8 +7,6 @@ class Executive::GroupDashboard
   def initialize(account:, framework: nil)
     @account   = account
     @framework = framework
-
-    # Initialize arrays for charts
     @labels        = []
     @c_values      = []
     @ofi_values    = []

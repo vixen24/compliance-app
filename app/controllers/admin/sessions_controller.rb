@@ -7,7 +7,7 @@ class Admin::SessionsController < ApplicationController
   layout "admin"
 
   def index
-    @sessions = Session.all
+    @sessions = Current.user.account.sessions
   end
 
   def destroy

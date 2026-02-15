@@ -3,6 +3,7 @@ class Account < ApplicationRecord
   has_many :users, dependent: :destroy
   has_many :teams, dependent: :destroy
   has_many :assessments, dependent: :destroy
+  has_many :sessions, through: :users
 
   validates :name, presence: true
   # before_create :assign_external_account_id

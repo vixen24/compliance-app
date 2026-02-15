@@ -40,7 +40,7 @@
       <div class="flex flex-row gap-3 items-center mx-3 py-2 px-3 rounded-lg bg-neutral-700">
         <div class="shrink-0 h-9 w-9 bg-linear-to-br from-red-200 to-red-300 rounded-lg flex items-center justify-center">
           <span class="font-semibold text-red-700 text-sm">
-            <%= Current.user&.name&.split&.map(&:first)&.first(2)&.join&.upcase %>
+            <%= Current.user&.name&.split&.map(&:first)&.first(2)&.join&.upcase || Current.user.email_address[0,2].upcase %>
           </span>
         </div>
         <div class="overflow-hidden">
