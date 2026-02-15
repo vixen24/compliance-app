@@ -1,0 +1,12 @@
+<% control = @answer.assessment_control %>
+<% assessment = @answer.assessment %>
+
+<% [1, 2].each do |suffix| %>
+  <%= turbo_stream.replace nested_dom_id(assessment, control, suffix) do %>
+    <%= render "assessments/state", 
+      control: control, 
+      answer: @answer, 
+      assessment: assessment,
+      suffix: suffix %>
+  <% end %>
+<% end %>

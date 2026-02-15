@@ -1,0 +1,15 @@
+<% content_for(:title) { "Create New Assessment" } %>
+
+<% content_for :left_sidebar do %>
+  <%= render "layouts/shared/left_sidebar" %>
+<% end %>
+
+<div class="">
+  <header class="flex justify-end m-8">
+   <%= link_to "Create New Assessment", new_team_assessment_path, class:"btn rounded-lg", disabled: true %>
+  </header>
+  <div class="bg-base-100 lg:w-2/5 md:w-3/5 mx-8 rounded-2xl">
+    <h1 class="p-8 text-2xl font-semibold text-primary">Create a New Assessment</h1>
+    <%= render "form" %>
+  </div>
+</div>

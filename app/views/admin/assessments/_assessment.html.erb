@@ -1,0 +1,26 @@
+<%= link_to admin_assessments_path, id: dom_id(assessment), data: { turbo: false } do %>
+  <div class="bg-base-100 shadow-md inset-shadow-2xs p-6 rounded-lg">
+    <div class="flex flex-col gap-2 justify-between flex-wrap">
+      <div>
+        <div class="flex gap-2 justify-between items-center">
+          <div class="text-lg text- font-semibold">
+            <%= assessment.name %>
+          </div>
+          <div class="badge <%= assessment.open? ? 'badge-success' : 'badge-error' %> self-start px-2 rounded-xl">
+            <%= assessment.status.to_s.capitalize %>
+          </div>
+        </div>
+        <!-- Control scope -->
+        <div class="my-1">
+          <%= assessment.team.name %>
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-2 flex-1 h-max">
+        <%= render_framework_code_badges(assessment) %>
+      </div>
+      <div>
+        <div class="text-xs text-gray-500">Created by <%= assessment.user.name %> at <%= time_ago_in_words(assessment.created_at) %> ago</div>
+      </div>
+    </div>
+  </div>
+<% end %>

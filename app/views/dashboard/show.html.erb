@@ -1,0 +1,158 @@
+<% content_for(:title) { "User Dashboard" } %>
+
+<% content_for :left_sidebar do %>
+  <%= render "layouts/shared/left_sidebar" %>
+<% end %>
+
+<div class="flex flex-col p-8 h-screen">
+  <header>
+    <div class="mb-8">
+      <h2 class="text-3xl font-bold">
+        <% Current.team %> Dashboard
+      </h2>
+      <p class="text-gray-600">Information Security Compliance Overview based on selected filters</p>
+    </div>
+  </header>
+
+  <%= form_with url: team_dashboard_path, method: :get, local: true,
+    data: { controller: "autosave", action: "change->autosave#debouncedSubmit" } do |form| %>
+
+
+    <div class="grid grid-cols-[1fr_1fr_1fr_auto] gap-8 bg-white rounded-2xl px-8 py-8 items-end shadow-md">
+
+      <!-- Assessment Status -->
+      <fieldset>
+        <legend class="font-semibold mb-1 text-neutral-800">Assessment Status</legend>
+        <%= form.select :status,
+          Assessment.statuses.keys.map { |k| [k.humanize, k] },
+          { selected: @status },
+          {
+            class: "select w-full"
+          } %>
+      </fieldset>
+
+      <!-- Assessment Name -->
+      <fieldset>
+        <legend class="font-semibold mb-1 text-neutral-800">Assessment Name</legend>
+        <%= form.select :id,
+         Array(@assessments).map { |a| [a.name, a.id] },
+          { selected: @assessment&.id },
+          {
+            class: "select w-full"
+          } %>
+      </fieldset>
+
+      <!-- Framework -->
+      <fieldset>
+        <legend class="font-semibold mb-1 text-neutral-800">Framework</legend>
+        <%= form.select :framework,
+          Array(@frameworks).map { |f| [f.code, f.id] },
+          { include_blank: "All Frameworks", selected: @framework&.id },
+          {
+            class: "select w-full"
+          } %>
+      </fieldset>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 my-8">
+    <!-- Active Users Card -->
+    <div class="p-6 pt-5 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300">
+      <div class="flex items-center justify-between">
+        <div class="text-xl font-medium text-gray-600">Unanswered</div>
+      </div>
+      <div class="font-bold text-4xl text-center mt-4 text-gray-800"><%= @answer_state_count&.[]("draft") || "0" %></div>
+    </div>
+
+    <!-- Unassigned Users Card -->
+    <div class="p-6 pt-5 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300">
+      <div class="flex items-center justify-between">
+        <div class="text-xl font-medium text-gray-600">Submitted</div>
+      </div>
+      <div class="font-bold text-4xl text-center mt-4 text-gray-800"><%= @answer_state_count&.[]("submitted") || "0" %></div>
+    </div>
+
+    <!-- Teams Card -->
+    <div class="p-6 pt-5 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300">
+      <div class="flex items-center justify-between">
+        <div class="text-xl font-medium text-gray-600">Rejected</div>
+      </div>
+      <div class="font-bold text-4xl text-center mt-4 text-gray-800"><%= @answer_state_count&.[]("rejected") || "0" %></div>
+    </div>
+
+    <!-- Logged In Users Card -->
+    <div class="p-6 pt-5 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300">
+      <div class="flex items-center justify-between">
+        <div class="text-xl font-medium text-gray-600">Accepted</div>
+      </div>
+      <div class="font-bold text-4xl text-center mt-4 text-gray-800"><%= @answer_state_count&.[]("approved") || "0" %></div>
+    </div>
+  </div>
+
+  <!---Charts -->
+  <div class="flex justify-between flex-wrap gap-4">
+
+    <!--Compliance chart-->
+    <div class="flex self-start shadow-md transition-shadow px-4 py-1 rounded-2xl bg-white w-auto" style="">
+      <div data-controller="compliance-chart" data-compliance-chart-values-value="<%= @status_values.to_json %>" 
+          data-compliance-chart-labels-value="<%= @status_labels.to_json %>" class="">
+      </div>
+
+      <div class="legend pr-4 flex flex-col gap-2 place-content-center justify-center">
+
+        <% colors = %w[green yellow red blue] %>
+
+        <% @status_labels&.zip(@status_values, colors)&.each do |label, value, color| %>
+          <!-- Legend with Linear Progress Bars -->
+            <div class="legend-item">
+              <div class="legend-header">
+                <div class="label">
+                  <span class="dot <%= color %>"></span> 
+                  <%= label %>
+                </div>
+
+                <% width = number_to_percentage((value.to_f / @total[:control_by_framework]) * 100, precision: 0) || "0%" %>
+                <span class="label__numbers"><%= value %> (<%= width %>)</span>
+              </div>
+              <div class="progress">
+                <div class="progress-fill <%= color %>" style="width: <%= width %>"></div>
+              </div>
+            </div>
+          <% end %>
+      </div>
+    </div>
+    
+    <!--Workflow chart-->
+    <div class="flex self-center shadow-md transition-shadow px-4 py-1 rounded-2xl bg-white w-auto" style="">
+      <div data-controller="workflow-chart" data-workflow-chart-values-value="<%= @state_values.to_json %>" 
+          data-workflow-chart-labels-value="<%= @state_labels.to_json %>" class="">
+      </div>
+
+      <div class="legend pr-4 flex flex-col gap-2 place-content-center justify-center">
+
+        <% colors = %w[green yellow red blue] %>
+
+        <% @state_labels&.zip(@state_values, colors)&.each do |label, value, color| %>
+          <!-- Legend with Linear Progress Bars -->
+            <div class="legend-item">
+              <div class="legend-header">
+                <div class="label">
+                  <span class="dot <%= color %>"></span> 
+                  <%= label %>
+                </div>
+
+                <% width = number_to_percentage((value.to_f / @total[:control_by_framework]) * 100, precision: 0) || "0%" %>
+                <span class="label__numbers"><%= value %> (<%= width %>)</span>
+              </div>
+              <div class="progress">
+                <div class="progress-fill <%= color %>" style="width: <%= width %>"></div>
+              </div>
+            </div>
+          <% end %>
+      </div>
+    </div> 
+  </div>
+</div>
+
+
+

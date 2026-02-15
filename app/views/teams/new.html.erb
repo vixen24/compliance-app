@@ -1,0 +1,25 @@
+<% content_for(:title) { "Create Team" } %> 
+
+<% content_for :left_sidebar do %>
+  <%= render "/admin/shared/left_sidebar" %>
+<% end %>
+
+<div class="p-4 sm:p-12 sm:w-2/4">
+  <%= render "form" %>
+</div>
+<script>
+  document.addEventListener("turbo:load", () => {
+    const selectEl = document.querySelector('select[name="team[user_ids][]"]')
+    const counterEl = document.getElementById("users-selected-count")
+
+    if (!selectEl || !counterEl) return
+
+    const updateCount = () => {
+      const count = Array.from(selectEl.selectedOptions).length
+      counterEl.textContent = `${count} ${count === 1 ? "user" : "users"} selected`
+    }
+
+    selectEl.addEventListener("change", updateCount)
+    updateCount()
+  })
+</script>

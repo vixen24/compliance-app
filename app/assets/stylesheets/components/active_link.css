@@ -1,0 +1,17 @@
+/* This enables a persistent active state on menu items
+   in the left-side navigation bar
+*/
+
+.active-link {
+  background-color: var(--color-primary-content);
+  border-left-color: var(--color-primary-content);
+  border-radius: var(--radius-xs);
+  color: var(--color-white);
+}
+
+.active-link__sub {
+  background-color: var(--color-secondary);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-white);
+  border-radius: 12px;
+}

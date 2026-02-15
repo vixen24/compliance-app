@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+@source not "./daisyui{,*}.mjs";
+
+@plugin "./daisyui.mjs" {
+  themes: all;
+}
+
+/* Optional for custom themes – Docs: https://daisyui.com/docs/themes/#how-to-add-a-new-custom-theme */
+@plugin "./daisyui-theme.mjs" {
+  /* custom theme here */
+  name: "light";
+  default: true;
+  --color-base-200: oklch(0.9791 0 0);
+  --color-primary: oklch(0.4634 0.190175 29.2339);
+  --color-primary-content: oklch(0.5549 0.2185 29.79);
+  --color-secondary: oklch(0.252 0 0);
+  --color-secondary-content: oklch(0.7476 0 0);
+
+}

@@ -1,0 +1,58 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+sqlite: &sqlite
+  adapter: sqlite3
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  timeout: 5000
+
+development:
+  primary: 
+    <<: *default
+    database: uba_compliance_development
+    username: UB
+    password: postgres42
+    host: localhost
+  cache:
+    <<: *sqlite
+    database: storage/uba_compliance_development_cache.sqlite3
+    migrations_paths: db/cache_migrate
+  cable:
+    <<: *sqlite
+    database: storage/uba_compliance_development_cable.sqlite3
+    migrations_paths: db/cable_migrate
+  queue:
+    <<: *sqlite
+    database: storage/uba_compliance_development_queue.sqlite3
+    migrations_paths: db/queue_migrate
+
+# Warning: The database defined as "test" will be erased and
+# re-generated from your development database when you run "rake".
+# Do not set this db to the same as development or production.
+# test:
+#   <<: *default
+#   database: storage/test.sqlite3
+
+
+# Store production database in the storage/ directory, which by default
+# is mounted as a persistent Docker volume in config/deploy.yml.
+production:
+  primary:
+    <<: *default
+    database: compliance-web-db
+    username: dbmasteruser
+    password: <%= Rails.application.credentials.db_password %>
+  cache:
+    <<: *sqlite
+    database: storage/compliance_web_production_cache.sqlite3
+    migrations_paths: db/cache_migrate
+  queue:
+    <<: *sqlite
+    database: storage/compliance_web_production_queue.sqlite3
+    migrations_paths: db/queue_migrate
+  cable:
+    <<: *sqlite
+    database: storage/compliance_web_production_cable.sqlite3
+    migrations_paths: db/cable_migrate

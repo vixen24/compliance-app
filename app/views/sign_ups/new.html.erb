@@ -1,0 +1,50 @@
+<% content_for(:title) { "Sign up" } %>
+
+<div class="h-screen mx-auto content-center" >
+  <div class="panel panel--centered mb-16 p-6 md:w-2/3 w-full">
+    <div class="justify-items-center p-12 pt-0" style="text-align: -webkit-center">
+      <%= svg_tag "logo.svg", alt: "UBA Logo", class: "w-36" %>
+    </div>
+
+    <h1 class="font-semibold text-secondary text-2xl">Sign in</h1>
+
+    <%= form_with model: @signup, url: sign_up_path, class: "contents" do |form| %>
+      <div class="my-5 mb-3">
+        <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", 
+            placeholder: "Enter your email address", value: params[:email_address], 
+            class: "text-lg block shadow-sm rounded-xl border border-gray-400 focus:outline-solid focus:border-secondary focus:outline-secondary px-4 py-2 w-full" %>
+      </div>
+
+      <div class="my-3">
+        <%= form.password_field :password, required: true, placeholder: "Enter your password", maxlength: 32, 
+            class: "text-lg block shadow-sm rounded-xl border border-gray-400 focus:outline-solid focus:border-secondary focus:outline-secondary px-4 py-2 w-full" %>
+      </div>
+
+      <div class="my-3">
+        <%= form.password_field :password_confirmation, required: true, placeholder: "Confirm your password", maxlength: 32, 
+            class: "text-lg block shadow-sm rounded-xl border border-gray-400 focus:outline-solid focus:border-secondary focus:outline-secondary px-4 py-2 w-full" %>
+      </div>
+
+      <div class="col-span-6 flex flex-col items-center gap-1">
+        <div class="py-2 inline">
+          <%= form.button type: "submit", name: nil, 
+              class: "group px-4 py-2.5 inline-flex items-center justify-center rounded-full outline-offset-4 bg-primary-content text-white hover:bg-primary active:scale-95 transition" do %>
+            <span class="text-lg font-semibold">Let's Go</span> 
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 transition-transform group-hover:translate-x-1" 
+              fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"> <path stroke-linecap="round" 
+              stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          <% end %>
+        </div>
+
+        <div class="mt-4">
+          <p class="text-lg font-semibold">Already have an account? <%= link_to "Sign in", sign_in_path, class:"underline" %></p>
+        </div>
+
+        <div class="mt-4 sm:mt-0">
+          <%= link_to "Forgot your password?", new_password_path, class: "text-gray-600 underline hover:no-underline" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

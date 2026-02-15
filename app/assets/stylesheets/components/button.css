@@ -1,0 +1,13 @@
+.btn[disabled] {
+  background: color-mix(in srgb, var(--color-primary-content) 40%, transparent);
+  color: color-mix(in srgb, white 70%, transparent);
+  cursor: not-allowed;
+}
+
+.btn-bg-red {
+  background-color: var(--color-primary-content);
+
+  &:hover {
+    background-color: var(--color-primary)
+  }
+}

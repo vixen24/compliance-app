@@ -1,0 +1,72 @@
+<% content_for(:title) { "Admin Dashboard: Active Sessions" } %> 
+
+<% content_for :left_sidebar do %>
+  <%= render "/admin/shared/left_sidebar" %>
+<% end %>
+
+<div class="h-screen overflow-hidden">
+  <header class="p-4 sm:p-4 lg:p-6 lg:pb-0">
+    <div class="bg-white p-4 rounded-lg">
+      <h1 class="text-2xl font-bold text-gray-900">
+        Session Management
+      </h1>
+      <p class="mt-1 text-sm text-gray-600">
+        Manage all active sessions across account
+      </p>
+    </div>
+  </header>
+
+  <div class="p-4 sm:p-4 lg:p-6 lg:pb-0">
+    <!-- Header -->
+    <div class="hidden sm:grid sm:grid-cols-[2fr_1fr_1fr_1fr_1fr] font-semibold px-4 py-2 bg-white rounded-tl-lg rounded-tr-lg">
+      <div class="p-2 pl-16">User</div>
+      <div class="p-2">Role</div>
+      <div class="p-2">Logon Time</div>
+      <div class="p-2">Duration</div>
+      <div class="p-2 pl-6">Action</div>
+    </div>
+
+    
+      <% @sessions.each do |session| %>
+        <div class="text-sm bg-white">
+          <!-- Desktop -->
+          <div class="hidden text-sm sm:grid sm:grid-cols-[2fr_1fr_1fr_1fr_1fr] sm:items-center hover:bg-gray-100">
+            <div class="px-6 py-4 ">
+              <div class="flex items-center">
+                <div class="shrink-0 h-10 w-10 bg-linear-to-br from-red-100 to-red-200 rounded-lg flex items-center justify-center">
+                  <span class="font-semibold text-red-700 text-sm">
+                    <%= session.user&.name&.split&.map(&:first)&.first(2)&.join&.upcase %>
+                  </span>
+                </div>
+                <div class="ml-4">
+                  <div class="text-sm font-medium text-gray-900 wrap-break-word"><%= session.user&.name %></div>
+                  <div class="text-sm text-gray-500 wrap-break-word"><%= session.user.email_address %></div>
+                </div>
+              </div>
+            </div>
+            <div class="p-4 wrap-break-word"><%= session.user.role.capitalize %></div>
+            <div class="p-4 wrap-break-word"><%= session.updated_at %></div>
+            <div class="p-4 wrap-break-word"><%= time_ago_in_words(session.updated_at) %></div>
+            <div class="flex flex-wrap gap-2">
+              <%= button_to admin_session_path(session), method: :delete, data: { turbo_confirm: "Are you sure?" }, class: "inline-flex items-center gap-1 px-3 py-1.5 text-sm text-red-600 hover:text-red-900 hover:bg-red-100 rounded-lg transition-colors" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+                Revoke
+              <% end %>
+            </div>
+          </div>
+          <!-- Mobile -->
+          <div class="md:hidden space-y-1 p-2 text-sm">
+            <div><span class="font-medium">Name</span> <%= session.user.email_address %></div>
+            <div><span class="font-medium">Name</span> <%= session.updated_at %></div>
+            <div><span class="font-medium">Name</span> <%= time_ago_in_words(session.updated_at) %></div>
+            <div class="flex gap-4 pt-1">
+              <%= button_to "Delete", admin_session_path(session), method: :delete, data: { turbo_confirm: "Are you sure?" }, class: "text-red-600 hover:underline" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    
+  </div>
+</div>

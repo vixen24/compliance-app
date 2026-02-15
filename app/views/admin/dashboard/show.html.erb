@@ -1,0 +1,91 @@
+<% content_for(:title) { "Admin Dashboard" } %> 
+
+<% content_for :left_sidebar do %>
+  <%= render "/admin/shared/left_sidebar" %>
+<% end %>
+
+<div class="h-screen">
+  <header class="p-4 sm:p-4 lg:p-6 lg:pb-0">
+    <div class="p-4 bg-white rounded-lg">
+      <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
+      <p class="mt-1 text-sm text-gray-600">
+        Analyze trends usage and performance
+      </p>
+    </div>
+  </header>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 p-4 sm:p-4 lg:p-6 lg:pb-0">
+    <!-- Active Users Card -->
+    <div class="p-6 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300">
+      <div class="flex items-center justify-between">
+        <div class="text-xl font-medium text-gray-600">Active Users</div>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+      </div>
+      <div class="font-bold text-4xl text-center mt-4 text-gray-800"><%= @metrics[:users] %></div>
+    </div>
+
+    <!-- Unassigned Users Card -->
+    <div class="p-6 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300">
+      <div class="flex items-center justify-between">
+        <div class="text-xl font-medium text-gray-600">Unassigned Users</div>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+      </div>
+      <div class="font-bold text-4xl text-center mt-4 text-gray-800"><%= @metrics[:users_without_team] %></div>
+    </div>
+
+    <!-- Teams Card -->
+    <div class="p-6 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300">
+      <div class="flex items-center justify-between">
+        <div class="text-xl font-medium text-gray-600">Subsidiaries</div>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+      </div>
+      <div class="font-bold text-4xl text-center mt-4 text-gray-800"><%= @metrics[:teams] %></div>
+    </div>
+
+    <!-- Logged In Users Card -->
+    <div class="p-6 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300">
+      <div class="flex items-center justify-between">
+        <div class="text-xl font-medium text-gray-600">Active Sessions</div>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+        </svg>
+      </div>
+      <div class="font-bold text-4xl text-center mt-4 text-gray-800"><%= @metrics[:active_sessions] %></div>
+    </div>
+
+    <!-- Storage capacity-->
+    <div class="lg:col-span-2 p-6 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300">
+      <div class="flex items-center justify-between">
+        <div class="text-xl font-medium text-gray-600">Storage Capacity</div>
+<svg xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 -960 960 960" width="32px" fill="#0000F5"><path d="M480-120q-151 0-255.5-46.5T120-280v-400q0-66 105.5-113T480-840q149 0 254.5 47T840-680v400q0 67-104.5 113.5T480-120Zm0-479q89 0 179-25.5T760-679q-11-29-100.5-55T480-760q-91 0-178.5 25.5T200-679q14 30 101.5 55T480-599Zm0 199q42 0 81-4t74.5-11.5q35.5-7.5 67-18.5t57.5-25v-120q-26 14-57.5 25t-67 18.5Q600-528 561-524t-81 4q-42 0-82-4t-75.5-11.5Q287-543 256-554t-56-25v120q25 14 56 25t66.5 18.5Q358-408 398-404t82 4Zm0 200q46 0 93.5-7t87.5-18.5q40-11.5 67-26t32-29.5v-98q-26 14-57.5 25t-67 18.5Q600-328 561-324t-81 4q-42 0-82-4t-75.5-11.5Q287-343 256-354t-56-25v99q5 15 31.5 29t66.5 25.5q40 11.5 88 18.5t94 7Z"/></svg>
+      </div>
+      
+
+      <!-- Progress bar -->
+      <div class="mt-8 w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+        <div
+          class="bg-red-500 h-3 rounded-full transition-all duration-500"
+          style="width: <%= @storage_percent %>%">
+        </div>
+      </div>
+
+      <!-- Labels -->
+      <div class="flex justify-between text-sm text-gray-600 mt-2">
+        <span>
+          Used: <%= number_to_human_size(@storage_used) %> (<%= @storage_percent %>%)
+        </span>
+
+        <span>
+          Total: <%= number_to_human_size(@storage_total) %>
+        </span>
+
+      </div>
+    </div>
+  </div>
+</div>

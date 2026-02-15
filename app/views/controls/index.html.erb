@@ -1,0 +1,71 @@
+<% content_for(:title) { "Controls" } %>
+
+<% content_for :left_sidebar do %>
+  <%= render "layouts/shared/left_sidebar" %>
+<% end %>
+
+<div class="h-screen flex flex-col">
+
+  <!-- Header -->
+  <div class="p-16">
+    <h2 class="text-2xl">
+      <%= @controls_count %> Mapped Controls
+    </h2>
+  </div>
+
+  <!-- Controls list -->
+
+    <div class="flex-1 p-16 overflow-y-auto space-y-4">
+      <% @controls.each do |control| %>
+        <div class="border rounded p-6 me-4">
+          <!-- Metadata -->
+          <div class="mb-6 text-sm">
+            <span class="underline decoration-dotted">
+              Domain: <%= control[:domain] %>
+            </span>
+            →
+            <span class="underline decoration-dotted">
+              Category: <%= control[:category] %>
+            </span>
+          </div>
+          <!-- Framework mappings -->
+          <div class="flex flex-wrap gap-2 mb-6">
+            <% control.frameworks.each do |framework| %>
+              <span class="text-xs border px-2 py-1 rounded">
+                <%= framework.code %>
+              </span>
+            <% end %>
+          </div>
+          <!-- Control -->
+          <div class="mb-6">
+            <h3 class="font-semibold mb-1">Control <%= control[:code] %></h3>
+            <p><%= control[:question] %></p>
+          </div>
+        </div>
+      <% end %>
+    </div>
+    <!-- Pagination -->
+    <div class="flex items-center justify-center gap-4 px-2 py-3 text-sm">
+      <% if @page > 1 %>
+        <%= link_to "Previous", team_controls_path(page: @page - 1, per_page: @per_page, framework: @framework), 
+          class: "btn btn-sm" %>
+      <% end %>
+      <span>
+        Page <%= @page %> of <%= (@controls_count.to_f / @per_page).ceil %>
+      </span>
+      <% if @page < (@controls_count.to_f / @per_page).ceil %>
+        <%= link_to "Next", team_controls_path(page: @page + 1, per_page: @per_page, framework: @framework),
+          class: "btn btn-sm" %>
+      <% end %>
+      <%= form_with url: team_controls_path, method: :get, class: "flex items-center gap-2" do |form| %>
+        <% if @framework %>
+          <%= form.hidden_field :framework, value: @framework.id.to_s %>
+        <% end %>
+        <%= form.hidden_field :page, value: 1 %> <%# Default to page 1 %>
+        <%= select_tag :per_page, options_for_select([1, 10, 20, 30, 40, 50], @per_page),
+            class: "select w-auto",
+            onchange: "this.form.submit()" %>
+      <% end %>
+    </div>
+ 
+</div>

@@ -1,0 +1,9 @@
+.menu :where(li ul):before {
+  background-color: white;
+  width: 2px;
+  content: "";
+  inset-inline-start: 0;
+  position: absolute;
+  top: -0.25rem;
+  bottom: .15rem;
+}

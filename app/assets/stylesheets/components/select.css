@@ -1,0 +1,6 @@
+ select[multiple]>option {
+   margin-bottom: 1px;
+   height: 28px;
+   padding: 2px;
+   padding-inline: 8px;
+ }

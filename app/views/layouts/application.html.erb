@@ -1,0 +1,26 @@
+<!DOCTYPE html> 
+<html lang="en" data-theme="light">
+  <%= render "layouts/shared/head" %>
+  
+  <body class="flex flex-row bg-base-300">
+    <%= render "layouts/shared/flash" %>
+    <%= yield :left_sidebar if content_for?(:left_sidebar) %>
+
+    <main id="main" class="h-screen overflow-y-auto flex-1 flex flex-col gap-6">
+      <%= yield %>
+    </main>
+
+    <%= yield :footer if content_for?(:footer) %>
+  </body>
+</html>
+
+<%# <footer class="border-t text-xs">
+    <div class="mx-auto max-w-7xl px-4 py-4">
+      <ul class="flex justify-center gap-7">
+        <li>© 2025 All Rights Reserved</li>
+        <li>Sources</li>
+        <li>Privacy</li>
+        <li>Availability</li>
+      </ul>
+    </div>
+  </footer> %>

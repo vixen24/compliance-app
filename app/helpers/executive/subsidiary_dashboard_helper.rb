@@ -1,0 +1,2 @@
+module Executive::SubsidiaryDashboardHelper
+end

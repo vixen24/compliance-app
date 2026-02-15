@@ -1,0 +1,86 @@
+<div id= "control_content" class="flex flex-col justify-between bg-base-100 overflow-y-auto flex-1 rounded-2xl scrollbar-stable p-6 border-gray-100 ml-3 mr-6 mt-4 mb-6 shadow-md transition-shadow">
+      <%# @controls - holds controls per page based on paginate, may be 1,2 or multiple. Default is 1 %>
+    <% if @controls.present? %>
+      <% control = @control %>
+      <div>
+        <div class="mb-4">
+          <!-- Framework metadata  -->
+          <div class="flex flex-row justify-between gap-0.5">
+
+            <!-- Control details -->
+            <div class="mb-4">
+              <h2 class="text-xl font-semibold"><%= control&.question %></h2>
+              <span class="text-gray-500 text-sm"><%= control&.code %></span>
+            </div>
+            <div>
+              <span id="<%= nested_dom_id(@assessment, control, 1)%>" class="<%= classes_for_answer_state(@control.answer) %>">
+                <%= @control.answer&.state&.upcase %>
+              </span>
+            </div>
+          </div>
+        
+          <!-- Render framework badges-->
+          <% if control.present? %>
+            <div class="flex flex-wrap gap-2 mt-4 mb-8">
+              <%= render_full_framework_code_badges(@assessment, control) %>
+            </div>   
+          <% end %>   
+        
+          <!-- Answer form fields -->
+          <details class="border-2 border-gray-200 rounded-2xl px-6 py-6" data-controller="details" data-details-key-value="user">
+            <summary class="text-lg font-semibold mb-1 text-gray-800 cursor-pointer">Subsidiary Response</summary>
+            <%= form_with model: Answer.new, url: team_assessment_answers_path(assessment_id: @assessment.id), data: { controller: "autosave" }, local: true do |form| %>
+              <%= form.hidden_field :assessment_control_id, value: @control.id %>
+              <%= form.hidden_field :assessment_id, value: @assessment.id %>
+              <%= form.hidden_field :user_id, value: Current.user.id %>
+        
+              <fieldset class="my-4">
+                <legend class="font-semibold mb-1 text-neutral-800">Answer</legend>
+                <%= form.select :status,
+                      Answer::STATUS_LABELS.map { |code, label| [label, code] },
+                      { selected: @control&.answer&.status },
+                      {
+                        class: "select",
+                        data: { action: "change->autosave#debouncedSubmit" },
+                        disabled: !@control&.answer&.answerable?
+                      } %>
+              </fieldset>
+        
+              <fieldset>
+                <legend class="font-semibold mb-1 text-neutral-800">Comment</legend>
+                <%= form.text_area :comment,
+                      value: @control&.answer&.comment,
+                      class: "textarea text-base input w-full field-sizing-content h-auto",
+                      data: { action: "change->autosave#debouncedSubmit"},
+                      readonly: !@control&.answer&.answerable? %>
+                <p class="text-xs text-gray-500 pt-1">Optional</p>
+              </fieldset>
+              <div class="flex justify-end">
+                <%= form.submit "Submit", name:"intent", formaction: team_assessment_answers_path(assessment_id: @assessment.id), class:"btn bg-primary-content focus:bg-primary text-white rounded-ld text-base", disabled: !@control.answer&.answerable? %>
+              </div>
+            <% end %>
+          </details>
+        </div>
+        <!-- Assessor review and feedback-->
+        <% if @control.answer&.auditable? %>
+          <div class="border-2 border-gray-200 rounded-2xl px-6 py-6">
+            <details data-controller="details" data-details-key-value="assessor">
+              <summary class="font-semibold mb-1 text-gray-900 cursor-pointer">Assessor Review and Feedback</summary>
+              <%= form_with model: @control.answer, url: team_assessment_answer_path(assessment_id: @assessment, answer_id: control.answer.id), local: true do |form| %>
+                  <div class="flex flex-row gap-4  justify-end">
+                    <%= form.submit "Reject", name: "intent", class: "btn bg-primary-content focus:bg-primary text-white text-base border-none" %>
+                    <%= form.submit "Approve", name: "intent", class: "btn bg-green-500 focus:bg-success text-white text-base border-none" %>
+                  </div>
+              <% end %>
+            </details>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <!--- Handle nil control state -->
+      <div class="text-center font-semibold text-lg">
+        <span class="text-3xl sad-emoji">&#9785;</span>
+        <div>There are no controls to show for the <%=@answer_state%> states</div>
+      </div>
+    <% end %>
+</div> 

@@ -1,0 +1,68 @@
+.flash {
+  display: flex;
+  inset-block-start: var(--block-space);
+  inset-inline-start: 50%;
+  justify-content: center;
+  position: fixed;
+  transform: translate(-50%);
+  z-index: var(--z-flash);
+}
+
+.flash__inner {
+  animation: appear-then-fade 3s 300ms both;
+  background-color: var(--flash-background, var(--color-ink));
+  border-radius: 4em;
+  color: var(--flash-color, var(--color-ink-inverted));
+  display: inline-flex;
+  font-size: var(--font-size-medium);
+  margin: 0 auto;
+  padding: 0.7em 1.4em;
+  animation: appear-then-fade 6s both;
+}
+
+.alert {
+  color: red;
+}
+
+.notice {
+  color: green;
+}
+
+
+.toggle.toggle-lg::before {
+  height: 2rem;
+  width: 75px;
+  border-radius: var(--radius-selector);
+}
+
+label.toggle.toggle-lg {
+  padding: 3px;
+}
+
+label.toggle:has(input[type="checkbox"]:checked) {
+  background: transparent
+}
+
+@keyframes sadPulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes sadShake {
+
+  0%,
+  100% {
+    transform: rotate(-6deg);
+  }
+
+  50% {
+    transform: rotate(6deg);
+  }
+}

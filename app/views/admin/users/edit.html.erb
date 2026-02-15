@@ -1,0 +1,9 @@
+<% content_for(:title) { "Edit User" } %>
+
+<% content_for :left_sidebar do %>
+  <%= render "/admin/shared/left_sidebar" %>
+<% end %>
+
+<div class="p-4 sm:p-12 sm:w-2/4">
+  <%= render "form" %>
+</div>

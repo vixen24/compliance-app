@@ -1,0 +1,4 @@
+.sad-emoji {
+  animation: sadPulse 2s infinite ease-in-out, sadShake 3s infinite ease-in-out;
+  display: inline-block;
+}

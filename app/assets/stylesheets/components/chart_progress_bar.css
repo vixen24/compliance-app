@@ -1,0 +1,68 @@
+/* ===== Legend ===== */
+.legend {
+  min-width: 320px;
+}
+
+.legend-item {
+  margin-bottom: 6px;
+}
+
+.legend-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--color-neutral-800);
+  font-weight: 600;
+}
+
+.label__numbers {
+  color: var(--color-neutral-700);
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.progress {
+  height: 6px;
+  background: #eee;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 6px;
+}
+
+/* Colors */
+.green {
+  background: #27ae60;
+}
+
+.red {
+  background: #e53935;
+}
+
+.yellow {
+  background: #ffb50e;
+}
+
+.gray {
+  background: #9ea3ad;
+}
+
+.blue {
+  background: #4d80df;
+}

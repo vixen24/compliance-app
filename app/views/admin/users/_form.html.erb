@@ -1,0 +1,55 @@
+<%= form_with model: [:admin, @user], class: "contents" do |form| %>
+    <div class="flex flex-col gap-2 w-full">
+      <div class="py-2">
+        <%= form.button "Save", type: "submit", class: "btn rounded-lg border-0 bg-blue-600 text-white hover:bg-blue-700" %>
+      </div>
+
+      <div class="my-2 w-full">
+        <label for="user_name" class="font-semibold mb-1 text-gray-600">Name:</label>
+        <%= form.text_field :name, placeholder: "Firstname Lastname", autofocus: true, class:"pt-1 text-lg block border-b-2 focus:border-blue-600 border-gray-200 focus:outline-none w-full" %>
+      </div>
+
+      <div class="my-2 w-full">
+        <label for="user_email_address" class="font-semibold mb-1 text-gray-600">Email address:</label>
+        <%= form.email_field :email_address, required: true, placeholder: "xyz@businessname.com", class:"pt-1 text-lg block border-b-2 focus:border-blue-600 border-gray-200 focus:outline-none w-full" %>
+      </div>
+      
+      <div class="lg:flex lg:flex-row lg:gap-4">
+        <div class="my-2 w-full">
+          <label for="user_password" class="font-semibold mb-1 text-gray-600">Password:</label>
+          <%= form.password_field :password, required: true, autocomplete: "", placeholder: "Enter a default password",
+            id:"user_password", class:"pt-1 text-lg block border-b-2 focus:border-blue-600 border-gray-200 focus:outline-none w-full" %>
+        </div>
+        <div class="my-2 w-full">
+          <label for="user_password_confirmation" class="font-semibold mb-1 text-gray-600">Password Confirmation</label>
+          <%= form.password_field :password_confirmation, required: true, autocomplete: "", placeholder: "Confirm default password",
+            id:"user_password_confirmation", class:"pt-1 text-lg block border-b-2 focus:border-blue-600 border-gray-200 focus:outline-none w-full" %>
+        </div>
+      </div>
+
+      <div class="lg:flex lg:flex-row lg:gap-4 my-2">
+        <div class="flex flex-col w-full">
+          <label for="user_role" class="font-semibold mb-1 text-gray-600">User Role:</label>
+          <%= form.select :role,
+              User.roles.keys.reject { |r| %w[system owner].include?(r) }.map { |r| [r.humanize, r] },
+              { include_blank: false },
+              { id: "user_role", class: "select mt-1 w-full" }
+          %>
+        </div>
+      </div>
+
+      <div class="flex gap-3 items-center my-2 w-full">
+        <fieldset class="w-full">
+          <legend class="font-semibold mb-1 text-gray-600">
+            Subsidiary
+          </legend>
+            <%= form.collection_select :team_ids,
+              Current.user.account.teams,
+              :id, :name,
+              {},
+              { multiple: true, size: Current.user.account.teams.size, class: "select w-1/2" } %>
+          <p class="text-xs text-gray-500 pt-1">Hold the CTRL key, then click to select multiple entries</p>
+      </fieldset>
+      </div>
+    </div>
+  <% end %>

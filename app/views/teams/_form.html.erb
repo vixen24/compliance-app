@@ -1,0 +1,40 @@
+<%= form_with model: @team, class: "contents" do |form| %>
+  <%= form.hidden_field :account_id, value: Current.user.account.id %>
+
+    <div class="flex flex-col gap-2 w-full">
+      <% if @team.errors.any? %>
+        <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+          <p class="font-semibold">
+            <%= pluralize(@team.errors.count, "error") %> prevented this team from being saved:
+          </p>
+
+          <ul class="list-disc ml-5 mt-2">
+            <% @team.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div>
+        <%= form.label :name %>
+        <%= form.text_field :name, class: "input input-bordered w-full" %>
+      </div>
+
+      <div class="mt-4">
+        <%= form.label :user_ids, "Select Users" %>
+        <%= select_tag "team[user_ids][]",
+                      options_from_collection_for_select(@users, :id, :email_address, @team.user_ids),
+                      multiple: true,
+                      class: "w-full p-2 border rounded h-32" %>
+      </div>
+      <div id="users-selected-count" class="text-sm text-gray-600 mt-1">
+        <%= @team.user_ids.size %> users selected
+      </div>
+
+      <div class="mt-4">
+        <%= form.submit(@team.persisted? ? "Update Team" : "Create Team",class: "btn rounded-lg border-0 bg-blue-600 text-white hover:bg-blue-700") %>
+      </div>
+
+    </div>
+  <% end %>
