@@ -7,7 +7,7 @@ image: vixen24/compliance_app
 # Deploy to these servers.
 servers:
   web:
-    - 15.237.188.48
+    - 51.44.108.112
   # job:
   #   hosts:
   #     - 192.168.0.1
@@ -19,7 +19,7 @@ servers:
 # Note: If using Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
 proxy:
   ssl: false                # or false if you really don’t want HTTPS
-  host: 15.237.188.48
+  host: 51.44.108.112
   app_port: 3000
 
 # Credentials for your image host.
