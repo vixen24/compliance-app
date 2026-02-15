@@ -41,9 +41,11 @@ development:
 production:
   primary:
     <<: *default
-    database: compliance-web-db
-    username: dbmasteruser
-    password: <%= Rails.application.credentials.db_password %>
+    database: <%= ENV["DB_NAME"] %>
+    username: <%= ENV["DB_USERNAME"] %>
+    password: <%= ENV["DB_PASSWORD"] %>
+    host: <%= ENV["DB_HOST"] %>
+    port: <%= ENV["DB_PORT"] %>
   cache:
     <<: *sqlite
     database: storage/compliance_web_production_cache.sqlite3

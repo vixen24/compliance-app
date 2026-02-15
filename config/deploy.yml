@@ -18,8 +18,9 @@ servers:
 #
 # Note: If using Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
 proxy:
-  ssl: true
+  ssl: false                 # or false if you really don’t want HTTPS
   host: app.51.44.168.84.nip.io
+  app_port: 3000
 
 # Credentials for your image host.
 registry:
@@ -52,6 +53,7 @@ env:
     DB_HOST: ls-db14ef6fbc1e24309279f44b8a9a88587bc5c82e.c1emi6ogggg0.eu-west-3.rds.amazonaws.com
     DB_PORT: 5432
     DB_USERNAME: dbmasteruser
+    DB_NAME: postgres
 
     # Log everything from Rails
     RAILS_LOG_LEVEL: debug
@@ -68,7 +70,7 @@ aliases:
 # Use a persistent storage volume for sqlite database files and local Active Storage files.
 # Recommended to change this to a mounted volume path that is backed up off server.
 volumes:
-  - "compliance_app_storage:/rails/storage"
+  - "/var/lib/compliance_app/storage:/rails/storage"
 
 
 # Bridge fingerprinted assets, like JS and CSS, between versions to avoid

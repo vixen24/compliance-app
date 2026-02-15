@@ -1,2 +1,2 @@
-class Executive::Dashboard
+class Executive::SubsidiaryDashboard
 end
