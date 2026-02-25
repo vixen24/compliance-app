@@ -23,7 +23,7 @@ gem "pg"
 
 # Features
 gem "jbuilder"
-gem "bcrypt", "~> 3.1.7"
+gem "bcrypt", "~> 3.1.21"
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 gem "rotp", "~> 6.3.0"
 
