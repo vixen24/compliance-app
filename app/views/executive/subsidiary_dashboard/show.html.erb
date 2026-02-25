@@ -4,7 +4,7 @@
   <%= render "executive/shared/left_sidebar" %>
 <% end %>
 
-<div class="flex flex-col p-8 h-screen">
+<div class="flex flex-col m-8">
   <header>
     <div class="flex gap-6">
       <!--Title-->
@@ -23,7 +23,7 @@
         </p>
       </div>
       <div class="bg-primary-content py-4 px-5 rounded-2xl flex-1">
-        <div class="text-xl text-white"><span class="font-bold"> <span class="bg-primary-content">&#127757;</span> UBA Group </span> has footprint across <span class=""> 24 countries</span></div>
+        <div class="text-xl text-white"><span class="font-bold"> <span class="bg-primary-content">&#127757;</span> UBA </span> has footprint across <span class=""> 24 countries</span></div>
 
         <!-- Team/Subsidiary -->
         <%= form_with url: executive_subsidiary_dashboard_path, method: :get, local: true, data: { controller: "autosave", action: "change->autosave#debouncedSubmit" } do |form| %>
@@ -34,7 +34,7 @@
               Current.user.account.teams.order(:name).map { |t| [t.name, t.id] },
                 { selected: @team&.id },
                 {
-                  class: "select w-full text-lg font-semibold"
+                  class: "select w-full text-base font-semibold"
                 } %>
             </fieldset>
           </div>
@@ -50,7 +50,7 @@
         <div class="mt-3 text-white">
           <ul class="space-y-2">
             <li class="flex items-start gap-2">
-              <span class=" mt-0.5">◆</span><span><%= executive_insight(@compliance_percentage) %></span>
+              <span class=" mt-0.5">◆</span><span><%= subsidiary_insight(@compliance_percentage) %></span>
             </li>
           </ul>
         </div>
@@ -108,8 +108,6 @@
 
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 my-6">
 
-    
-
     <!--Controls for framework in the current view-->
     <div class="p-5 pt-4 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 relative flex items-start gap-6">
       <div class=" inline-flex shrink-0 rounded-xl border border-neutral-200 bg-background/40 p-2.5 shadow-sm">
@@ -146,7 +144,7 @@
             <%= @answer_status_count&.fetch("NA", 0) %>
           </div>
           <div class="text-sm text-gray-500 mt-2">
-           Controls not in scope
+           Out-of-scope controls
           </div>
         </div>
       </div>
@@ -213,7 +211,17 @@
               <div class="legend-header">
                 <div class="label">
                   <span class="dot <%= color %>"></span> 
-                  <%= label %>
+                  <%= button_to Answer.status_label(label).titleize,
+                    executive_subsidiary_dashboard_path,
+                    method: :get,
+                    params: { 
+                      team: @team.id,
+                      status: @status,
+                      id: @assessment&.id,
+                      framework: @framework,
+                      answer_status: label
+                      },
+                    class: "border-0 bg-transparent cursor-pointer" %>
                 </div>
 
                 <% width = number_to_percentage((value.to_f / @total[:control_by_framework]) * 100, precision: 0) || "0%" %>
@@ -243,7 +251,17 @@
               <div class="legend-header">
                 <div class="label">
                   <span class="dot <%= color %>"></span> 
-                  <%= label %>
+                  <%= button_to Answer.state_key_from_label(label).titleize,
+                    executive_subsidiary_dashboard_path,
+                    method: :get,
+                    params: { 
+                      team: @team.id,
+                      status: @status,
+                      id: @assessment&.id,
+                      framework: @framework,
+                      answer_state: label
+                    },
+                    class: "border-0 bg-transparent cursor-pointer" %>
                 </div>
 
                 <% width = number_to_percentage((value.to_f / @total[:control_by_framework]) * 100, precision: 0) || "0%" %>
@@ -256,5 +274,102 @@
           <% end %>
       </div>
     </div> 
+  </div>
+
+  <!--Controls Summary-->
+  <div id="controls-summary" class="bg-white rounded-2xl shadow-md transition-shadow mt-7 overflow-hidden" data-controller=<%= "scroll-into-view" if @answer_status || @answer_state %>>
+    <div class="bg-secondary px-8 py-2 text-xl font-semibold text-white" style="font-family: 'Times New Roman', Times, serif">
+      <% if @answer_status %>
+        Showing controls with compliance status: <%= Answer.status_label(@answer_status).titleize %>
+      <% elsif @answer_state %>
+        Showing controls with workflow: <%= @answer_state.titleize %>
+      <% else %>
+        Showing all controls in assessment
+      <% end %>
+    </div>
+    <div class="">
+      <div class="grid grid-cols-[0.25fr_8fr_1fr_1fr] gap-6 border-b border-neutral-100 px-8 py-2 font-semibold ">
+        <div>ID</div>
+        <div>Control</div>
+        <div>Status</div>
+        <div>Workflow </div>
+      </div>
+      <% @filtered_controls_per_page.each do |control| %>
+      <div class="grid grid-cols-[0.25fr_8fr_1fr_1fr] space-x-2 gap-6 border-b border-neutral-100 px-8 py-2 hover:bg-neutral-100">
+        <div><%= control.control_id %></div>
+        <div class="">
+          <div class="text-secondary font-semibold"> <%= control.question %> </div>
+          <div class="flex flex-wrap gap-2 py-2">
+            <%= render_full_framework_code_badges(@assessment, control) %>
+          </div>
+        </div>
+        <div class="uppercase shrink <%= answer_status_classes(control.answer.status_label) %>">
+          <div class="truncate max-w-[60px] md:max-w-[100px] lg:max-w-[120px]  block">
+            <%= control.answer.status_label %>
+          </div>
+        </div>
+        <div class="uppercase shrink <%= answer_state_classes(control.answer) %>">
+          <div class="truncate max-w-[60px] md:max-w-[100px] lg:max-w-[120px]  block">
+            <%= control.answer.state_label %>
+          </div>
+        </div>
+      </div>
+      <% end %>
+    </div>
+
+    <!--Control Pagination-->
+    <div class="flex items-center gap-4 text-sm py-2 px-6 border-t border-gray-100">
+      <div>
+        <%= form_with url: executive_subsidiary_dashboard_path, method: :get, class: "flex items-center gap-2" do |form| %>
+          <%= form.hidden_field :team, value: @team.id %>
+          <%= form.hidden_field :status, value: @status %>
+          <%= form.hidden_field :id, value: @assessment&.id %>
+          <%= form.hidden_field :framework, value: @framework.id.to_s if @framework %>
+          <%= form.hidden_field :answer_state, value: @answer_state %>
+          <%= form.hidden_field :answer_status, value: @answer_status %>
+          <%= form.hidden_field :page, value: @page %>
+          
+          <%= select_tag :per_page, options_for_select([10, 30, 60, 80], @per_page),
+              class: "select min-w-18 h-8",
+              onchange: "this.form.submit()" %>
+        <% end %>
+      </div>
+      
+      <% control_count = @filtered_controls.size %>
+      <% total_pages = (control_count.to_f / @per_page).ceil %>
+
+      <div class="flex flex-1 items-center">
+        <div class="flex gap-4 m-auto items-center">
+          <%= link_to "Previous", executive_subsidiary_dashboard_path(
+                team: @team.id,
+                status: @status,
+                id: @assessment&.id,
+                framework: @framework,
+                answer_state: @answer_state,
+                answer_status: @answer_status,
+                page: @page - 1, 
+                per_page: @per_page               
+              ), 
+            class: "btn btn-sm #{'invisible' if @page <= 1}" 
+          %>
+          <span class="font-semibold"><%= @page %> of <%= total_pages %></span>
+          <%= link_to "Next", executive_subsidiary_dashboard_path(
+                team: @team.id,
+                status: @status,
+                id: @assessment&.id,
+                framework: @framework,
+                answer_state: @answer_state,
+                answer_status: @answer_status,
+                page: @page + 1, 
+                per_page: @per_page, 
+              ), 
+              class: "btn btn-sm #{'invisible' if @page >= total_pages}" 
+            %>
+        </div>
+        <span class="font-semibold pr-2">
+          <%=control_count%> Controls
+        </span>
+      </div>
+    </div>
   </div>
 </div>

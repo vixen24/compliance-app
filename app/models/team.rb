@@ -7,6 +7,11 @@ class Team < ApplicationRecord
 
   validates :name, presence: true, uniqueness: { case_sensitive: false, message: "already exists" }
 
+  scope :for_team, ->(team) {
+    joins(assessment: :team)
+      .where(teams: { id: team.id })
+  }
+
   def self.most_compliant_for_account(account_id)
     compliant_count_sql =
       "SUM(CASE WHEN answers.status = 'C' THEN 1 ELSE 0 END)"
@@ -42,10 +47,4 @@ class Team < ApplicationRecord
       .having("#{compliant_count_sql} = ?", min_count)
       .pluck(:name)
   end
-
-
-  scope :for_team, ->(team) {
-    joins(assessment: :team)
-      .where(teams: { id: team.id })
-  }
 end

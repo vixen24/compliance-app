@@ -3,44 +3,47 @@ default: &default
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 3 } %>
 
-sqlite: &sqlite
-  adapter: sqlite3
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  timeout: 5000
+# sqlite: &sqlite
+#   adapter: sqlite3
+#   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+#   timeout: 5000
 
 development:
-  primary: 
+  primary: &primary_development
     <<: *default
     database: uba_compliance_development
     username: UB
     password: postgres42
     host: localhost
   cache:
-    <<: *sqlite
-    database: storage/uba_compliance_development_cache.sqlite3
+    <<: *primary_development
     migrations_paths: db/cache_migrate
   cable:
-    <<: *sqlite
-    database: storage/uba_compliance_development_cable.sqlite3
+    <<: *primary_development
     migrations_paths: db/cable_migrate
   queue:
-    <<: *sqlite
-    database: storage/uba_compliance_development_queue.sqlite3
+    <<: *primary_development
     migrations_paths: db/queue_migrate
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
-  primary: &primary_production
+  primary: &primary_test
     <<: *default
-    database: compliance_db
+    database: uba_compliance_test
     username: UB
     password: postgres42
     host: localhost
   cache:
-    <<: *primary_production
+    <<: *primary_test
     migrations_paths: db/cache_migrate
+  cable:
+    <<: *primary_test
+    migrations_paths: db/cable_migrate
+  queue:
+    <<: *primary_test
+    migrations_paths: db/queue_migrate
 
 
 # Store production database in the storage/ directory, which by default
@@ -56,9 +59,9 @@ production:
   cache:
     <<: *primary_production
     migrations_paths: db/cache_migrate
-  # queue:
-  #   <<: *primary_production
-  #   migrations_paths: db/queue_migrate
-  # cable:
-  #   <<: *primary_production
-  #   migrations_paths: db/cable_migrate
+  queue:
+    <<: *primary_production
+    migrations_paths: db/queue_migrate
+  cable:
+    <<: *primary_production
+    migrations_paths: db/cable_migrate

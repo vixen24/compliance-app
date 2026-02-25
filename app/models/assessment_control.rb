@@ -17,20 +17,20 @@ class AssessmentControl < ApplicationRecord
   # end
 
   scope :matching, ->(query) do
-    return none if query.blank?
+    return all if query.blank?
 
     if connection.adapter_name == "PostgreSQL"
       ts_query = sanitize_sql_array([ "plainto_tsquery('english', ?)", query ])
 
-      select("id, question, ts_rank_cd(search_vector, #{ts_query}) AS rank")
+      select("#{table_name}.*, ts_rank_cd(search_vector, #{ts_query}) AS rank")
         .where("search_vector @@ #{ts_query}")
         .order("rank DESC")
-        .limit(10)
+    # .limit(10) # Consider removinf due to .limit in paginate
 
     else
       # SQLite fallback
       where("question LIKE ?", "%#{query}%")
-        .limit(20)
+        .limit(10)
     end
   end
 
@@ -48,13 +48,26 @@ class AssessmentControl < ApplicationRecord
   }
 
   scope :for_answer_state, ->(answer_state) {
-    return if answer_state.blank?
+    return all if answer_state.blank?
+
     left_joins(:answer).where(
       case answer_state.to_s
       when "draft"
         { answers: { id: nil } }
       else
         { answers: { state: Array(answer_state) } }
+      end
+    )
+  }
+
+  scope :for_answer_status, ->(answer_status) {
+    return all if answer_status.blank?
+
+    left_joins(:answer).where(
+      if answer_status.to_s == "NAS"
+        "answers.id IS NULL OR answers.state = 'submitted' OR answers.state = 'rejected'"
+      else
+        { answers: { state: "approved", status: Array(answer_status) } }
       end
     )
   }

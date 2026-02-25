@@ -3,11 +3,9 @@
     <% @controls.each do |control| %>
       <% active = control&.id == @control&.id %>
       <li class="rounded-2xl my-3 shadow-md transition-shadow border border-gray-200 card" data-card-id="<%= control.control_id %>" 
-          data-selectable-card-target="card"
-          data-action="click->selectable-card#select">
-        <%= link_to team_assessment_path(Current.team, @assessment, control: control, page: @page, per_page: @per_page, framework: @framework, answer_state: @answer_state),
-            class: "block focus:outline-2 focus:outline-secondary rounded-2xl focus:outline-offset-3",
-            data: { turbo_stream: true } do %>
+          data-selectable-card-target="card" data-action="click->selectable-card#select">
+        <%= link_to team_assessment_path(Current.team, @assessment, control: control, page: @page, per_page: @per_page, framework: @framework, answer_state: @answer_state, q: @q),
+            class: "block focus:outline-2 focus:outline-secondary rounded-2xl focus:outline-offset-3",  data: { turbo_stream: true } do %>
           <div class="flex flex-col py-2.5 px-3">
             <div class="flex flex-row justify-between gap-x-2 gap-y-0">
               <div class="tooltip tooltip-bottom before:z-2" data-tip="<%= control&.question %>">
@@ -15,8 +13,8 @@
                   <%= control&.question %>
                 </div>
               </div>
-              <span id="<%= nested_dom_id(@assessment, control, 2)%>" class="<%= classes_for_answer_state(control.answer) %>">
-                <%= control.answer&.state&.upcase %>
+              <span id="<%= nested_dom_id(@assessment, control, 2)%>" class="uppercase <%= answer_state_classes(control.answer) %>">
+                <%= control.answer.state %>
               </span>
             </div>
             <div class="text-xs text-gray-500 pt-0.5">C-<%= control.control_id.to_s.rjust(4, "0") %></div>

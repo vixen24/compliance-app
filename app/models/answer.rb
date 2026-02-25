@@ -40,25 +40,48 @@ class Answer < ApplicationRecord
   validates :url, format: { with: URI::DEFAULT_PARSER.make_regexp, message: "must be a valid URL" }, allow_blank: true
 
   STATUS_LABELS = {
-    "C"   => "Compliant",
-    "NC"  => "Not Compliant",
-    "OFI" => "Opportunity for Improvement",
-    "NA"  => "Not Applicable"
+    "C"   => "compliant",
+    "NC"  => "not compliant",
+    "OFI" => "opportunity for improvement",
+    "NA"  => "not applicable"
   }.freeze
+
+  STATE_LABELS = {
+    "draft"   => "draft",
+    "approved"  => "approved",
+    "submitted" => "pending approval",
+    "rejected"  => "rejected"
+  }.freeze
+
+  def status_label
+    if state.to_s != "approved"
+      "not assessed"
+    else
+      STATUS_LABELS[status] || NullAnswer::STATUS_LABELS[status]
+    end
+  end
+
+  def self.status_label(label)
+    STATUS_LABELS[label] || NullAnswer::STATUS_LABELS[label]
+  end
+
+  def self.status_key_from_label(label)
+    STATUS_LABELS.key(label) || NullAnswer::STATUS_LABELS.key(label)
+  end
+
+  def state_label
+    STATUS_LABELS[state] || NullAnswer::STATE_LABELS[state]
+  end
+
+  def self.state_key_from_label(state)
+    STATE_LABELS[state] || NullAnswer::STATE_LABELS.key(state)
+  end
 
   def self.upsert_from(attrs)
     find_or_initialize_by(assessment_control_id: attrs[:assessment_control_id], assessment_id: attrs[:assessment_id]).tap { |a| a.assign_attributes(attrs) }
   end
 
   def self.count_by(attribute, assessment:, framework: nil, only_approved: false)
-    scope = approved if only_approved
-    scope = scope.for_assessment_control(assessment) if only_approved
-    scope = for_assessment_control(assessment) unless only_approved
-    scope = scope.for_framework_control(framework) if framework.present?
-    scope.group(attribute)
-  end
-
-  def self.count_by_account(attribute, account:, only_approved: false)
     scope = approved if only_approved
     scope = scope.for_assessment_control(assessment) if only_approved
     scope = for_assessment_control(assessment) unless only_approved

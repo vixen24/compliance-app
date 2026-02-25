@@ -32,15 +32,7 @@
       <div class="text-gray-800 text-lg font-semibold pl-2"><%= @users.count %> Users</div>
       <div class="flex items-center gap-4 text-sm">
         <div class="flex items-center gap-4">
-          <button class="px-4 py-2 bg-white border rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
-            All Users
-          </button>
-          <button class="px-4 py-2 border border-transparent rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-white hover:border-gray-300 transition-colors">
-            Active
-          </button>
-          <button class="px-4 py-2 border border-transparent rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-white hover:border-gray-300 transition-colors">
-            Inactive
-          </button>
+
         </div>
         <!-- Team/Subsidiary -->
         <%= form_with url: admin_users_path, method: :get, local: true, data: { controller: "autosave", action: "change->autosave#debouncedSubmit" } do |form| %>

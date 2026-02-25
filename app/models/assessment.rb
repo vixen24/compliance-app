@@ -20,6 +20,12 @@ class Assessment < ApplicationRecord
     end
   end
 
+  # TODO: Add DB constraint for above validation
+  # add_index :assessments,
+  #         :team_id,
+  #         unique: true,
+  #         where: "status = 'open'"
+
   def self.bulk_create!(name, team_ids, framework_ids, user)
     assessments = []
     errors = []

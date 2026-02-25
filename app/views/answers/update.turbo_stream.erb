@@ -4,8 +4,7 @@
 <% [1, 2].each do |suffix| %>
   <%= turbo_stream.replace nested_dom_id(assessment, control, suffix) do %>
     <%= render "assessments/state", 
-      control: control, 
-      answer: @answer, 
+      control: control,
       assessment: assessment,
       suffix: suffix %>
   <% end %>

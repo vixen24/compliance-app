@@ -40,7 +40,7 @@ class TeamsController < ApplicationController
   private
 
   def set_users
-    @users = Current.user.account.users.member_or_admin
+    @users = Current.user.account.users.with_assignable_roles
   end
 
   def set_team

@@ -51,7 +51,7 @@ export default class extends Controller {
         }
       },
       annotations: [],
-      height: 400,
+      height: 390,
       width: 430,
       responsive: true,
       showlegend: false,

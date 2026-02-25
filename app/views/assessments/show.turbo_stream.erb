@@ -1,5 +1,6 @@
 <%= turbo_stream.replace "control_content" do %>
   <%= render "assessments/control_content",
-    control: @control
+    control: @control,
+    assessment: @assessment
   %>
 <% end %>

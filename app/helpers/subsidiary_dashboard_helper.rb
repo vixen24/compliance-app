@@ -1,5 +1,7 @@
 module SubsidiaryDashboardHelper
-  def executive_insight(compliance_percentage)
+  def subsidiary_insight(compliance_percentage)
+     return "Compliance data is unavailable" if compliance_percentage.nil?
+
     case true
     when compliance_percentage <= 30
       "Overall control environment is unreliable at this point in time"

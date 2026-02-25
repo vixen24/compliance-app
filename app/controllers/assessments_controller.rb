@@ -2,23 +2,20 @@ class AssessmentsController < ApplicationController
   before_action :set_current_team
   before_action :authenticate_admin!, only: %i[new edit create update destroy] # blocker: prevents user from creating or modifying assessments
   before_action :ensure_viewable!
+  before_action :set_search_param, only: %i[show]
   before_action :set_pagination, only: %i[show]
   before_action :set_framework, only: %i[show]
   before_action :set_answer_state, only: %i[show]
   before_action :set_assessment, only: %i[show]
-  before_action :set_assessment_frameworks, only: %i[show]
-  before_action :set_frameworks, only: %i[new create]
   before_action :set_assessment_controls, only: %i[show]
 
-  DEFAULT_PAGE      = 1.freeze
-  DEFAULT_PER_PAGE  = 20.freeze
   def index
     @assessments = Current.team.assessments.includes(:frameworks).order(created_at: :desc)
   end
 
   def show
-    @controls = @assessment_controls.order(control_id: :asc).paginate(@page, @per_page)
-    @control = params[:control].present? ? @controls.find { |c| c.id == params[:control].to_i } : @controls.first
+    @controls = @assessment_controls.order(:control_id).paginate(@page, @per_page)
+    @control = params[:control].present? ? AssessmentControl.find_by(id: params[:control], assessment_id: @assessment.id) : @controls.first
   end
 
   def new
@@ -46,8 +43,15 @@ class AssessmentsController < ApplicationController
 
   private
 
+  DEFAULT_PAGE      = 1.freeze
+  DEFAULT_PER_PAGE  = 20.freeze
+
+  def set_search_param
+    @q = params[:q] if params[:q].present?
+  end
+
   def set_pagination
-    @page = params[:page].to_i.clamp(1, Float::INFINITY) || 1
+    @page = params[:page].to_i.clamp(1, Float::INFINITY)
     @per_page = (params[:per_page] || DEFAULT_PER_PAGE).to_i
   end
 
@@ -63,20 +67,8 @@ class AssessmentsController < ApplicationController
     @assessment = Current.team.assessments.find(params[:id])
   end
 
-  # Loads controls for a given assessment, based on the framework(s) present
   def set_assessment_controls
-    frameworks = @framework || @frameworks
-    @assessment_controls = AssessmentControl.with_assessment_answers(@assessment, frameworks, @answer_state)
-  end
-
-  # Load all frameworks for a given assessment
-  def set_assessment_frameworks
-    @frameworks = @assessment.frameworks
-  end
-
-  # Load all frameworks available
-  def set_frameworks
-    @frameworks = Framework.all
+    @assessment_controls = @assessment.assessment_controls.for_frameworks(@framework).for_answer_state(@answer_state).matching(@q)
   end
 
   def assessment_params

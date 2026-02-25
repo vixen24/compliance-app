@@ -25,9 +25,10 @@ class User < ApplicationRecord
   scope :admin, -> { where(active: true, role: %i[ owner admin ]) }
   scope :member, -> { where(active: true, role: :member) }
   scope :active, -> { where(active: true, role: %i[ owner admin member ]) }
-  scope :member_or_admin, -> { where.not(role: :owner) }
+  scope :with_assignable_roles, -> { where(role: %i[ admin assessor member ]) }
+
   scope :by_team, ->(team) {
-    return unless team.present?
+    return all unless team.present?
     joins(:teams).where(teams: { id: team })
   }
 
@@ -35,13 +36,14 @@ class User < ApplicationRecord
   validates :email_address, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :password, :password_confirmation, presence: true, on: :create
   validates :password, confirmation: true, length: { minimum: 6 }, allow_blank: true
+  validates :role, uniqueness: { scope: :account_id }, if: -> { system? }
 
   def owner_or_admin?
     role.in?(%w[owner admin])
   end
 
   def self.signup_enabled?
-    User.count.zero?
+    count.zero?
   end
 
   def can_view_assessment?

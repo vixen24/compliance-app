@@ -8,11 +8,18 @@ class Executive::SubsidiaryDashboardController < ApplicationController
   before_action :set_assessment, only: %i[show]
   before_action :set_framework, only: %i[show]
   before_action :set_frameworks, only: %i[show]
+  before_action :set_pagination, only: %i[show]
+  before_action :set_answer_state, only: %i[show]
+  before_action :set_answer_status, only: %i[show]
+  before_action :set_filtered_controls, only: %i[show]
+  before_action :set_filtered_controls_per_page, only: %i[show]
 
   DEFAULT_STATUS = "open"
 
   def show
-     @total = { control: 0, control_by_framework: 0, compliant: 0, compliant_by_framework: 0 }
+     # @dashboard = Executive::SubsidiaryDashboard.new(team: @team, assessment: @assessment, framework: @framework, page: @page, per_page: @per_page).call
+
+     @total = Hash.new(0)
 
     return unless @assessment.present?
 
@@ -35,6 +42,14 @@ class Executive::SubsidiaryDashboardController < ApplicationController
 
   private
 
+  DEFAULT_PAGE      = 1.freeze
+  DEFAULT_PER_PAGE  = 10.freeze
+
+  def set_pagination
+    @page = params[:page].to_i.clamp(DEFAULT_PAGE, Float::INFINITY) || DEFAULT_PAGE
+    @per_page = (params[:per_page] || DEFAULT_PER_PAGE).to_i
+  end
+
   def set_team
     @team = params[:team].present? ? (Team.find_by(id: params[:team]) || Team.find_by(name: params[:team])) : Current.user.account.teams.first
   end
@@ -48,7 +63,8 @@ class Executive::SubsidiaryDashboardController < ApplicationController
   end
 
   def set_assessment
-    @assessment = @assessments.find_by(id: params[:id]) || @assessments.first
+    scope = @assessments.includes(assessment_controls: :answer)
+    @assessment = scope.find_by(id: params[:id]) || scope.first
   end
 
   def set_framework
@@ -59,6 +75,28 @@ class Executive::SubsidiaryDashboardController < ApplicationController
     @frameworks = @assessment&.frameworks
   end
 
+  def set_filtered_controls
+    controls = @assessment&.assessment_controls || AssessmentControl.none
+
+@filtered_controls =
+  controls
+    .for_frameworks(@framework)
+    .for_answer_state(@answer_state)
+    .for_answer_status(@answer_status)
+  end
+
+  def set_filtered_controls_per_page
+    @filtered_controls_per_page = @filtered_controls&.paginate(@page, @per_page)&.order(:control_id)
+  end
+
+  def set_answer_state
+    @answer_state = params[:answer_state] if params[:answer_state].present?
+  end
+
+  def set_answer_status
+    @answer_status = params[:answer_status] if params[:answer_status].present?
+  end
+
   def build_chart_data
     # NA (aka Out-of-scope) is subtrated from all attributes
     @draft = @total[:control_by_framework] - @answer_state_count.fetch("approved", 0) - @answer_state_count.fetch("submitted", 0) - @answer_state_count.fetch("rejected", 0)
@@ -67,17 +105,17 @@ class Executive::SubsidiaryDashboardController < ApplicationController
 
 
     @state_labels = [
-      "Approved",
-      "Pending Approval",
-      "Rejected",
-      "Draft"
+      "approved",
+      "submitted",
+      "rejected",
+      "draft"
     ]
 
     @status_labels = [
-      "Compliant",
-      "Opportunity for Improvement",
-      "Not Compliant",
-      "Not Assessed"
+      "C",
+      "OFI",
+      "NC",
+      "NAS"
     ]
 
     @state_values = [
@@ -93,10 +131,5 @@ class Executive::SubsidiaryDashboardController < ApplicationController
       @answer_status_count.fetch("NC", 0),
       @not_assessed
     ]
-  end
-
-  def set_group
-    @answer_state_count = Answer.count_by_account(:state, account: Current.user.account).count
-    @answer_status_count = Answer.count_by_account(:status, account: Current.user.account, only_approved: true).count
   end
 end

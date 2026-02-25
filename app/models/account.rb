@@ -11,7 +11,7 @@ class Account < ApplicationRecord
   class << self
     def create_with_owner(account:, owner:)
       create!(**account).tap do |account|
-        # account.users.create!(role: :system, name: "System")
+        account.users.create!(role: :system, name: "System")
         account.users.create!(**owner.with_defaults(role: :owner))
       end
     end
