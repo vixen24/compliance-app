@@ -20,7 +20,7 @@ class AssessmentControl < ApplicationRecord
     return all if query.blank?
 
     if connection.adapter_name == "PostgreSQL"
-      ts_query = sanitize_sql_array([ "plainto_tsquery('english', ?)", query ])
+      ts_query = sanitize_sql_array([ "websearch_to_tsquery('english', ?)", query ])
 
       select("#{table_name}.*, ts_rank_cd(search_vector, #{ts_query}) AS rank")
         .where("search_vector @@ #{ts_query}")
@@ -53,7 +53,8 @@ class AssessmentControl < ApplicationRecord
     left_joins(:answer).where(
       case answer_state.to_s
       when "draft"
-        { answers: { id: nil } }
+        # For draft: either no answer exists (id: nil) or answer.state is draft
+        [ "answers.id IS NULL OR answers.state IN (?)", Array(answer_state) ]
       else
         { answers: { state: Array(answer_state) } }
       end
@@ -65,7 +66,7 @@ class AssessmentControl < ApplicationRecord
 
     left_joins(:answer).where(
       if answer_status.to_s == "NAS"
-        "answers.id IS NULL OR answers.state = 'submitted' OR answers.state = 'rejected'"
+        "answers.id IS NULL OR answers.state = 'draft' OR answers.state = 'submitted' OR answers.state = 'rejected'"
       else
         { answers: { state: "approved", status: Array(answer_status) } }
       end

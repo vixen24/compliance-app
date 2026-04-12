@@ -1,33 +1,29 @@
 class Admin::AssessmentsController < ApplicationController
-  include Admin::Authentication
+  admin_access_only
+  layout "public"
 
-  before_action :authenticate_admin!
-  before_action :set_assessment_params, only: %i[create]
+  before_action :set_assessment_batch, only: %i[update destroy]
   before_action :set_teams, only: %i[new create]
-
-  layout "admin"
+  before_action :set_frameworks, only: %i[new create]
 
   def show
   end
 
   def index
-    @assessments = Current.user.account.assessments.includes(team: [], frameworks: [], user: []).order(created_at: :desc)
+    @assessment_batches = Current.user.account.assessment_batches.includes(assessments: [ team: [], frameworks: [], user: [] ]).order(created_at: :desc)
   end
 
   def new
-    @assessment = Assessment.new
-    @errors = {}
+    @assessment_batch = AssessmentBatch.new
   end
 
   def create
-    if validate_assessment_params
-      result = Assessment.bulk_create_with_controls(@name, @team_ids, @framework_ids, Current.user)
+    @assessment_batch = AssessmentBatch.new(batch_assessment_params)
 
-      if result[:errors].any?
-        @errors = result[:errors]
-        render :new, status: :unprocessable_entity
-      else
-        redirect_to admin_assessments_path, notice: "Initializing assessments..."
+    if @assessment_batch.save_batch
+      respond_to do |format|
+        format.html { redirect_to admin_assessments_path, notice: "Assessments created" }
+        format.turbo_stream { render turbo_stream: turbo_stream.action(:redirect, admin_assessments_path) }
       end
     else
       render :new, status: :unprocessable_entity
@@ -41,9 +37,20 @@ class Admin::AssessmentsController < ApplicationController
   end
 
   def update
+    if @assessment_batch.update_batch(params[:status])
+      redirect_to admin_assessments_path, notice: "Assessments updated"
+    else
+      render :edit, status: :unprocessable_entity
+    end
   end
 
+  # Uses background job
   def destroy
+    if @assessment_batch.destroy_batch
+      redirect_to admin_assessments_path, notice: "Assessments is deleting..."
+    else
+      redirect_to admin_assessments_path, alert: "Failed to delete assessments"
+    end
   end
 
   private
@@ -52,25 +59,19 @@ class Admin::AssessmentsController < ApplicationController
     @teams = Current.user.account.teams
   end
 
-  def set_assessment_params
-    @team_ids = params[:team_ids]
-    @framework_ids = params[:framework_ids]
-    @name = params[:name]
+  def set_frameworks
+    @frameworks = Framework.all
   end
 
-  def validate_assessment_params
-    if @team_ids.present? && @framework_ids.present? && @name.present?
-      true
-    else
-      flash.now[:alert] =
-        if @team_ids.blank?
-          "No teams selected."
-        elsif @framework_ids.blank?
-          "No frameworks selected."
-        else
-          "Name cannot be blank."
-        end
-      false
-    end
+  def set_assessment_batch
+    @assessment_batch = Current.user.account.assessment_batches.find_by(id: params[:id])
+  end
+
+  def batch_assessment_params
+    params.require(:assessment_batch).permit(:name, :status, team_ids: [], framework_ids: [])
+          .tap { |p| p[:team_ids]&.reject!(&:blank?)
+                     p[:framework_ids]&.reject!(&:blank?)
+                }
+          .merge(user_id: Current.user.id, account_id: Current.user.account.id)
   end
 end

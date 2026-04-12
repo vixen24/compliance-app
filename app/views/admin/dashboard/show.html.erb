@@ -4,9 +4,9 @@
   <%= render "/admin/shared/left_sidebar" %>
 <% end %>
 
-<div class="h-screen">
-  <header class="p-4 sm:p-4 lg:p-6 lg:pb-0">
-    <div class="p-4 bg-white rounded-lg">
+<div class="flex flex-col h-screen bg-[url('gentle_waves.png')]">
+  <header class="px-4 border-b border-neutral-200 bg-white">
+    <div class="p-4 rounded-lg">
       <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
       <p class="mt-1 text-sm text-gray-600">
         Analyze trends usage and performance
@@ -14,79 +14,188 @@
     </div>
   </header>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 p-4 sm:p-4 lg:p-6 lg:pb-0">
-    <!-- Active Users Card -->
-    <div class="p-6 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300">
-      <div class="flex items-center justify-between">
-        <div class="text-xl font-medium text-gray-600">Active Users</div>
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-        </svg>
-      </div>
-      <div class="font-bold text-4xl text-center mt-4 text-gray-800"><%= @metrics[:users] %></div>
-    </div>
+  <div class="flex-1 min-h-0 overflow-y-auto">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 p-4 sm:p-4 lg:p-6 lg:pb-0">
 
-    <!-- Unassigned Users Card -->
-    <div class="p-6 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300">
-      <div class="flex items-center justify-between">
-        <div class="text-xl font-medium text-gray-600">Unassigned Users</div>
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-        </svg>
-      </div>
-      <div class="font-bold text-4xl text-center mt-4 text-gray-800"><%= @metrics[:users_without_team] %></div>
-    </div>
-
-    <!-- Teams Card -->
-    <div class="p-6 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300">
-      <div class="flex items-center justify-between">
-        <div class="text-xl font-medium text-gray-600">Subsidiaries</div>
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-        </svg>
-      </div>
-      <div class="font-bold text-4xl text-center mt-4 text-gray-800"><%= @metrics[:teams] %></div>
-    </div>
-
-    <!-- Logged In Users Card -->
-    <div class="p-6 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300">
-      <div class="flex items-center justify-between">
-        <div class="text-xl font-medium text-gray-600">Active Sessions</div>
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-        </svg>
-      </div>
-      <div class="font-bold text-4xl text-center mt-4 text-gray-800"><%= @metrics[:active_sessions] %></div>
-    </div>
-
-    <!-- Storage capacity-->
-    <div class="lg:col-span-2 p-6 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300">
-      <div class="flex items-center justify-between">
-        <div class="text-xl font-medium text-gray-600">
-          Storage Capacity
-        </div>
-        <svg xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 -960 960 960" width="32px" fill="#0000F5"><path d="M480-120q-151 0-255.5-46.5T120-280v-400q0-66 105.5-113T480-840q149 0 254.5 47T840-680v400q0 67-104.5 113.5T480-120Zm0-479q89 0 179-25.5T760-679q-11-29-100.5-55T480-760q-91 0-178.5 25.5T200-679q14 30 101.5 55T480-599Zm0 199q42 0 81-4t74.5-11.5q35.5-7.5 67-18.5t57.5-25v-120q-26 14-57.5 25t-67 18.5Q600-528 561-524t-81 4q-42 0-82-4t-75.5-11.5Q287-543 256-554t-56-25v120q25 14 56 25t66.5 18.5Q358-408 398-404t82 4Zm0 200q46 0 93.5-7t87.5-18.5q40-11.5 67-26t32-29.5v-98q-26 14-57.5 25t-67 18.5Q600-328 561-324t-81 4q-42 0-82-4t-75.5-11.5Q287-343 256-354t-56-25v99q5 15 31.5 29t66.5 25.5q40 11.5 88 18.5t94 7Z"/></svg>
-      </div>
-      
-
-      <!-- Progress bar -->
-      <div class="mt-8 w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-        <div
-          class="bg-red-500 h-3 rounded-full transition-all duration-500"
-          style="width: <%= @metrics[:storage][:percent] %>%">
+      <!-- Users -->
+      <div>
+        <h2 class="text-sm font-semibold text-gray-600 uppercase tracking-widest mb-3 text-center">Users</h2>
+        <div class="grid gap-4">
+          <!-- Active Users Card -->
+          <div class="p-6 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300">
+            <div class="flex items-center justify-between">
+              <div class="font-medium text-gray-700">Active Users</div>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <div class="font-bold text-xl text-center mt-4 text-gray-600"><%= @metrics[:active_users] %></div>
+          </div>
+          <!-- Inactive Users Card -->
+          <div class="p-6 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300">
+            <div class="flex items-center justify-between">
+              <div class="font-medium text-gray-700">Inactive Users</div>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <div class="font-bold text-xl text-center mt-4 text-gray-600"><%= @metrics[:inactive_users] %></div>
+          </div>
+          <!-- Unassigned Users Card -->
+          <div class="p-6 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300">
+            <div class="flex items-center justify-between">
+              <div class="font-medium text-gray-700">Unassigned to a Subsidiary</div>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            </div>
+            <div class="font-bold text-xl text-center mt-4 text-gray-600"><%= @metrics[:users_without_team] %></div>
+          </div>
+          <!-- Logged In Users Card -->
+          <div class="p-6 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300">
+            <div class="flex items-center justify-between">
+              <div class="font-medium text-gray-700">Active Sessions</div>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+              </svg>
+            </div>
+            <div class="font-bold text-xl text-center mt-4 text-gray-600"><%= @metrics[:active_sessions] %></div>
+          </div>
         </div>
       </div>
 
-      <!-- Labels -->
-      <div class="flex justify-between text-sm text-gray-600 mt-2">
-        <span>
-          Used: <%= number_to_human_size(@metrics[:storage][:used]) %> (<%= @metrics[:storage][:percent] %>%)
-        </span>
+      <!-- Security -->
+      <div class="lg:col-span-1">
+        <h2 class="text-sm font-semibold text-gray-600 uppercase tracking-widest mb-3 text-center">Security</h2>
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm h-fit p-5 space-y-3">
 
-        <span>
-          Total: <%= number_to_human_size(@metrics[:storage][:total]) %>
-        </span>
+          <%# Two-Factor Authentication %>
+          <% if @metrics[:mfa_status] == "Disabled" %>
+            <div class="flex items-center justify-between rounded-xl bg-red-50 border border-red-100 px-4 py-3">
+              <div class="flex items-center gap-3">
+                <span class="shrink-0 h-2 w-2 rounded-full bg-red-400"></span>
+                <div>
+                  <div class="text-sm font-semibold text-gray-700">Two-factor Authentication</div>
+                  <div class="text-xs text-red-500 font-medium mt-0.5">Disabled</div>
+                </div>
+              </div>
+              <%= link_to "Enable", admin_setting_path(anchor: "account_mfa_enabled"), class: "text-xs font-semibold text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300 rounded-lg px-3 py-1.5 transition-colors duration-150 flex-shrink-0" %>
+            </div>
+          <% else %>
+            <div class="flex items-center justify-between rounded-xl bg-emerald-50 border border-emerald-100 px-4 py-3">
+              <div class="flex items-center gap-3">
+                <span class="flex-shrink-0 h-2 w-2 rounded-full bg-emerald-400"></span>
+                <div>
+                  <div class="text-sm font-semibold text-gray-700">Two-Factor Auth</div>
+                  <div class="text-xs text-emerald-600 font-medium mt-0.5"><%= @metrics[:mfa_status] %></div>
+                </div>
+              </div>
+              <svg class="h-5 w-5 text-emerald-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+          <% end %>
 
+          <%# Password Complexity %>
+          <% if @metrics[:password_complexity] == "Disabled" %>
+            <div class="flex items-center justify-between rounded-xl bg-red-50 border border-red-100 px-4 py-3">
+              <div class="flex items-center gap-3">
+                <span class="flex-shrink-0 h-2 w-2 rounded-full bg-red-400"></span>
+                <div>
+                  <div class="text-sm font-semibold text-gray-700">Password Complexity</div>
+                  <div class="text-xs text-red-500 font-medium mt-0.5">Disabled</div>
+                </div>
+              </div>
+              <%= link_to "Enable", admin_setting_path, class: "text-xs font-semibold text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300 rounded-lg px-3 py-1.5 transition-colors duration-150 flex-shrink-0" %>
+            </div>
+          <% else %>
+            <div class="flex items-center justify-between rounded-xl bg-emerald-50 border border-emerald-100 px-4 py-3">
+              <div class="flex items-center gap-3">
+                <span class="flex-shrink-0 h-2 w-2 rounded-full bg-emerald-400"></span>
+                <div>
+                  <div class="text-sm font-semibold text-gray-700">Password Complexity</div>
+                  <div class="text-xs text-emerald-600 font-medium mt-0.5"><%= @metrics[:password_complexity] %></div>
+                </div>
+              </div>
+              <svg class="h-5 w-5 text-emerald-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+          <% end %>
+
+          <%# Session Timeout %>
+          <% if @metrics[:session_timeout] == "None" %>
+            <div class="flex items-center justify-between rounded-xl bg-red-50 border border-red-100 px-4 py-3">
+              <div class="flex items-center gap-3">
+                <span class="flex-shrink-0 h-2 w-2 rounded-full bg-red-400"></span>
+                <div>
+                  <div class="text-sm font-semibold text-gray-700">Session Timeout</div>
+                  <div class="text-xs text-red-500 font-medium mt-0.5">Not configured</div>
+                </div>
+              </div>
+              <%= link_to "Enable", admin_setting_path, class: "text-xs font-semibold text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300 rounded-lg px-3 py-1.5 transition-colors duration-150 flex-shrink-0" %>
+            </div>
+          <% else %>
+            <div class="flex items-center justify-between rounded-xl bg-emerald-50 border border-emerald-100 px-4 py-3">
+              <div class="flex items-center gap-3">
+                <span class="flex-shrink-0 h-2 w-2 rounded-full bg-emerald-400"></span>
+                <div>
+                  <div class="text-sm font-semibold text-gray-700">Session Timeout</div>
+                  <div class="text-xs text-emerald-600 font-medium mt-0.5"><%= @metrics[:session_timeout] %></div>
+                </div>
+              </div>
+              <svg class="h-5 w-5 text-emerald-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+          <% end %>
+
+          <%# Summary pill %>
+          <div class="pt-1">
+            <% all_secure = @metrics[:mfa_status] != "Disabled" && @metrics[:password_complexity] != "Disabled" && @metrics[:session_timeout] != "None" %>
+            <% if all_secure %>
+              <div class="flex items-center gap-2 text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5">
+                <svg class="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                </svg>
+                All security controls are active
+              </div>
+            <% else %>
+              <div class="flex items-center gap-2 text-xs font-medium text-red-700 bg-red-50 border border-red-200 rounded-xl px-4 py-2.5">
+                <svg class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+                Action required — review security settings
+              </div>
+            <% end %>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Infrasructure-->
+      <div>
+        <h2 class="text-sm font-semibold text-gray-600 uppercase tracking-widest mb-3 text-center">Infrastructure</h2>
+        <div class="lg:col-span-2 p-6 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300">
+          <div class="flex items-center justify-between">
+            <div class="font-medium text-gray-500">
+              Database Capacity
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 -960 960 960" width="32px" fill="#5941ff"><path d="M480-120q-151 0-255.5-46.5T120-280v-400q0-66 105.5-113T480-840q149 0 254.5 47T840-680v400q0 67-104.5 113.5T480-120Zm0-479q89 0 179-25.5T760-679q-11-29-100.5-55T480-760q-91 0-178.5 25.5T200-679q14 30 101.5 55T480-599Zm0 199q42 0 81-4t74.5-11.5q35.5-7.5 67-18.5t57.5-25v-120q-26 14-57.5 25t-67 18.5Q600-528 561-524t-81 4q-42 0-82-4t-75.5-11.5Q287-543 256-554t-56-25v120q25 14 56 25t66.5 18.5Q358-408 398-404t82 4Zm0 200q46 0 93.5-7t87.5-18.5q40-11.5 67-26t32-29.5v-98q-26 14-57.5 25t-67 18.5Q600-328 561-324t-81 4q-42 0-82-4t-75.5-11.5Q287-343 256-354t-56-25v99q5 15 31.5 29t66.5 25.5q40 11.5 88 18.5t94 7Z"/></svg>
+          </div>
+          <!-- Progress bar -->
+          <div class="mt-8 w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+            <div
+              class="bg-red-500 h-3 rounded-full transition-all duration-500"
+              style="width: <%= @metrics[:storage][:percent] %>%">
+            </div>
+          </div>
+          <!-- Labels -->
+          <div class="flex justify-between text-sm text-gray-600 mt-2">
+            <span> Used: <%= number_to_human_size(@metrics[:storage][:used]) %> (<%= @metrics[:storage][:percent] %>%) </span>
+            <span> Total: <%= number_to_human_size(@metrics[:storage][:total]) %> </span>
+          </div>
+        </div>
       </div>
     </div>
   </div>

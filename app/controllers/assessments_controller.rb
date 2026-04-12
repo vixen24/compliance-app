@@ -1,12 +1,14 @@
 class AssessmentsController < ApplicationController
+  admin_access_only only: %i[new edit create update destroy]
+
+  before_action :ensure_viewable!, only: %i[show index]
   before_action :set_current_team
-  before_action :authenticate_admin!, only: %i[new edit create update destroy] # blocker: prevents user from creating or modifying assessments
-  before_action :ensure_viewable!
+  before_action :set_assessment, only: %i[show]
+  before_action :ensure_assessment_is_open!, only: %i[show]
   before_action :set_search_param, only: %i[show]
   before_action :set_pagination, only: %i[show]
   before_action :set_framework, only: %i[show]
   before_action :set_answer_state, only: %i[show]
-  before_action :set_assessment, only: %i[show]
   before_action :set_assessment_controls, only: %i[show]
 
   def index
@@ -79,6 +81,11 @@ class AssessmentsController < ApplicationController
 
   def ensure_viewable!
     return if Current.user.can_view_assessment?
-    redirect_back fallback_location: admin_assessments_path, alert: "Action not allowed"
+    redirect_back fallback_location: root_url, alert: "Access is denied!"
+  end
+
+  def ensure_assessment_is_open!
+     return if @assessment.open?
+     redirect_back fallback_location: root_url, alert: "Accessment is closed!"
   end
 end

@@ -1,30 +1,32 @@
-<% content_for(:title) { "Compliance at-a-Glance" } %>
+<% content_for(:title) { "Dashboard" } %>
 
 <% content_for :left_sidebar do %>
   <%= render "layouts/shared/left_sidebar" %>
 <% end %>
 
-<div class="flex flex-col m-8">
-  <header>
+<div class="flex flex-col">
+  <div class="border-b border-base-300">
+    <!--Back button -->
+    <%= link_to "javascript:history.back()", class: "mx-4 my-2 flex items-center gap-1 hover:bg-gray-200 w-fit rounded-lg py-1 px-3" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" class="w-4 h-4"><path d="M10 19l-7-7 7-7"/><path d="M3 12h18"/></svg>
+      Back
+    <% end %>
+  </div>
+  <header class="m-6">
     <div class="flex gap-6">
       <!--Title-->
       <div class="pr-2 flex-2">
-        <!--Back button -->
-        <%= link_to "javascript:history.back()", class: "flex items-center gap-1 text-base font-semibold hover:bg-gray-200 w-fit rounded-lg py-1 px-3" do %>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" class="w-4 h-4"><path d="M10 19l-7-7 7-7"/><path d="M3 12h18"/></svg>
-          Back
-        <% end %>
-        <h2 class="text-4xl text-secondary font-black pt-2" style="font-family: 'Times New Roman', Times, serif">
+        <h2 class="text-3xl font-black pt-2">
           <% Current.user.role.capitalize %> Information Security Compliance at-a-Glance
         </h2>
         <p class="py-1">
-          <div class="text-gray-600 text-xl" >Monitor compliance posture and approval flow. Use filters </div>
-          <div class="text-gray-600 text-xl"> to spotlight risk, unblock approvals, and keep standards audit-ready</div>
+          <div class="text-base-content/95">Monitor compliance posture and approval flow. Use filters to spotlight risk,  </div>
+          <div class="text-base-content/95"> unblock approvals, and keep standards audit-ready</div>
         </p>
       </div>
 
       <!--Subsidiary Insight-->
-      <div class="bg-secondary py-4 px-5 rounded-2xl flex-1">
+      <div class="darkish py-4 px-5 rounded-lg flex-1">
         <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border bg-white border-white border-border/60 bg-card/40">
           <svg xmlns="http://www://w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#FFC600" stroke="#FFC600" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles h-4 w-4 text-accent"> <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path> <path d="M20 3v4"></path> <path d="M22 5h-4"></path> <path d="M4 17v2"></path> <path d="M5 18H3"></path> </svg>
           <span class="text-xs font-bold text-foreground/90 text-secondary">Quick Insights</span>
@@ -32,7 +34,7 @@
         <div class="mt-3 text-white">
           <ul class="space-y-2">
             <li class="flex items-start gap-2">
-              <span class=" mt-0.5">◆</span><span><%= subsidiary_insight(@compliance_percentage) %></span>
+              <span class="">-</span><span><%= subsidiary_insight(@compliance_percentage) %></span>
             </li>
           </ul>
         </div>
@@ -45,7 +47,7 @@
     data: { controller: "autosave", action: "change->autosave#debouncedSubmit" } do |form| %>
     <%= hidden_field_tag :team, @team&.id %>
 
-    <div class="bg-white rounded-2xl px-8 pt-4 pb-6 mt-6 border border-gray-200 items-end shadow-md">
+    <div class="rounded-lg px-8 pt-4 pb-6 mx-6 border border-base-300 items-end shadow-md bg-base-200">
       <div>
         <span class="flex items-center gap-1 pb-1">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d51709" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"> <path d="M4 6h16M7 12h10M10 18h4"/> </svg>
@@ -56,7 +58,7 @@
       <div class="grid grid-cols-[1fr_1fr_1fr] gap-8">
         <!-- Assessment Status -->
         <fieldset>
-          <legend class="font-semibold mb-1 text-neutral-800">Assessment State</legend>
+          <legend class="text-sm mb-1 text-base-content/80">Assessment State</legend>
           <%= form.select :status,
             Assessment.statuses.keys.map { |k| [k.humanize, k] },
             { selected: @status },
@@ -66,7 +68,7 @@
         </fieldset>
         <!-- Assessment Name -->
         <fieldset>
-          <legend class="font-semibold mb-1 text-neutral-800">Assessment Name</legend>
+          <legend class="text-sm mb-1 text-base-content/80">Assessment Name</legend>
           <%= form.select :id,
             @assessments.map { |a| [a.name, a.id] },
             { selected: @assessment&.id || "" },
@@ -76,7 +78,7 @@
         </fieldset>
         <!-- Framework -->
         <fieldset>
-          <legend class="font-semibold mb-1 text-neutral-800">Framework</legend>
+          <legend class="text-sm mb-1 text-base-content/80">Framework</legend>
           <%= form.select :framework,
             (@frameworks || []).map { |f| [f.code, f.id] },
             { include_blank: "All Frameworks", selected: @framework&.id },
@@ -88,44 +90,44 @@
     </div>
   <% end %>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 my-6">
-
+  <%# Cards %>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 m-6">
     <!--Controls for framework in the current view-->
-    <div class="p-5 pt-4 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 relative flex items-start gap-6">
-      <div class=" inline-flex shrink-0 rounded-xl border border-neutral-200 bg-background/40 p-2.5 shadow-sm">
+    <div class="p-5 pt-4 rounded-lg border border-base-300 shadow hover:shadow-lg transition-shadow duration-300 relative flex items-start gap-4">
+      <div class=" inline-flex shrink-0 rounded-xl border border-base-300 p-2.5 shadow-sm">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d51709" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-git-branch h-5 w-5 text-foreground/80" aria-hidden="true"><line x1="6" x2="6" y1="3" y2="15"></line><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><path d="M18 9a9 9 0 0 1-9 9"></path></svg>
       </div>
       <div>
         <div class="flex items-center justify-between">
-          <div class="text-sm font-semibold text-gray-500">
+          <div class="text-sm font-semibold">
             CONTROLS
           </div>
         </div>
-        <div class="font-bold text-4xl mt-2 text-gray-800" style="font-family: 'Times New Roman', Times, serif">
+        <div class="font-bold text-4xl mt-2">
           <%= @total[:control_by_framework] %>
         </div>
-        <div class="text-sm text-gray-500 mt-2">
-          Controls for framework in the current view
+        <div class="text-sm text-base-content/80 mt-2">
+          Total number of controls for framework
         </div>
       </div>
     </div>
 
     <div>
       <!--Frameworks in the current view-->
-      <div class="p-5 pt-4 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 relative flex items-start gap-6">
-        <div class=" inline-flex shrink-0 rounded-xl border border-neutral-200 bg-background/40 p-2.5 shadow-sm">
+      <div class="p-5 pt-4 rounded-lg border border-base-300 shadow hover:shadow-lg transition-shadow duration-300 relative flex items-start gap-4">
+        <div class=" inline-flex shrink-0 rounded-xl border border-base-300 bg-background/40 p-2.5 shadow-sm">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d51709" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-git-branch h-5 w-5 text-foreground/80" aria-hidden="true"><line x1="6" x2="6" y1="3" y2="15"></line><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><path d="M18 9a9 9 0 0 1-9 9"></path></svg>
         </div>
         <div>
           <div class="flex items-center justify-between">
-            <div class="text-sm font-semibold text-gray-500">
+            <div class="text-sm font-semibold">
               NOT APPLICABLE
             </div>
           </div>
-          <div class="font-bold text-4xl mt-2 text-gray-800" style="font-family: 'Times New Roman', Times, serif">
+          <div class="font-bold text-4xl mt-2">
             <%= @answer_status_count&.fetch("NA", 0) %>
           </div>
-          <div class="text-sm text-gray-500 mt-2">
+          <div class="text-sm text-base-content/80 mt-2">
            Out-of-scope controls
           </div>
         </div>
@@ -133,41 +135,41 @@
     </div>
 
     <!--Oldest response awaiting approval-->
-    <div class="p-5 pt-4 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 relative flex items-start gap-6">
-      <div class=" inline-flex shrink-0 rounded-xl border border-neutral-200 bg-background/40 p-2.5 shadow-sm">
+    <div class="p-5 pt-4 rounded-lg border border-base-300 shadow hover:shadow-lg transition-shadow duration-300 relative flex items-start gap-4">
+      <div class=" inline-flex shrink-0 rounded-xl border border-base-300 p-2.5 shadow-sm">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d51709" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check h-5 w-5 text-primary" data-replit-metadata="client/src/pages/Dashboard.tsx:246:22" data-component-name="ShieldCheck"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path><path d="m9 12 2 2 4-4"></path></svg>
       </div>
       <div>
         <div class="flex items-center justify-between">
-          <div class="text-sm font-semibold text-gray-500">
+          <div class="text-sm font-semibold">
             LONGEST AWAITING APPROVAL
           </div>
         </div>
-        <div class="font-bold text-4xl mt-2 text-gray-800" style="font-family: 'Times New Roman', Times, serif">
+        <div class="font-bold text-4xl mt-2">
           <%= pluralize((Time.current.to_date - (@oldest_submitted_answer&.to_date || Time.current.to_date)).to_i, "day") %>
 
         </div>
-        <div class="text-sm text-gray-500 mt-2">
+        <div class="text-sm text-base-content/80 mt-2">
           Oldest submission awaiting approval</span>
         </div>
       </div>
     </div>
 
     <!---Controls per assessement per framework-->
-    <div class="p-5 pt-4 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 relative flex items-start gap-6">
-      <div class=" inline-flex shrink-0 rounded-xl border border-neutral-200 bg-background/40 p-2.5 shadow-sm">
+    <div class="p-5 pt-4 rounded-lg border border-base-300 shadow hover:shadow-lg transition-shadow duration-300 relative flex items-start gap-4">
+      <div class=" inline-flex shrink-0 rounded-xl border border-base-300  p-2.5 shadow-sm">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d51709" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check h-5 w-5 text-primary" data-replit-metadata="client/src/pages/Dashboard.tsx:246:22" data-component-name="ShieldCheck"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path><path d="m9 12 2 2 4-4"></path></svg>
       </div>
       <div>
         <div class="flex items-center justify-between">
-          <div class="text-sm font-semibold text-gray-500">
+          <div class="text-sm font-semibold">
             LATEST SUBMISSION
           </div>
         </div>
-        <div class="font-bold text-4xl mt-2 text-gray-800" style="font-family: 'Times New Roman', Times, serif">
-          <%= pluralize(((Time.current - (@earliest_submitted_answer || Time.current)) / 1.hour).to_i, "hour") %>
+        <div class="font-bold text-4xl mt-2">
+          <%= pluralize((Time.current.to_date  - (@earliest_submitted_answer&.to_date || Time.current.to_date)).to_i, "day") %>
         </div>
-        <div class="text-sm text-gray-500 mt-2">
+        <div class="text-sm text-base-content/80 mt-2">
           Most recent submission</span>
         </div>
       </div>
@@ -175,10 +177,10 @@
   </div>
 
   <!---Charts -->
-  <div class="flex justify-between flex-wrap gap-4">
+  <div class="flex justify-between flex-wrap gap-2 m-6 mt-0">
 
     <!--Compliance chart-->
-    <div class="flex self-start shadow-md transition-shadow px-4 py-1 rounded-2xl bg-white w-auto" style="">
+    <div class="flex border border-base-300 self-start shadow-md transition-shadow px-4 py-1 rounded-lg w-auto">
       <div data-controller="compliance-chart" data-compliance-chart-values-value="<%= @status_values.to_json %>" 
           data-compliance-chart-labels-value="<%= @status_labels.to_json %>" class="">
       </div>
@@ -217,7 +219,7 @@
     </div>
     
     <!--Workflow chart-->
-    <div class="flex self-center shadow-md transition-shadow px-4 py-1 rounded-2xl bg-white w-auto" style="">
+    <div class="flex border border-base-300 self-center shadow-md transition-shadow px-4 py-1 rounded-lg w-auto">
       <div data-controller="workflow-chart" data-workflow-chart-values-value="<%= @state_values.to_json %>" 
           data-workflow-chart-labels-value="<%= @state_labels.to_json %>" class="">
       </div>
@@ -257,8 +259,8 @@
   </div>
 
   <!--Controls Summary-->
-  <div id="controls-summary" class="bg-white rounded-2xl shadow-md transition-shadow mt-7 overflow-hidden" data-controller=<%= "scroll-into-view" if @answer_status || @answer_state %>>
-    <div class="bg-secondary px-8 py-2 text-xl font-semibold text-white" style="font-family: 'Times New Roman', Times, serif">
+  <div id="" class="rounded-lg m-6 border border-base-300 overflow-hidden" data-controller=<%= "scroll-into-view" if @answer_status || @answer_state %>>
+    <div class="bg-base-content/80 px-8 py-1 text-lg text-base-100 font-medium">
       <% if @answer_status %>
         Showing controls with compliance status: <%= Answer.status_label(@answer_status).titleize %>
       <% elsif @answer_state %>
@@ -267,89 +269,8 @@
         Showing all controls in assessment
       <% end %>
     </div>
-    <div class="">
-      <div class="grid grid-cols-[0.25fr_8fr_1fr_1fr] gap-6 border-b border-neutral-100 px-8 py-2 font-semibold bg-base-300">
-        <div>ID</div>
-        <div>Control</div>
-        <div>Status</div>
-        <div>Workflow </div>
-      </div>
-      <% @filtered_controls_per_page.each do |control| %>
-      <div class="grid grid-cols-[0.25fr_8fr_1fr_1fr] space-x-2 gap-6 border-b border-neutral-100 px-8 py-2 hover:bg-neutral-100">
-        <div><%= control.control_id %></div>
-        <div class="">
-          <div class="text-secondary font-semibold"> <%= control.question %> </div>
-          <div class="flex flex-wrap gap-2 py-2">
-            <%= render_full_framework_code_badges(@assessment, control) %>
-          </div>
-        </div>
-        <div class="uppercase shrink <%= answer_status_classes(control.answer.status_label) %>">
-          <div class="truncate max-w-[60px] md:max-w-[100px] lg:max-w-[120px]  block">
-            <%= control.answer.status_label %>
-          </div>
-        </div>
-        <div class="uppercase shrink <%= answer_state_classes(control.answer) %>">
-          <div class="truncate max-w-[60px] md:max-w-[100px] lg:max-w-[120px]  block">
-            <%= control.answer.state_label %>
-          </div>
-        </div>
-      </div>
-      <% end %>
-    </div>
 
-    <!--Control Pagination-->
-    <div class="flex items-center gap-4 text-sm py-2 px-6 border-t border-gray-100">
-      <div>
-        <%= form_with url: team_dashboard_path, method: :get, class: "flex items-center gap-2" do |form| %>
-          <%= form.hidden_field :team, value: @team.id %>
-          <%= form.hidden_field :status, value: @status %>
-          <%= form.hidden_field :id, value: @assessment&.id %>
-          <%= form.hidden_field :framework, value: @framework.id.to_s if @framework %>
-          <%= form.hidden_field :answer_state, value: @answer_state %>
-          <%= form.hidden_field :answer_status, value: @answer_status %>
-          <%= form.hidden_field :page, value: @page %>
-          
-          <%= select_tag :per_page, options_for_select([10, 30, 60, 80], @per_page),
-              class: "select min-w-18 h-8",
-              onchange: "this.form.submit()" %>
-        <% end %>
-      </div>
-      
-      <% control_count = @filtered_controls.size %>
-      <% total_pages = (control_count.to_f / @per_page).ceil %>
-
-      <div class="flex flex-1 items-center">
-        <div class="flex gap-4 m-auto items-center">
-          <%= link_to "Previous", team_dashboard_path(
-                team: @team.id,
-                status: @status,
-                id: @assessment&.id,
-                framework: @framework,
-                answer_state: @answer_state,
-                answer_status: @answer_status,
-                page: @page - 1, 
-                per_page: @per_page               
-              ), 
-            class: "btn btn-sm #{'invisible' if @page <= 1}" 
-          %>
-          <span class="font-semibold"><%= @page %> of <%= total_pages %></span>
-          <%= link_to "Next", team_dashboard_path(
-                team: @team.id,
-                status: @status,
-                id: @assessment&.id,
-                framework: @framework,
-                answer_state: @answer_state,
-                answer_status: @answer_status,
-                page: @page + 1, 
-                per_page: @per_page, 
-              ), 
-              class: "btn btn-sm #{'invisible' if @page >= total_pages}" 
-            %>
-        </div>
-        <span class="font-semibold pr-2">
-          <%=control_count%> Controls
-        </span>
-      </div>
-    </div>
+    <!--Controls table-->
+    <%= render "controls_table"%>
   </div>
 </div>

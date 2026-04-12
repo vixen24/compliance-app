@@ -21,6 +21,7 @@ module Authentication
   end
 
   private
+
     def authenticated?
       resume_session
     end
@@ -29,17 +30,13 @@ module Authentication
       resume_session || request_authentication
     end
 
-    def resume_session
-      Current.session ||= find_session_by_cookie
-    end
-
     def find_session_by_cookie
       Session.find_by(id: cookies.signed[:session_id]) if cookies.signed[:session_id]
     end
 
     def request_authentication
       session[:return_to_after_authenticating] = request.url
-      redirect_to new_session_path
+      redirect_to main_app.new_session_path
     end
 
     def after_authentication_url
@@ -55,13 +52,39 @@ module Authentication
         Current.session = session
         cookies.signed.permanent[:session_id] = { value: session.id, httponly: true, same_site: :lax }
       end
-
-      # Current.team = user.teams.first
-      # session[:current_team_id] = Current.team.id if Current.team
     end
 
     def terminate_session
       Current.session.destroy
+      cookies.delete(:session_id)
+    end
+
+    def resume_session
+      # Current.session =|| find_session_by_cookie
+      return Current.session if Current.session
+
+      session = find_session_by_cookie
+
+      if session && session_active?(session)
+        touch_session(session)
+        Current.session = session
+      else
+        terminate_session_if_exists(session)
+        nil
+      end
+    end
+
+    def session_active?(session)
+      timeout = session.user.account.session_timeout
+      timeout.blank? || session.updated_at > Time.current - timeout
+    end
+
+    def touch_session(session)
+      session.touch # updates updated_at
+    end
+
+    def terminate_session_if_exists(session)
+      session&.destroy
       cookies.delete(:session_id)
     end
 end

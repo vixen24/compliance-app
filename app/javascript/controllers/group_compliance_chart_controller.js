@@ -1,4 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
+import Plotly from "plotly.js-basic-dist"
+import { plotlyTheme } from "plotly_theme"
 
 export default class extends Controller {
   static values = {
@@ -9,6 +11,26 @@ export default class extends Controller {
     na: Array
   }
   connect() {
+    this.render()
+    this.bindThemeListener()
+  }
+
+  disconnect() {
+    window.removeEventListener("theme:changed", this.themeHandler)
+  }
+
+  bindThemeListener() {
+    this.themeHandler = () => this.updateTheme()
+    window.addEventListener("theme:changed", this.themeHandler)
+  }
+
+  updateTheme() {
+    this.render()
+  }
+
+  render() {
+    const { bg, font } = plotlyTheme()
+
     var compliant = {
       x: this.labelsValue,
       y: this.cValue,
@@ -59,18 +81,30 @@ export default class extends Controller {
 
     var data = [compliant, ofi, not_compliant, not_assessed];
     var layout = {
+      paper_bgcolor: bg,
+      plot_bgcolor: bg,
+
+      legend: {
+        font: {
+          color: font,
+        }
+      },
+
       margin: {
         b: 120
       },
       xaxis: {
         title: {
           text: 'Subsidiaries',
-          standoff: 2,
+          standoff: 4,
           font: {
             size: 16,
-            color: '#404040',
+            color: font,
             weight: 'bold'
           }
+        },
+        tickfont: {
+          color: font
         }
       },
       yaxis: {
@@ -78,9 +112,12 @@ export default class extends Controller {
           text: 'Compliance (%)',
           font: {
             size: 16,
-            color: '#404040',
+            color: font,
             weight: 'bold'
           }
+        },
+        tickfont: {
+          color: font
         },
         range: [0, 100]
       },
@@ -88,25 +125,21 @@ export default class extends Controller {
       title: {
         text: 'Percentage Compliance Across Subisidiaries',
         font: {
-          size: 24,
-          family: 'Georgia, Times New Roman, Times, serif',
+          size: 20,
           weight: 'bold',
-          color: "#404040"
+          color: font
         }
       },
       autosize: true,
-      height: 600,
+      height: 580
     };
 
     Plotly.newPlot(this.element, data, layout, { responsive: true });
 
-    // Make chart clickable
     this.element.on('plotly_click', (event) => {
       const subsidiary = event.points[0].x;
 
-      // redirect to subsidiary page
-      window.location.href =
-        `/executive/subsidiary_dashboard?team=${encodeURIComponent(subsidiary)}`;
+      window.location.href = `/executive/subsidiary_dashboard?team=${encodeURIComponent(subsidiary)}`;
     });
   }
 }

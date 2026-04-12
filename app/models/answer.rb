@@ -3,34 +3,23 @@ class Answer < ApplicationRecord
 
   belongs_to :assessment_control
   belongs_to :assessment
-  belongs_to :user # Remove this user, replace with last_modified_by/at and last review_by/at and accepted
-  has_many :feedbacks
+  belongs_to :user
 
   scope :for_frameworks, ->(frameworks = nil) {
-  framework_ids = Array(frameworks).map { |f| f.respond_to?(:id) ? f.id : f } .compact
-
-    if framework_ids.any?
-      joins(assessment_control: { control: :frameworks }) .where(frameworks: { id: framework_ids }).distinct
-    else
-      all
-    end
+    framework_ids = Array(frameworks).map { |f| f.respond_to?(:id) ? f.id : f }.compact
+    framework_ids.any? ? joins(assessment_control: { control: :frameworks }).where(frameworks: { id: framework_ids }).distinct : all
   }
 
   scope :for_open_assessment_for_team, ->(team) {
-    joins(assessment_control: :assessment)
-      .where(assessments: { status: "open", team_id: team.id })
+    joins(assessment_control: :assessment).where(assessments: { status: "open", team_id: team.id })
   }
 
-
   scope :for_assessment_control, ->(assessment) {
-    joins(:assessment_control)
-      .where(assessment_controls: { assessment_id: assessment.id })
+    joins(:assessment_control).where(assessment_controls: { assessment_id: assessment.id })
   }
 
   scope :for_framework_control, ->(framework) {
-    joins(assessment_control: { control: :framework_controls })
-      .where(framework_controls: { framework_id: framework.id })
-      .distinct
+    joins(assessment_control: { control: :framework_controls }).where(framework_controls: { framework_id: framework.id }).distinct
   }
 
   scope :approved, -> { where(state: :approved) }
@@ -65,12 +54,12 @@ class Answer < ApplicationRecord
     STATUS_LABELS[label] || NullAnswer::STATUS_LABELS[label]
   end
 
-  def self.status_key_from_label(label)
-    STATUS_LABELS.key(label) || NullAnswer::STATUS_LABELS.key(label)
-  end
-
   def state_label
     STATUS_LABELS[state] || NullAnswer::STATE_LABELS[state]
+  end
+
+  def self.status_key_from_label(label)
+    STATUS_LABELS.key(label) || NullAnswer::STATUS_LABELS.key(label)
   end
 
   def self.state_key_from_label(state)
@@ -94,7 +83,7 @@ class Answer < ApplicationRecord
   end
 
   def self.earliest_submitted_for_assessment(assessment_id)
-    where(assessment_id: assessment_id, state: :submitted) .order(created_at: :desc) .pick(:created_at)
+    where(assessment_id: assessment_id, state: :submitted).order(created_at: :desc).pick(:created_at)
   end
 end
 

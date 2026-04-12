@@ -1,7 +1,7 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 3 } %>
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
 # sqlite: &sqlite
 #   adapter: sqlite3
@@ -9,59 +9,26 @@ default: &default
 #   timeout: 5000
 
 development:
-  primary: &primary_development
+  primary:
     <<: *default
     database: uba_compliance_development
     username: UB
     password: postgres42
     host: localhost
-  cache:
-    <<: *primary_development
-    migrations_paths: db/cache_migrate
-  cable:
-    <<: *primary_development
-    migrations_paths: db/cable_migrate
-  queue:
-    <<: *primary_development
-    migrations_paths: db/queue_migrate
 
-# Warning: The database defined as "test" will be erased and
-# re-generated from your development database when you run "rake".
-# Do not set this db to the same as development or production.
 test:
-  primary: &primary_test
+  primary:
     <<: *default
     database: uba_compliance_test
     username: UB
     password: postgres42
     host: localhost
-  cache:
-    <<: *primary_test
-    migrations_paths: db/cache_migrate
-  cable:
-    <<: *primary_test
-    migrations_paths: db/cable_migrate
-  queue:
-    <<: *primary_test
-    migrations_paths: db/queue_migrate
 
-
-# Store production database in the storage/ directory, which by default
-# is mounted as a persistent Docker volume in config/deploy.yml.
 production:
-  primary: &primary_production
+  primary:
     <<: *default
     database: <%= ENV["DB_NAME"] %>
     username: <%= ENV["DB_USERNAME"] %>
     password: <%= ENV["DB_PASSWORD"] %>
     host: <%= ENV["DB_HOST"] %>
     port: <%= ENV["DB_PORT"] %>
-  cache:
-    <<: *primary_production
-    migrations_paths: db/cache_migrate
-  queue:
-    <<: *primary_production
-    migrations_paths: db/queue_migrate
-  cable:
-    <<: *primary_production
-    migrations_paths: db/cable_migrate

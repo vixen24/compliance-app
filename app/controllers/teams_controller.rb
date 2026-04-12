@@ -1,11 +1,9 @@
 class TeamsController < ApplicationController
-  include Admin::Authentication
-
-  before_action :authenticate_admin!
-  before_action :set_team, only: :update
+  admin_access_only
+  before_action :set_team, only: %i[edit update destroy]
   before_action :set_users, only: %i[new edit create update]
 
-  layout "admin"
+  layout "public"
 
   def index
     @teams = Current.user.account.teams.includes(:users, :assessments).order(:name)
@@ -16,14 +14,16 @@ class TeamsController < ApplicationController
   end
 
   def edit
-    @team = Team.find(params[:id])
   end
 
   def create
     @team = Team.new(team_params)
 
     if @team.save
-      redirect_to teams_path, notice: "Team created successfully."
+      respond_to do |format|
+        format.html { redirect_to teams_path, notice: "Team created successfully" }
+        format.turbo_stream { render turbo_stream: turbo_stream.action(:redirect, teams_path) }
+      end
     else
       render :new, status: :unprocessable_entity
     end
@@ -31,16 +31,24 @@ class TeamsController < ApplicationController
 
   def update
     if @team.update(team_params)
-      redirect_to teams_path, notice: "Team updated successfully."
+      respond_to do |format|
+        format.html { redirect_to teams_path, notice: "Team updated successfully." }
+        format.turbo_stream { render turbo_stream: turbo_stream.action(:redirect, teams_path) }
+      end
     else
       render :edit, status: :unprocessable_entity
     end
   end
 
+  def destroy
+    @team.destroy
+    redirect_to teams_path, notice: "Deleted successfully."
+  end
+
   private
 
   def set_users
-    @users = Current.user.account.users.with_assignable_roles
+    @users = Current.user.account.users.regular
   end
 
   def set_team

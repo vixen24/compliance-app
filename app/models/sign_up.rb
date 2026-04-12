@@ -27,6 +27,9 @@ class SignUp
     @user = @account.users.find_by!(role: :owner)
   end
 
+  def accepting_signups
+  end
+
   private
 
   def email_address_must_be_unique

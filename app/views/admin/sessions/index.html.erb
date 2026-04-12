@@ -1,72 +1,165 @@
-<% content_for(:title) { "Admin Dashboard: Active Sessions" } %> 
+<% content_for(:title) { "Active Sessions" } %> 
 
 <% content_for :left_sidebar do %>
   <%= render "/admin/shared/left_sidebar" %>
 <% end %>
 
-<div class="h-screen overflow-hidden">
-  <header class="p-4 sm:p-4 lg:p-6 lg:pb-0">
-    <div class="bg-white p-4 rounded-lg">
-      <h1 class="text-2xl font-bold text-gray-900">
-        Session Management
-      </h1>
-      <p class="mt-1 text-sm text-gray-600">
-        Manage all active sessions across account
-      </p>
+<div class="h-screen flex flex-col">
+
+  <header class="px-4 border-b border-neutral-200">
+    <div class="p-4 rounded-lg">
+      <div class="flex flex-row justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">
+            Session Management
+          </h1>
+          <p class="mt-1 text-sm text-gray-600">
+            Manage all active sessions across account
+          </p>
+        </div>
+        <div class="flex items-center gap-3">
+          <%= button_to admin_sessions_path(all: true), method: :delete, class: "btn border-none bg-primary-content focus:bg-primary rounded-lg text-gray-100 flex items-center gap-2", data: { turbo_confirm: "Do you want to revoke all active sessions in this account?" }  do %>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path> </svg>
+            <span class="hidden sm:inline"> Revoke all sessions </span>
+          <% end %>
+        </div>
+      </div>
     </div>
   </header>
 
-  <div class="p-4 sm:p-4 lg:p-6 lg:pb-0">
-    <!-- Header -->
-    <div class="hidden sm:grid sm:grid-cols-[2fr_1fr_1fr_1fr_1fr] font-semibold px-4 py-2 bg-white rounded-tl-lg rounded-tr-lg">
-      <div class="p-2 pl-16">User</div>
-      <div class="p-2">Role</div>
-      <div class="p-2">Logon Time</div>
-      <div class="p-2">Duration</div>
-      <div class="p-2 pl-6">Action</div>
-    </div>
+  <!-- Filters -->
+  <div class="px-4 border-b border-neutral-200">
+    <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between p-4 bg-white rounded-lg">
+      <div class="text-gray-800 text-lg font-semibold pl-2">
+        <%= @sessions.count %> Active Sessions
+      </div>
 
+      <!-- Search by email or name -->
+      <div class="flex items-center gap-4 text-sm">
+        <div class="">
+          <%= form_with url: admin_sessions_path, method: :get, local: true do |form| %>
+            <label class="input w-full">
+              <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></g></svg>
+              <%= form.search_field :q,
+                  value: @q,
+                  placeholder: "Search email or name",
+                  class: "" %>
+              </label>
+          <% end %>
+        </div>
+
+        <div class="sm:text-sm">
+          <!-- Clear All Filters -->
+          <%= link_to "Clear", admin_sessions_path, class: "btn bg-secondary text-white hover:bg-secondary/90 border-none rounded-lg" %>
+        </div>
+      </div>
+    </div>
+  </div>
     
-      <% @sessions.each do |session| %>
-        <div class="text-sm bg-white">
-          <!-- Desktop -->
-          <div class="hidden text-sm sm:grid sm:grid-cols-[2fr_1fr_1fr_1fr_1fr] sm:items-center hover:bg-gray-100">
-            <div class="px-6 py-4 ">
-              <div class="flex items-center">
-                <div class="shrink-0 h-10 w-10 bg-linear-to-br from-red-100 to-red-200 rounded-lg flex items-center justify-center">
-                  <span class="font-semibold text-red-700 text-sm">
-                    <%= session.user&.name&.split&.map(&:first)&.first(2)&.join&.upcase %>
-                  </span>
-                </div>
-                <div class="ml-4">
-                  <div class="text-sm font-medium text-gray-900 wrap-break-word"><%= session.user&.name %></div>
-                  <div class="text-sm text-gray-500 wrap-break-word"><%= session.user.email_address %></div>
-                </div>
-              </div>
+  <!--Large screen -->
+  <div class="hidden lg:block border border-neutral-200 rounded-lg m-6 flex-1 min-h-0 overflow-y-auto">
+    <div class="grid lg:grid-cols-[1.5fr_1fr_1fr_1fr_1fr_1fr]">
+
+      <!-- Header -->
+      <div class="px-2 py-1 pl-4 text-left text-white bg-secondary tracking-wider min-w-0 sticky top-0">Users</div>
+      <div class="px-2 py-1 text-left text-white bg-secondary tracking-wider sticky top-0">Role</div>
+      <div class="px-2 py-1 text-left text-white bg-secondary tracking-wider sticky top-0">Logon Time</div>
+      <div class="px-2 py-1 text-left text-white bg-secondary tracking-wider sticky top-0">Logon Duration</div>
+      <div class="px-2 py-1 text-left text-white bg-secondary tracking-wider sticky top-0">Last Activity</div>
+      <div class="px-2 py-1 pl-4 text-left text-white bg-secondary tracking-wider sticky top-0">Action</div>
+
+      <%# Body %>
+      <% @sessions.each_with_index do |session, index| %>
+        <%# Grid Body %>
+        <div class="<%= index.even? ? 'bg-gray-100' : 'bg-white' %> p-2 pl-4 text-sm text-wrap overflow-hidden">
+          <div class="flex items-center">
+            <div class="shrink-0 h-9 w-9 bg-linear-to-br from-red-100 to-red-200 rounded-lg flex items-center justify-center">
+              <span class="font-semibold text-red-700 tracking-wider">
+                <%= session.user&.name&.split&.map(&:first)&.first(2)&.join&.upcase %>
+              </span>
             </div>
-            <div class="p-4 wrap-break-word"><%= session.user.role.capitalize %></div>
-            <div class="p-4 wrap-break-word"><%= session.updated_at %></div>
-            <div class="p-4 wrap-break-word"><%= time_ago_in_words(session.updated_at) %></div>
-            <div class="flex flex-wrap gap-2">
-              <%= button_to admin_session_path(session), method: :delete, data: { turbo_confirm: "Are you sure?" }, class: "inline-flex items-center gap-1 px-3 py-1.5 text-sm text-red-600 hover:text-red-900 hover:bg-red-100 rounded-lg transition-colors" do %>
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                </svg>
-                Revoke
-              <% end %>
-            </div>
-          </div>
-          <!-- Mobile -->
-          <div class="md:hidden space-y-1 p-2 text-sm">
-            <div><span class="font-medium">Name</span> <%= session.user.email_address %></div>
-            <div><span class="font-medium">Name</span> <%= session.updated_at %></div>
-            <div><span class="font-medium">Name</span> <%= time_ago_in_words(session.updated_at) %></div>
-            <div class="flex gap-4 pt-1">
-              <%= button_to "Delete", admin_session_path(session), method: :delete, data: { turbo_confirm: "Are you sure?" }, class: "text-red-600 hover:underline" %>
+            <div class="ml-4 min-w-0">
+              <div class="text-gray-900 leading-tight"><%= session.user&.name %></div>
+              <div class="text-gray-500 leading-tight"><%= session.user.email_address %></div>
             </div>
           </div>
         </div>
+        <div class="<%= index.even? ? 'bg-gray-100' : 'bg-white' %> p-2 text-sm whitespace-nowrap">
+          <span class="inline-flex items-center">
+            <%= session.user.role.capitalize %>
+          </span>
+        </div>
+        <div class="<%= index.even? ? 'bg-gray-100' : 'bg-white' %> p-2 text-sm">
+          <div class="">
+            <%= session.created_at %>
+          </div>
+        </div>
+        <div class="<%= index.even? ? 'bg-gray-100' : 'bg-white' %> p-2 text-sm">
+          <div class="">
+            <%= time_ago_in_words(session.created_at) %>
+          </div>
+        </div>
+        <div class="<%= index.even? ? 'bg-gray-100' : 'bg-white' %> p-2 text-sm">
+          <div class="">
+            <%= time_ago_in_words(session.updated_at) %>
+          </div>
+        </div>
+        <div class="<%= index.even? ? 'bg-gray-100' : 'bg-white' %> p-2 text-sm whitespace-nowrap">
+          <div class="">
+            <%= button_to admin_session_path(session), method: :delete, data: { turbo_confirm: "Are you sure?" }, class: "inline-flex items-center gap-1 px-3 py-1.5 text-sm text-red-600 hover:text-red-900 hover:bg-red-100 rounded-lg transition-colors" do %>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+              Revoke
+            <% end %>
+          </div>
+        </div>
       <% end %>
-    
+    </div>
   </div>
+
+  <!-- Small Screen -->
+  <div class="bg-white lg:hidden divide-y divide-gray-200 m-4 rounded-lg overflow-clip">
+    <% @sessions.each do |session| %>
+      <div class="p-4 hover:bg-neutral-100 transition-colors">
+        <div class="flex items-start justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="shrink-0 h-9 w-9 bg-linear-to-br from-red-100 to-red-200 rounded-xl flex items-center justify-center">
+              <span class="font-semibold text-red-700 text-base">
+                  <%= session.user&.name&.split&.map(&:first)&.first(2)&.join&.upcase %>
+              </span>
+            </div>
+            <div>
+              <div class="text-sm font-semibold text-gray-900 leading-tight"><%= session&.user&.name %></div>
+              <div class="text-sm text-gray-500 leading-tight"><%= session.user.email_address %></div>
+            </div>
+          </div>
+          <div class="">
+          <%= button_to admin_session_path(session), method: :delete, data: { turbo_confirm: "Are you sure?" }, class: "inline-flex items-center gap-1 px-3 py-1.5 text-sm text-red-600 hover:text-red-900 hover:bg-red-100 rounded-lg transition-colors" do %>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+            Revoke
+          <% end %>
+        </div>
+        </div>
+        
+        <div class="mt-4 grid grid-cols-[0.5fr_1fr_1fr] gap-3 text-sm">
+          <div>
+            <span class="text-gray-500">Role</span>
+            <p class="font-medium"><%= session.user.role.capitalize %></p>
+          </div>
+          <div>
+            <span class="text-gray-500">Logon Time</span>
+            <p class="font-medium"><%= session.created_at %></p>
+          </div>
+          <div>
+            <span class="text-gray-500">Logon Duration</span>
+            <p class="font-medium"><%= time_ago_in_words(session.updated_at) %></p>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
 </div>

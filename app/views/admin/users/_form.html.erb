@@ -1,55 +1,76 @@
-<%= form_with model: [:admin, @user], class: "contents" do |form| %>
-    <div class="flex flex-col gap-2 w-full">
-      <div class="py-2">
-        <%= form.button "Save", type: "submit", class: "btn rounded-lg border-0 bg-blue-600 text-white hover:bg-blue-700" %>
-      </div>
+<%= form_with model: [:admin, @user],  url: @user.persisted? ? admin_user_path(@user, password_reset: @password_reset) : admin_users_path, class: "contents" do |form| %>
+  <div class="flex flex-col gap-y-3 px-6">
 
-      <div class="my-2 w-full">
-        <label for="user_name" class="font-semibold mb-1 text-gray-600">Name:</label>
-        <%= form.text_field :name, placeholder: "Firstname Lastname", autofocus: true, class:"pt-1 text-lg block border-b-2 focus:border-blue-600 border-gray-200 focus:outline-none w-full" %>
-      </div>
-
-      <div class="my-2 w-full">
-        <label for="user_email_address" class="font-semibold mb-1 text-gray-600">Email address:</label>
-        <%= form.email_field :email_address, required: true, placeholder: "xyz@businessname.com", class:"pt-1 text-lg block border-b-2 focus:border-blue-600 border-gray-200 focus:outline-none w-full" %>
-      </div>
+    <% unless @password_reset %>
+      <div>
+        <div class="flex flex-col gap-y-3 p-4 rounded-lg shadow border border-base-100">
+          <div class="flex flex-col">
+            <label for="user_name" class="text-sm font-medium text-base-content/80">Name</label>
+            <%= form.text_field :name, placeholder: "Firstname Lastname", autocomplete: "off",
+                class:"border-b-2 border-gray-200 focus:outline-none w-full #{'border-red-500' if @user.errors[:name].any?}" %>
+            <%= field_error(@user, :name) %>
+          </div>
+          <div class="flex flex-col">
+            <label for="user_email_address" class="text-sm font-medium text-base-content/80">Email address</label>
+            <%= form.email_field :email_address, required: true, placeholder: "xyz@businessname.com",
+                class:"border-b-2 border-gray-200 focus:outline-none w-full #{'border-red-500' if @user.errors[:email_address].any?}" %>
+            <%= field_error(@user, :email_address) %>
+          </div>
       
-      <div class="lg:flex lg:flex-row lg:gap-4">
-        <div class="my-2 w-full">
-          <label for="user_password" class="font-semibold mb-1 text-gray-600">Password:</label>
-          <%= form.password_field :password, required: true, autocomplete: "", placeholder: "Enter a default password",
-            id:"user_password", class:"pt-1 text-lg block border-b-2 focus:border-blue-600 border-gray-200 focus:outline-none w-full" %>
-        </div>
-        <div class="my-2 w-full">
-          <label for="user_password_confirmation" class="font-semibold mb-1 text-gray-600">Password Confirmation</label>
-          <%= form.password_field :password_confirmation, required: true, autocomplete: "", placeholder: "Confirm default password",
-            id:"user_password_confirmation", class:"pt-1 text-lg block border-b-2 focus:border-blue-600 border-gray-200 focus:outline-none w-full" %>
+          <div class="lg:flex lg:flex-row lg:gap-4">
+            <div class="flex flex-col w-full">
+              <label for="user_role" class="text-sm font-medium text-base-content/80">Role</label>
+              <%= form.select :role,
+                  User.assignable_roles_for_select,
+                  { include_blank: false },
+                  { id: "user_role", class: "select w-full #{'border-red-500' if @user.errors[:role].any?}" } %>
+              <%= field_error(@user, :role) %>
+            </div>
+          </div>
+          <div class="">
+            <label class="text-sm font-medium text-base-content/80">Subsidiaries</label>
+            <% if @teams.present?%>
+              <%= form.select :team_ids,
+                  options_from_collection_for_select(@teams, :id, :name, @user.team_ids),
+                  {},
+                  multiple: true,
+                  data: {
+                    controller: "tom-select",
+                    tom_select_placeholder_value: "Click to select..."
+                  },
+                  class: "w-full"
+              %>
+              <%= field_error(@user, :team) %>
+            <% elsif %>
+              <%= link_to "Create subsidiary", new_team_path, class: "btn rounded-lg border-0 bg-secondary text-white" %>
+            <% end %>
+          </div>
         </div>
       </div>
+    <% end %>
 
-      <div class="lg:flex lg:flex-row lg:gap-4 my-2">
-        <div class="flex flex-col w-full">
-          <label for="user_role" class="font-semibold mb-1 text-gray-600">User Role:</label>
-          <%= form.select :role,
-              User.roles.keys.reject { |r| %w[system owner].include?(r) }.map { |r| [r.humanize, r] },
-              { include_blank: false },
-              { id: "user_role", class: "select mt-1 w-full" }
-          %>
+    <% if @password_reset != false %>
+      <div>
+        <div class="flex flex-col gap-y-3 p-4 rounded-lg shadow border border-neutral-100">
+          <div class="w-full flex flex-col">
+            <label for="user_password" class="text-sm font-medium text-base-content/80">Password</label>
+            <%= form.password_field :password, required: true, autocomplete: "", placeholder: " 8 minimum: upper, lower, number, special",
+              id:"user_password", class:"text-base border-b-2 border-gray-200 focus:outline-none w-full #{'border-red-500' if @user.errors[:password].any?}" %>
+            <%= field_error(@user, :password) %>
+          </div>
+          <div class="w-full flex flex-col">
+            <label for="user_password_confirmation" class="text-sm font-medium text-base-content/80">Password Confirmation</label>
+            <%= form.password_field :password_confirmation, required: true, autocomplete: "", placeholder: "Confirm default password",
+              id:"user_password_confirmation", class:"text-base border-b-2 border-gray-200 focus:outline-none w-full #{'border-red-500' if @user.errors[:password_confirmation].any?}" %>
+            <%= field_error(@user, :password_confirmation) %>
+          </div>
         </div>
       </div>
+    <% end %>
 
-      <div class="flex gap-3 items-center my-2 w-full">
-        <fieldset class="w-full">
-          <legend class="font-semibold mb-1 text-gray-600">
-            Subsidiary
-          </legend>
-            <%= form.collection_select :team_ids,
-              Current.user.account.teams,
-              :id, :name,
-              {},
-              { multiple: true, size: Current.user.account.teams.size, class: "select w-1/2" } %>
-          <p class="text-xs text-gray-500 pt-1">Hold the CTRL key, then click to select multiple entries</p>
-      </fieldset>
-      </div>
+    <div class="my-4 flex gap-4 justify-end">
+      <%= link_to "Cancel", admin_users_path, data:{turbo: false}, class: "btn rounded-lg bg-white border border-neutral-800 text-neutral-800" %>
+      <%= form.button @user.persisted? ? "Update User" : "Create User", type: "submit", class: "btn rounded-lg bg-primary-content text-gray-100 focus:bg-primary border-none" %>
     </div>
-  <% end %>
+  </div>
+<% end %>

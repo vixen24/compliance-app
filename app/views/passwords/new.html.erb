@@ -1,21 +1,21 @@
 <% content_for(:title) { "Forgot Password" } %>
 
-<div class="h-screen mx-auto content-center" >
-  <div class="panel panel--centered mb-16 p-12 md:w-2/4 w-full">
-    <div class="justify-items-center p-12 pt-0" style="text-align: -webkit-center">
-        <%= svg_tag "logo.svg", alt: "UBA Logo", class: "w-36" %>
+<div class="h-screen login-bg" >
+  <div class="panel panel--centered mb-16 p-12 py-6 md:w-2/4 w-full mx-auto bg-white/85">
+    <div class="justify-items-center p-2 pt-0" style="text-align: -webkit-center">
+        <%= svg_tag "logo.svg", alt: "UBA Logo", class: "w-26" %>
       </div>
     <div class="">
-      <h1 class="font-semibold text-secondary text-2xl">Forgot your password?</h1>
-      <%= form_with url: passwords_path, class: "contents" do |form| %>
+      <h1 class="font-semibold text-lg text-neutral-700 text-center">Forgot your password?</h1>
+      <%= form_with url: passwords_path, data: { turbo: false }, class: "contents" do |form| %>
         <div class="my-5">
           <%= form.email_field :email_address, required: true, autofocus: true,
             autocomplete: "username", placeholder: "Enter your email address", value: params[:email_address],
-            class: "block shadow-sm rounded-lg border border-gray-400 focus:outline-solid focus:border-secondary focus:outline-secondary px-3 py-2 mt-2 w-full" %>
+            class: "block text-neutral-700 shadow-sm rounded-lg border border-gray-400 focus:outline-solid focus:border-secondary focus:outline-secondary px-3 py-2 mt-2 w-full" %>
         </div>
     </div>
   
-      <div class="inline">
+      <div class="justify-self-center" style="text-align: -webkit-center">
         <%= form.submit "Send reset instructions",
         class: "w-full sm:w-auto text-center rounded-xl px-3.5 py-2.5 bg-primary-content hover:bg-primary text-white inline-block font-medium font-semibold cursor-pointer" %>
       </div>

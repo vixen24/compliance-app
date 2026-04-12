@@ -1,14 +1,14 @@
 <% content_for(:title) { "Sign up" } %>
 
-<div class="h-screen mx-auto content-center" >
-  <div class="panel panel--centered mb-16 p-6 md:w-2/3 w-full">
-    <div class="justify-items-center p-12 pt-0" style="text-align: -webkit-center">
-      <%= svg_tag "logo.svg", alt: "UBA Logo", class: "w-36" %>
+<div class="h-screen login-bg" >
+  <div class="panel panel--centered mb-16 px-12 py-6 md:w-2/3 w-full mx-auto bg-white/85">
+    <div class="justify-items-center p-6 pt-0" style="text-align: -webkit-center">
+      <%= svg_tag "logo.svg", alt: "UBA Logo", class: "w-26" %>
     </div>
 
-    <h1 class="font-semibold text-secondary text-2xl">Sign in</h1>
+    <h1 class="font-medium text-neutral-700 text-lg text-center">Create account</h1>
 
-    <%= form_with model: @signup, url: sign_up_path, class: "contents" do |form| %>
+    <%= form_with model: @signup, url: sign_up_path, data: { turbo: false }, class: "contents" do |form| %>
       <div class="my-5 mb-3">
         <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", 
             placeholder: "Enter your email address", value: params[:email_address], 
@@ -38,11 +38,11 @@
         </div>
 
         <div class="mt-4">
-          <p class="text-lg font-semibold">Already have an account? <%= link_to "Sign in", sign_in_path, class:"underline" %></p>
+          <p class="text-sm text-gray-600">Already have an account? <%= link_to "Sign in", sign_in_path, class:"hover:underline" %></p>
         </div>
 
         <div class="mt-4 sm:mt-0">
-          <%= link_to "Forgot your password?", new_password_path, class: "text-gray-600 underline hover:no-underline" %>
+          <%= link_to "Forgot your password?", new_password_path, class: "text-gray-600 text-sm hove:underline" %>
         </div>
       </div>
     <% end %>

@@ -29,8 +29,8 @@ module System
       end
 
       def disk_info
-        dir = postgres_data_directory
-        `df -B1 #{dir} | tail -1`.split
+        dir = Shellwords.escape(postgres_data_directory)
+        `df -B1 #{dir}`.lines.last.split
       end
     end
   end

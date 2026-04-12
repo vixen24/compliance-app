@@ -22,26 +22,38 @@ class Executive::GroupDashboard
   end
 
   def call
-    load_teams
-    load_counts
-    compute_percentages
-    compute_compliant_extreme
-    self
+    Rails.cache.fetch(cache_key, expires_in: 10.minutes) do
+      load_teams
+      load_counts
+      compute_percentages
+      compute_compliant_extreme
+      self
+    end
   end
 
 
 
   private
 
+  def cache_key
+    [
+      "executive/group_dashboard",
+      account.id,
+      "framework-#{framework&.id}",
+      Time.current.beginning_of_hour.to_i  # optional: refresh every hour
+    ].join("/")
+  end
+
   def compute_compliant_extreme
-    compliant_count_sql = "SUM(CASE WHEN answers.status = 'C' THEN 1 ELSE 0 END)"
     base = Team.where(account_id: account.id).left_joins(assessments: :answers).group("teams.id")
+            .select("teams.id, teams.name, SUM(CASE WHEN answers.status = 'C' THEN 1 ELSE 0 END) AS compliant_count")
 
-    min_count = base.pluck(Arel.sql(compliant_count_sql)).min
-    max_count = base.pluck(Arel.sql(compliant_count_sql)).max
+    counts = base.map { |t| [ t.name, t.compliant_count.to_i ] }.to_h
+    min_count = counts.values.min
+    max_count = counts.values.max
 
-    least = base.having("#{compliant_count_sql} = ?", min_count) .pluck(:name)
-    most = base.having("#{compliant_count_sql} = ?", max_count) .pluck(:name)
+    least = counts.select { |_, v| v == min_count }.keys
+    most  = counts.select { |_, v| v == max_count }.keys
 
     @compliant_extreme = CompliantExtreme.new(most, least)
   end
@@ -70,8 +82,9 @@ class Executive::GroupDashboard
 
     answers_counts = answers_query.group("assessments.team_id", :status, :state).count
 
-    @answers_counts_by_team = Hash.new { |h, k| h[k] = { C: 0, OFI: 0, NC: 0, NA: 0, approved: 0, rejected: 0 } }
+    @answers_counts_by_team = {}
     answers_counts.each do |(team_id, status, state), count|
+      @answers_counts_by_team[team_id] ||= { C: 0, OFI: 0, NC: 0, NA: 0, approved: 0, rejected: 0 }
       @answers_counts_by_team[team_id][status.to_sym] += count if status
       @answers_counts_by_team[team_id][state.to_sym]  += count if state
     end

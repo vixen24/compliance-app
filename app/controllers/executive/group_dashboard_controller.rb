@@ -1,6 +1,5 @@
 class Executive::GroupDashboardController < ApplicationController
-  include Executive::Authentication
-  before_action :authorize_executive!
+  executive_access_only
   before_action :set_framework, only: [ :show ]
   before_action :set_frameworks, only: [ :show ]
 

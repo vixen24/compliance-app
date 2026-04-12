@@ -1,223 +1,205 @@
-<% content_for(:title) { "Admin Dashboard: Users" } %>
+<% content_for(:title) { "Users Directory" } %>
 
 <% content_for :left_sidebar do %>
   <%= render "/admin/shared/left_sidebar" %>
 <% end %>
 
-<div class="h-screen overflow-hidden">
+<div class="h-screen flex flex-col">
+
   <!-- Header Section -->
-  <div class="p-4 sm:p-4 lg:p-6 lg:pb-0">
-    <div class="bg-white p-4 rounded-lg">
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+  <header class="px-4 border-b border-neutral-200">
+    <div class="p-4 rounded-lg">
+      <div class="flex flex-row justify-between gap-4">
         <div>
           <h1 class="text-2xl font-bold text-gray-900">User Directory</h1>
           <p class="mt-1 text-sm text-gray-600">Manage user accounts, permissions, and access</p>
         </div>
-        
-        <div class="flex items-center gap-3">
-          
-          <%= link_to new_admin_user_path, class: "btn border-none bg-primary-content focus:bg-primary rounded-lg text-gray-100 flex items-center gap-2" do %>
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /> </svg>
-            <span class="hidden sm:inline"> Create User </span>
-            <span class="sr-only sm:hidden"> Create User </span>
-          <% end %>
+
+        <div class="flex gap-8 items-center">
+          <div data-controller="dialog" data-dialog-modal-value="true" data-action="keydown.esc->dialog#close:stop">
+            <button type="button", data-action="dialog#open",
+              class="btn border-none bg-primary-content focus:bg-primary rounded-lg text-white flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /> </svg>
+              <span>Create User</span>
+            </button>
+
+            <dialog class="m-auto dialog-panel" style="--panel-size: 48ch" data-dialog-target="dialog" role="dialog" aria-modal="true">
+              <%= turbo_frame_tag "create-new-user", src: new_admin_user_path, loading:"lazy" %>
+            </dialog>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </header>
 
-  <!-- Filters & Stats -->
-  <div class="p-4 sm:p-4 lg:p-6 lg:pb-0 flex-1 overflow-hidden">
+  <!-- Filters -->
+  <div class="border-b border-neutral-200 px-4">
     <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between p-4 bg-white rounded-lg">
-      <div class="text-gray-800 text-lg font-semibold pl-2"><%= @users.count %> Users</div>
-      <div class="flex items-center gap-4 text-sm">
-        <div class="flex items-center gap-4">
+      <div class="text-gray-800 text-lg font-semibold pl-2">
+        <%= @users.count %> Users
+      </div>
 
+      
+      <div class="flex items-center gap-4 text-sm">
+
+        <!-- Search by email or name -->
+        <div class="">
+          <%= form_with url: admin_users_path, method: :get, local: true do |form| %>
+          <%= hidden_field_tag :active, @active %>
+          <%= hidden_field_tag :team, @team&.id %>
+          <%= hidden_field_tag :role, @role %>
+
+            <label class="input w-full">
+              <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></g></svg>
+              <%= form.search_field :q,
+                  value: @q,
+                  placeholder: "Search email or name",
+                  class: "" %>
+            </label>
+          <% end %>
         </div>
+
+        <!-- Active/Inactive -->
+        <%= form_with url: admin_users_path, method: :get, local: true, data: { controller: "autosave", action: "change->autosave#debouncedSubmit" } do |form| %>
+          <%= hidden_field_tag :role, @role %>
+          <%= hidden_field_tag :q, @q %>
+          <%= hidden_field_tag :team, @team&.id %>
+            <div class="">
+              <fieldset>
+                <%= form.select :active,
+                User.status_options,
+                  { include_blank:"All Status", selected: @active },
+                  { class: "select w-full" } %>
+              </fieldset>
+            </div>
+        <% end %>
+
         <!-- Team/Subsidiary -->
         <%= form_with url: admin_users_path, method: :get, local: true, data: { controller: "autosave", action: "change->autosave#debouncedSubmit" } do |form| %>
+          <%= hidden_field_tag :active, @active %>
+          <%= hidden_field_tag :role, @role %>
+          <%= hidden_field_tag :q, @q %>
           <div class="">
             <fieldset>
               <%= form.select :team,
-              Current.user.account.teams.order(:name).map { |t| [t.name, t.id] },
-                { include_blank:"All Subsidiary", selected: @team&.id },
+              Current.user.account.teams.for_select,
+              { include_blank:"All Subsidiary", selected: @team&.id },
+              { class: "select w-full"} %>
+            </fieldset>
+          </div>
+        <% end %>
+
+        <!-- Role -->
+        <%= form_with url: admin_users_path, method: :get, local: true, data: { controller: "autosave", action: "change->autosave#debouncedSubmit" } do |form| %>
+          <%= hidden_field_tag :active, @active %>
+          <%= hidden_field_tag :team, @team&.id %>
+          <%= hidden_field_tag :q, @q %>
+          <div class="">
+            <fieldset>
+              <%= form.select :role,
+                User.assignable_roles_for_select,
+                { include_blank:"All Roles", selected: @role },
                 {
                   class: "select w-full"
                 } %>
             </fieldset>
           </div>
         <% end %>
-      </div>
-    </div>
-  </div>
 
-  <!-- Table Section -->
-  <div class="rounded-xl overflow-auto" style="height: 78vh">
-    <!-- Desktop Table -->
-    <div class="hidden lg:block p-4 sm:p-4 lg:p-6">
-      <div class="rounded-lg overflow-hidden bg-white">
-        <table class="min-w-full border-separate border-spacing-0">
-          <thead class="sticky top-0 z-10">
-            <tr>
-              <th class="pr-6 pl-20 py-2  text-left font-semibold text-neutral-700 tracking-wider ">
-                Users
-              </th>
-
-              <th class="px-6 py-2 text-left  font-semibold text-neutral-700 tracking-wider ">
-                Status
-              </th>
-
-              <th class="px-6 py-2 text-left  font-semibold text-neutral-700 tracking-wider ">
-                Subsidiary
-              </th>
-
-              <th class="px-6 py-2 text-left  font-semibold text-neutral-700 tracking-wider ">
-                Role
-              </th>
-
-              <th class="px-6 py-2 text-left  font-semibold text-neutral-700 tracking-wider ">
-                Created at
-              </th>
-
-              <th class="px-6 py-2 text-left  font-semibold text-neutral-700 tracking-wider ">
-                Last Active
-              </th>
-
-              <th class="pr-6 pl-10 py-2 text-left  font-semibold text-neutral-700 tracking-wider ">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <% @users.each do |user| %>
-              <tr class="hover:bg-neutral-100 transition-colors">
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="flex items-center">
-                    <div class="shrink-0 h-10 w-10 bg-linear-to-br from-red-100 to-red-200 rounded-lg flex items-center justify-center">
-                      <span class="font-semibold text-red-700 text-sm">
-                        <%= user&.name&.split&.map(&:first)&.first(2)&.join&.upcase %>
-                      </span>
-                    </div>
-                    <div class="ml-4">
-                      <div class="text-sm font-medium text-gray-900"><%= user&.name %></div>
-                      <div class="text-sm text-gray-500"><%= user.email_address %></div>
-                    </div>
-                  </div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= user.active? ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' %>">
-                    <%= user.active? ? "Active" : "Inactive" %>
-                  </span>
-                </td>
-                <td class="px-6 py-4">
-                  <div class="text-sm text-gray-900">
-                    <%= user.teams.pluck(:name).to_sentence %>
-                  </div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="px-3 py-1 text-sm font-medium bg-gray-100 text-gray-800 rounded-lg">
-                    <%= user.role.capitalize %>
-                  </span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  <%= user.created_at.strftime("%b %d, %Y %I:%M %p %Z") %>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  <%= user.updated_at.strftime("%b %d, %Y %I:%M %p %Z") %>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <div class="flex justify-around items-center gap-2">
-                    <%= link_to edit_admin_user_path(user), 
-                        class: "inline-flex items-center gap-1 px-3 py-1.5 text-sm text-blue-600 hover:text-blue-900 hover:bg-blue-100 rounded-lg transition-colors" do %>
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                      </svg>
-                      Edit
-                    <% end %>
-                    
-                    <%= link_to admin_user_path(user, toggle: true), data: { turbo_method: :patch },
-                      class: "inline-flex items-center gap-1 px-3 py-1.5 text-sm #{user.active? ? 'text-amber-600 hover:text-amber-900 hover:bg-amber-50' : 'text-emerald-600 hover:text-emerald-900 hover:bg-emerald-50'} rounded-lg transition-colors" do %>
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path> </svg>
-                      <%= user.active? ? "Deactivate" : "Activate" %>
-                    <% end %>
-
-                    
-                    <%= button_to admin_user_path(user), 
-                        method: :delete, data: { turbo_confirm: "Are you sure you want to delete #{user&.name}?" },
-                        class: "inline-flex items-center gap-1 px-3 py-1.5 text-sm text-red-600 hover:text-red-900 hover:bg-red-100 rounded-lg transition-colors" do %>
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                      </svg>
-                      Delete
-                    <% end %>
-                  </div>
-                </td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Mobile Cards -->
-    <div class="lg:hidden divide-y divide-gray-200">
-      <% @users.each do |user| %>
-        <div class="p-4 hover:bg-gray-50 transition-colors">
-          <div class="flex items-start justify-between">
-            <div class="flex items-center space-x-3">
-              <div class="shrink-0 h-12 w-12 bg-linear-to-br from-red-100 to-red-200 rounded-xl flex items-center justify-center">
-                <span class="font-semibold text-red-700 text-base">
-                   <%= user&.name&.split&.map(&:first)&.first(2)&.join&.upcase %>
-                </span>
-              </div>
-              <div>
-                <h3 class="text-sm font-semibold text-gray-900"><%= user&.name %></h3>
-                <p class="text-sm text-gray-500"><%= user.email_address %></p>
-                <div class="flex items-center gap-2 mt-1">
-                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium <%= user.active? ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' %>">
-                    <%= user.active? ? "Active" : "Inactive" %>
-                  </span>
-                  <span class="text-xs text-gray-500"><%= user.teams.count %> Users</span>
-                </div>
-              </div>
-            </div>
-            
-            <div class="relative">
-              <button class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
-                </svg>
-              </button>
-            </div>
-          </div>
-          
-          <div class="mt-4 grid grid-cols-2 gap-3 text-sm">
-            <div>
-              <span class="text-gray-500">Role</span>
-              <p class="font-medium"><%= user.role.capitalize %></p>
-            </div>
-            <div>
-              <span class="text-gray-500">Created At</span>
-              <p class="font-medium"><%= user.created_at.strftime("%b %d, %Y %I:%M %p %Z") %></p>
-            </div>
-          </div>
-          
-          <div class="mt-4 flex gap-2">
-            <%= link_to "Edit", edit_admin_user_path(user),
-                class: "flex-1 text-center py-2 px-3 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors" %>
-            
-            <%= link_to (user.active? ? "Deactivate" : "Activate"), 
-                admin_user_path(user.id), 
-                data: { turbo_method: :patch },
-                class: "flex-1 text-center py-2 px-3 border border-gray-300 rounded-lg text-sm font-medium hover:bg-amber-50 transition-colors" %>
-
-            <%= button_to "Delete", admin_user_path(user), method: :delete, 
-              form: { data: { turbo_confirm: "Are you sure you want to delete #{user&.name}?" } },
-              class: "w-36 flex-1 text-center px-2 py-3 border border-gray-300 rounded-lg text-sm font-mdeium text-red-600 hover:text-red-900 hover:bg-red-50 transition-colors" %>
+        <div class="flex items-center gap-4 text-sm">
+          <div class="">
+            <!-- Clear All Filters -->
+            <%= link_to "Clear", admin_users_path, class: "btn bg-secondary text-white hover:bg-secondary/90 border-none rounded-lg" %>
           </div>
         </div>
-      <% end %>
+      </div>
     </div>
+  
+  </div>
+
+  <!-- Large Screen -->
+  <div class="hidden lg:block border border-neutral-200 rounded-lg m-6 flex-1 min-h-0 overflow-y-auto">
+    <table id="users" class="w-full">
+      <thead>
+        <tr>
+          <th class="px-2 py-1 pl-4 font-normal text-left text-white bg-secondary tracking-wider sticky top-0">Users</th>
+          <th class="px-2 py-1 text-left font-normal text-white bg-secondary tracking-wider sticky top-0">Status</th>
+          <th class="px-2 py-1 text-left font-normal text-white bg-secondary tracking-wider sticky top-0">Subsidiary</th>
+          <th class="px-2 py-1 text-left font-normal text-white bg-secondary tracking-wider sticky top-0">Role</th>
+          <th class="px-2 py-1 text-left font-normal text-white bg-secondary tracking-wider whitespace-nowrap overflow-ellipsis overflow-hidden sticky top-0">Created at</th>
+          <th class="px-2 py-1 text-left font-normal text-white bg-secondary tracking-wider whitespace-nowrap overflow-ellipsis overflow-hidden sticky top-0">Last active</th>
+          <th class="px-2 py-1 pl-4 font-normal text-left text-white bg-secondary tracking-wider sticky top-0">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="users">
+        <% @users.each do |user| %>
+          <%= render user %>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Small Screen -->
+  <div class="bg-white lg:hidden divide-y divide-gray-200 m-4 rounded-lg overflow-clip">
+    <% @users.each do |user| %>
+      <div class="p-4 hover:bg-neutral-100 transition-colors">
+        <div class="flex items-start justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="shrink-0 h-12 w-12 bg-linear-to-br from-red-100 to-red-200 rounded-xl flex items-center justify-center">
+              <span class="font-semibold text-red-700 text-base">
+                  <%= user&.name&.split&.map(&:first)&.first(2)&.join&.upcase %>
+              </span>
+            </div>
+            <div>
+              <h3 class="text-sm font-semibold text-gray-900"><%= user&.name %></h3>
+              <p class="text-sm text-gray-500"><%= user.email_address %></p>
+              <div class="flex items-center gap-2 mt-1">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium <%= user.active? ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' %>">
+                  <%= user.active? ? "Active" : "Inactive" %>
+                </span>
+                <span class="text-xs text-gray-500"><%= pluralize(user.teams.size, "Subsidiary") %></span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="relative">
+            <button class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+        
+        <div class="mt-4 grid grid-cols-2 gap-3 text-sm">
+          <div>
+            <span class="text-gray-500">Role</span>
+            <p class="font-medium"><%= user.role.capitalize %></p>
+          </div>
+          <div>
+            <span class="text-gray-500">Created At</span>
+            <p class="font-medium"><%= user.created_at.strftime("%b %d, %Y %I:%M %p %Z") %></p>
+          </div>
+        </div>
+        
+        <div class="mt-4 flex flex-wrap gap-2">
+          <%= link_to "Edit", edit_admin_user_path(user, password_reset: false),
+              class: "flex-1 text-center py-1 px-2 border border-gray-300 rounded-lg text-sm font-medium text-blue-600 hover:text-blue-900 hover:bg-blue-100 transition-colors" %>
+
+          <%= link_to "Password Reset", edit_admin_user_path(user, password_reset: true), 
+              class: "flex-1 text-center px-1 py-2 border border-gray-300 rounded-lg text-sm font-medium text-blue-600 hover:text-blue-900 hover:bg-blue-100 transition-colors" %>
+          
+          <%= link_to (user.active? ? "Deactivate" : "Activate"), 
+              admin_user_path(user, toggle: true), 
+              data: { turbo_method: :patch },
+              class: "flex-1 text-center py-1 px-2 border border-gray-300 rounded-lg #{user.active? ? 'text-amber-600 hover:text-amber-900 hover:bg-amber-50' : 'text-emerald-600 hover:text-emerald-900 hover:bg-emerald-50'} transition-colors" %>
+          
+          <%= button_to "Delete", admin_user_path(user), method: :delete, 
+            form: { data: { turbo_confirm: "Are you sure you want to delete #{user&.name}?" } },
+            class: "w-38 flex-1 text-center px-1 py-2 border border-gray-300 rounded-lg text-sm font-mdeium text-red-600 hover:text-red-900 hover:bg-red-50 transition-colors" %>
+        </div>
+      </div>
+    <% end %>
   </div>
 
   <!-- Pagination -->

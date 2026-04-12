@@ -1,15 +1,15 @@
-<% content_for :title, "Assessments" %>
+<% content_for :title, "All Assessments" %>
 
 <% content_for :left_sidebar do %>
   <%= render "admin/shared/left_sidebar" %>
 <% end %>
 
-<%= turbo_stream_from "assessments_#{Current.user.account.id}" %>
+<%= turbo_stream_from "admin_assessment_index" %>
 
-<div class="h-screen flex flex-col overflow-hidden">
+<div class="h-screen flex flex-col">
   
-  <header class="p-4 sm:p-4 lg:p-6 pb-0">
-    <div class="bg-white flex items-center justify-between gap-4 p-4 rounded-lg">
+  <header class="border-b border-neutral-200 px-4">
+    <div class="flex items-center justify-between gap-4 p-4 rounded-lg">
       <div>
         <h1 class="text-2xl font-bold text-secondary">
           Assessments
@@ -18,15 +18,75 @@
           Create and manage assessment lifecycle across subsidiaries
         </p>
       </div>
-      <%= link_to new_admin_assessment_path, class: "btn border-none bg-primary-content focus:bg-primary rounded-lg text-gray-100 flex items-center gap-2" do %>
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /> </svg>
-        <span class="hidden sm:inline"> Create Assessment </span>
-        <span class="sr-only sm:hidden"> Create Assessment </span>
-      <% end %>
+
+      <div class="flex gap-8 items-center">
+        <div data-controller="dialog" data-dialog-modal-value="true" data-action="keydown.esc->dialog#close:stop">
+          <button type="button", data-action="dialog#open",
+            class="btn border-none bg-primary-content focus:bg-primary rounded-lg text-white flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /> </svg>
+            <span>Create Assessment</span>
+          </button>
+
+          <dialog class="m-auto dialog-panel" style="--panel-size: 48ch" data-dialog-target="dialog" role="dialog" aria-modal="true">
+            <%= turbo_frame_tag "create-new-assessment", src: new_admin_assessment_path %>
+          </dialog>
+        </div>
+      </div>
     </div>
   </header>
   
-  <section id="assessments_list" class="grid grid-cols-1 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-4 gap-4 overflow-y-auto p-6 pt-0">
-    <%= render @assessments %>
-  </section>
+  <div class="flex-1 min-h-0 overflow-y-auto m-6 border border-neutral-200 rounded-lg">
+    <div class="grid grid-cols-[1fr_0.5fr_2fr_2fr_1fr]">
+
+      <!-- Grid Header -->
+      <div class="px-6 py-1 text-left text-white bg-secondary tracking-wider sticky top-0">Name</div>
+      <div class="px-6 py-1 text-left text-white bg-secondary tracking-wider sticky top-0">Status</div>
+      <div class="px-6 py-1 text-left text-white bg-secondary tracking-wider sticky top-0">Frameworks</div>
+      <div class="px-6 py-1 text-left text-white bg-secondary tracking-wider sticky top-0">Subsidiaries</div>
+      <div class="px-6 py-1 text-left text-white bg-secondary tracking-wider sticky top-0">Actions</div>
+
+      <% @assessment_batches.each_with_index do |batch, index| %>
+        <% row_class = index.even? ? "bg-gray-100" :  "bg-white" %>
+
+        <!-- Name -->
+        <div class="px-6 py-4 text-base font-medium <%= row_class %>">
+          <%= batch.name %>
+        </div>
+
+        <!-- Batch status -->
+        <div class="px-6 py-4 text-sm font-medium <%= row_class %>">
+          <div class="badge <%= batch.open? ? 'bg-green-200 text-green-800' : 'bg-amber-200 text-amber-800' %>">
+            <%= batch.status.capitalize %>
+          </div>
+        </div>
+
+        <!-- Frameworks -->
+        <div class="px-6 py-4 text-sm <%= row_class %>">
+          <%= batch.assessments.first&.frameworks&.map(&:code)&.join(", ") || "-" %> - <%= batch.assessments.first&.frameworks&.size %>
+        </div>
+
+        <!-- Teams -->
+        <div class="px-6 py-4 text-sm <%= row_class %>">
+          <%= batch.assessments.map { |a| a.team&.name }.compact.join(", ") %> - <%= batch.assessments.size %>
+        </div>
+
+        <!-- Actions -->
+        <div class="px-6 py-4 text-sm <%= row_class %>">
+          <div class="flex gap-2">
+            <%= link_to admin_assessment_path(batch, status: (batch.open? ? :closed : :open)), data: { turbo_method: :patch },
+              class: "inline-flex items-center gap-1 px-2 py-1.5 text-sm #{batch.open? ? 'text-amber-600 hover:text-amber-900 hover:bg-amber-100' : 'text-green-600 hover:text-green-900 hover:bg-green-100'} rounded-lg transition-colors" do %>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path> </svg>
+              <%= batch.open? ? "Close" : "Open" %>
+            <% end %>    
+
+            <%= button_to admin_assessment_path(batch), method: :delete, data: { turbo_confirm: "Are you sure?" }, class: "inline-flex items-center gap-1 px-3 py-1.5 text-sm text-red-600 hover:text-red-900 hover:bg-red-100 rounded-lg transition-colors" do %>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+              Delete
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  
 </div>

@@ -1,5 +1,5 @@
 module NavigationHelper
-  def active_link_to(name = nil, path = nil, sub_page, page, **options, &block)
+  def active_link_to(name = nil, path = nil, sub_page = nil, page = true, **options, &block)
     if block_given?
       path = name
       name = capture(&block)
@@ -7,9 +7,9 @@ module NavigationHelper
 
     classes = Array(options[:class])
 
-    if page == true
-      active = request.path == path
-      classes << "active-link" if active
+    if page
+      active = request.path.start_with?(path)
+      classes << "active-link__selected" if active
     end
 
     options[:class] = classes.compact.join(" ").strip

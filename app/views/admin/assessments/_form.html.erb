@@ -1,60 +1,74 @@
-<%= form_with url:admin_assessments_path, method: :post do |form| %>
-  <% if @errors.any? %>
-      <div class="bg-red-50 border border-red-200 text-red-700 px-4 p-3 rounded mb-4 ml-4 mr-4">
-        <p class="font-semibold">
-          <%= pluralize(@errors.count, "error") %> prevented assessment(s) from being saved:
-        </p>
+<%= form_with model:@assessment_batch, url:admin_assessments_path, method: :post do |form| %>
+  <% if @assessment_batch&.errors&.any? %>
+    <div class="bg-red-50 border border-red-200 text-red-700 px-4 p-3 rounded mb-4 mx-8">
+      <p class="font-medium">
+        <%= pluralize(@assessment_batch.errors.count, "error") %> prohibited this from being saved:
+      </p>
 
-        <ul class="list-disc ml-5 mt-2">
-          <% @errors.each do |message| %>
-            <li><%= message.join(", ") %></li>
-          <% end %>
-        </ul>
-      </div>
-    <% end %>
-
-  <div class="flex flex-col gap-y-8 px-8">
-    <div class="w-full mt-1">
-      <%= text_field_tag :name, @name, required: true, autofocus: true, placeholder: "Name of assessment",
-          class: "text-2xl block font-semibold border-b-2 focus:border-secondary border-gray-200 focus:outline-none px-2 py-1 w-full" %>
+      <ul class="list-disc ml-5 mt-2">
+        <% @assessment_batch.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+    
+  <div class="flex flex-col gap-y-4 px-8 mt-2">
+    <div class="w-full">
+      <%= form.text_field :name, required: true, autocomplete: "off", placeholder: "Name of assessment",
+          class: "text-lg font-medium border-b-2 border-base-300 w-full" %>
+      <%= field_error(@assessment_batch, :name) %>
     </div>
 
     <fieldset class="">
-      <legend class="font-semibold mb-2 text-gray-600">
-        Security framework(s)
-      </legend>
+      <legend class="text-sm font-medium text-base-content/80"> Framework </legend>
 
-      <div class="grid grid-cols-1 lg:grid-cols-4 gap-x-2 gap-y-1">
-        <% Framework.all.each do |framework| %>
-          <label class="flex items-center gap-2 mb-1 cursor-pointer">
-            <%= check_box_tag "framework_ids[]", framework.id, @framework_ids&.include?(framework.id.to_s), class: "checkbox checkbox-sm" %>
-            <p><%= framework.code %></p>
-          </label>
-        <% end %>
+      <div class="w-full">
+        <%= form.select :framework_ids,
+          options_from_collection_for_select(Framework.all, :id, :code, @assessment_batch.framework_ids || []),
+          {}, multiple: true, class: "",
+          data: {
+            controller: "tom-select w-full",
+            tom_select_placeholder_value: "Click to select..."
+          }
+        %>
+        <%= field_error(@assessment_batch, :framework) %>
       </div>
     </fieldset>
 
     <fieldset class="">
-      <legend class="font-semibold mb-2 text-gray-600">
-        Select subsidiaries (teams)
-      </legend>
+      <legend class="text-sm font-medium text-base-content/80"> Subsidiary </legend>
       <% if @teams.present?%>
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-x-2 gap-y-1">
-          <% @teams.each do |team| %>
-            <label class="flex items-center gap-2 mb-1 cursor-pointer">
-              <%= check_box_tag "team_ids[]", team.id, @team_ids&.include?(team.id.to_s), class: "checkbox checkbox-sm" %>
-              <p><%= team.name %></p>
-            </label>
-          <% end %>
-        </div>
+        <%= form.select :team_ids,
+            options_from_collection_for_select(@teams, :id, :name, @assessment_batch.team_ids || []),
+            {},
+            multiple: true,
+            data: {
+              controller: "tom-select w-full",
+              tom_select_placeholder_value: "Click to select..."
+            },
+            class: ""
+        %>
+        <%= field_error(@assessment_batch, :team) %>
       <% elsif %>
         <%= link_to "Create subsidiary", new_team_path, class: "btn rounded-lg border-0 bg-secondary text-white" %>
       <% end %>
     </fieldset>
+
+    <fieldset class="">
+      <legend class="text-sm font-medium text-base-content/80"> Status </legend>
+        <%= form.select :status,
+            AssessmentBatch.status_options_for_select,
+            {selected: @assessment_batch.status },
+            class: "select w-full"
+        %>
+    </fieldset>
   </div>
 
-  <div class="p-8 flex justify-end">
-    <%= submit_tag "Create Assessments", class: "btn rounded-lg bg-primary-content text-base text-gray-100 focus:bg-primary" %>
+  <div class="pr-8 pb-8 flex gap-4 justify-end mt-8">
+    <%# <button type="button" class="btn" data-action="dialog#close">Cancel</button> %>
+    <%= link_to "Cancel", admin_assessments_path, data:{turbo: false}, class: "btn rounded-lg bg-white border border-neutral-800 text-neutral-800" %>
+    <%= submit_tag "Create", class: "btn rounded-lg bg-primary-content text-base text-gray-100 focus:bg-primary border-none" %>
   </div>
 <% end %>
 

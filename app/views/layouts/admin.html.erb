@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
-  <%= render "layouts/shared/head" %>
+  <%= render "layouts/shared/admin_head" %>
   
-  <body class="flex flex-row bg-base-300">
-    <%= render "layouts/shared/flash" %>
+  <body class="flex">
+    <%= render "shared/flash" %>
     <%= yield :left_sidebar if content_for?(:left_sidebar) %>
 
-    <main id="main" class="h-screen flex-1 flex flex-col">
+    <main id="main" class="flex-1 flex flex-col">
       <%= yield :header  if content_for?(:header) %>
       <%= yield %>
     </main>

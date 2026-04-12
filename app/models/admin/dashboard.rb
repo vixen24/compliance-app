@@ -6,38 +6,89 @@ class Admin::Dashboard
   end
 
   def call
-    @call ||= {
-      users: users_count,
-      teams: teams_count,
-      users_without_team: users_without_team_count,
-      active_sessions: active_sessions_count,
-      storage: storage_metrics
-    }
+    Rails.cache.fetch(cache_key, expires_in: 5.minutes) do
+      {
+        active_users: active_users_count,
+        inactive_users: inactive_users_count,
+        teams: teams_count,
+        users_without_team: users_without_team_count,
+        active_sessions: active_sessions_count,
+        storage: storage_metrics,
+        open_assessment: open_assessment,
+        closed_assessment: closed_assessment,
+        mfa_status: mfa_status,
+        password_complexity: password_complexity,
+        session_timeout: session_timeout
+      }
+    end
   end
 
   private
 
-  def users_count
-    account.users.count
+  def active_users_count
+    account.users.active.count
+  end
+
+  def inactive_users_count
+    account.users.inactive.count
+  end
+
+  def open_assessment
+    account.assessments.where(status: :open).count
+  end
+
+  def closed_assessment
+    account.assessments.where(status: :closed).count
   end
 
   def teams_count
-    account.teams.count
-  end
-
-  def users_without_team_count
-    account.users.where.missing(:team_users).count
+    @teams_count ||= account.teams.count
   end
 
   def active_sessions_count
-    account.sessions.count
+    @active_sessions_count ||= account.sessions.count
+  end
+
+  def users_without_team_count
+    @users_without_team_count ||= account.users
+      .where(
+        "NOT EXISTS (
+          SELECT 1 FROM team_users
+          WHERE team_users.user_id = users.id
+        )"
+      ).count
+  end
+
+  def mfa_status
+    account.mfa_enabled? ? "Enabled" : "Disabled"
+  end
+
+  def password_complexity
+    account.password_complexity? ? "Enabled" : "Disabled"
+  end
+
+  def session_timeout
+    Session.session_timeout_map.key(account.session_timeout)
   end
 
   def storage_metrics
-    {
-      used: System::Storage.used_bytes,
-      total: System::Storage.total_bytes,
-      percent: System::Storage.percent_used
-    }
+    @storage_metrics ||= begin
+      used  = System::Storage.used_bytes
+      total = System::Storage.total_bytes
+
+      {
+        used: used,
+        total: total,
+        percent: (used.to_f / total * 100).round(2)
+      }
+    end
+  end
+
+  def cache_key
+    [
+      "admin_dashboard",
+      account.id,
+      account.updated_at.to_i
+    ].join("/")
   end
 end

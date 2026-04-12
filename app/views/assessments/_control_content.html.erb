@@ -1,11 +1,11 @@
-<div id= "control_content" class="flex flex-col justify-between bg-base-100 overflow-y-auto flex-1 rounded-2xl scrollbar-stable p-6 border-gray-100 ml-3 mr-6 mt-4 mb-6 shadow-md transition-shadow">
+<div id= "control_content" class="flex flex-col justify-between border border-base-200 bg-base-200 overflow-y-auto flex-1 rounded-lg scrollbar-stable p-6 ml-3 m-6 shadow-md transition-shadow">
       <%# @controls - holds controls per page based on paginate, may be 1,2 or multiple. Default is 1 %>
     <% if @controls.present? %>
       <% control = @control %>
       <div>
         <div class="mb-4">
           <!-- Framework metadata  -->
-          <div class="flex flex-row justify-between gap-2">
+          <div class="flex flex-row justify-between gap-4">
 
             <!-- Control details -->
             <div class="mb-4">
@@ -27,15 +27,15 @@
           <% end %>   
         
           <!-- Answer form fields -->
-          <details class="border-2 border-gray-200 rounded-2xl px-6 py-6" data-controller="details" data-details-key-value="user">
-            <summary class="text-lg font-semibold mb-1 text-gray-800 cursor-pointer">Subsidiary Response</summary>
+          <details class="border-2 border-base-300 rounded-2xl px-6 py-6" data-controller="details" data-details-key-value="user">
+            <summary class="text-lg mb-1 cursor-pointer">Subsidiary Response</summary>
             <%= form_with model: Answer.new, url: team_assessment_answers_path(assessment_id: @assessment.id), data: { controller: "autosave" }, local: true do |form| %>
               <%= form.hidden_field :assessment_control_id, value: @control.id %>
               <%= form.hidden_field :assessment_id, value: @assessment.id %>
               <%= form.hidden_field :user_id, value: Current.user.id %>
         
               <fieldset class="my-4">
-                <legend class="font-semibold mb-1 text-neutral-800">Answer</legend>
+                <legend class="mb-1 text-base-content/95">Answer</legend>
                 <%= form.select :status,
                       Answer::STATUS_LABELS.map { |code, label| [label, code] },
                       { selected: @control&.answer&.status },
@@ -47,19 +47,24 @@
               </fieldset>
 
               <fieldset class="my-4">
-                <label for="answer_url" class="font-semibold mb-1 text-neutral-800">Evidence URL</label>
-                <div class="join w-full">
+                <label for="answer_url" class="text-base-content/95">Evidence URL</label>
+                <div class="inline-flex gap-4 items-stretch w-full mt-1">
                   <%= form.url_field :url, placeholder: "https://ubagroup-sharepoint.com/xxxyyyy",
                       value: @control&.answer&.url,
                       class: "input text-base rounded-l-field w-full",
-                      data: { action: "change->autosave#debouncedSubmit"},
+                      data: { action: "input->autosave#debouncedSubmit"},
                       readonly: !@control&.answer&.answerable? %>
-                  <%= link_to "View Evidence", (@control&.answer&.url.presence || "about:blank"), target: "_blank", rel: "noopener", data: { turbo: false }, class:"btn bg-secondary focus:bg-secondary text-white join-item"%>
+                  <%= link_to "View Evidence", (@control&.answer&.url.presence || "#"), 
+                      target: "_blank", 
+                      rel: "noopener", 
+                      data: { turbo: false }, 
+                      title: (@control&.answer&.url.presence || "No URL provided"),
+                      class:"btn border rounded border-base-content/20"%>
                 </div>
               </fieldset>
         
               <fieldset>
-                <legend class="font-semibold mb-1 text-neutral-800">Comment</legend>
+                <legend class="mb-1 text-base-content/95">Comment</legend>
                 <%= form.text_area :comment,
                       value: @control&.answer&.comment,
                       class: "textarea text-base input w-full field-sizing-content h-auto",
@@ -68,20 +73,20 @@
                 <p class="text-xs text-gray-500 pt-1">Optional</p>
               </fieldset>
               <div class="flex justify-end">
-                <%= form.submit "Submit", name:"intent", formaction: team_assessment_answers_path(assessment_id: @assessment.id), class:"btn bg-primary-content focus:bg-primary text-white rounded-ld text-base", disabled: !@control.answer&.answerable? %>
+                <%= form.submit "Submit", name:"intent", formaction: team_assessment_answers_path(assessment_id: @assessment.id), class:"btn bg-primary-content focus:bg-primary text-white rounded text-base", disabled: !@control.answer&.answerable? %>
               </div>
             <% end %>
           </details>
         </div>
-        <!-- Assessor review and feedback-->
+        <!-- Assessor review -->
         <% if @control.answer&.auditable? %>
-          <div class="border-2 border-gray-200 rounded-2xl px-6 py-6">
+          <div class="border-2 border-base-300 rounded-2xl px-6 py-6">
             <details data-controller="details" data-details-key-value="assessor">
-              <summary class="font-semibold mb-1 text-gray-900 cursor-pointer">Assessor Review and Feedback</summary>
+              <summary class="text-lg mb-1 cursor-pointer">Assessor Review</summary>
               <%= form_with model: @control.answer, url: team_assessment_answer_path(assessment_id: @assessment, answer_id: control.answer.id), local: true do |form| %>
                   <div class="flex flex-row gap-4  justify-end">
-                    <%= form.submit "Reject", name: "intent", class: "btn bg-primary-content focus:bg-primary text-white text-base border-none" %>
-                    <%= form.submit "Approve", name: "intent", class: "btn bg-green-500 focus:bg-success text-white text-base border-none" %>
+                    <%= form.submit "Reject", name: "intent", class: "btn bg-primary-content dark:bg-primary-content/50 focus:bg-primary dark:focus:bg-primary-content/20 text-white text-base border-none" %>
+                    <%= form.submit "Approve", name: "intent", class: "btn bg-green-500 dark:bg-green-500/50 dark:focus:bg-green-500/20 focus:bg-success text-white text-base border-none active:bg-transparent" %>
                   </div>
               <% end %>
             </details>

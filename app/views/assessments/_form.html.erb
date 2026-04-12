@@ -1,6 +1,6 @@
 <%= form_with model: @assessment, url: team_assessments_path do |form| %>
     <div class="flex flex-col gap-y-8 px-8">
-    <div class="w-full mt-1">
+`    <div class="w-full mt-1">
       <%= form.text_field :name, required: true, autofocus: true, value: params[:name], placeholder: "Name of assessment",
           class: "text-2xl block font-semibold border-b-2 focus:border-secondary border-gray-200 focus:outline-none px-2 py-1 w-full " %>
     </div>
@@ -27,7 +27,7 @@
       <%= form.date_field :due_date, value: params[:due_date],
           class: "input input-border w-full" %>
       <p class="text-xs text-gray-500 pt-1">Optional</p>
-    </fieldset>
+    </fieldset>`
   </div>
 
   <div class="p-8 flex justify-end">

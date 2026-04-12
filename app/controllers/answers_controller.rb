@@ -10,10 +10,10 @@ class AnswersController < ApplicationController
   end
 
   def create
-    if @answer.submittable?(@intent) && @answer.submitted!
+    if @answer.can_be_submitted?(@intent) && @answer.submitted!
       respond_to do |format|
         format.turbo_stream
-        format.html { redirect_back fallback_location: team_assessments_url, notice: "Submitted for review" }
+        format.html { redirect_to team_assessments_url, notice: "Submitted for review" }
       end
     elsif @answer.save
       head :ok
@@ -33,7 +33,7 @@ class AnswersController < ApplicationController
 
     respond_to do |format|
       format.turbo_stream
-      format.html { redirect_back fallback_location: team_assessments_url, notice: @notice }
+      format.html { redirect_to team_assessments_url, notice: @notice }
     end
   end
 

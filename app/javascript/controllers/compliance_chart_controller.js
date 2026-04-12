@@ -1,4 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
+import Plotly from "plotly.js-basic-dist"
+import { plotlyTheme } from "plotly_theme"
 
 export default class extends Controller {
   static values = {
@@ -7,6 +9,26 @@ export default class extends Controller {
   }
 
   connect() {
+    this.render()
+    this.bindThemeListener()
+  }
+
+  disconnect() {
+    window.removeEventListener("theme:changed", this.themeHandler)
+  }
+
+  bindThemeListener() {
+    this.themeHandler = () => this.updateTheme()
+    window.addEventListener("theme:changed", this.themeHandler)
+  }
+
+  updateTheme() {
+    this.render()
+  }
+
+  render() {
+    const { bg, font } = plotlyTheme()
+
     var data = [{
       values: this.valuesValue,
       labels: this.labelsValue,
@@ -23,7 +45,7 @@ export default class extends Controller {
       marker: {
         colors: ['#2ca02c', '#ffb50e', '#d62728', "#4d80df"],
         line: {
-          color: "#ffffff",
+          color: bg,
           width: 3,
         }
       },
@@ -35,18 +57,20 @@ export default class extends Controller {
     }];
 
     var layout = {
+      paper_bgcolor: bg,
+      plot_bgcolor: bg,
+
       title: {
         text: '<span>Compliance Overview' +
-          '<br><span style="color: #6a7282; font-size:14px; font-weight:normal; font-family: Open Sans, Arial, sans-serif;">' +
+          '<br><span style="font-size:14px; font-weight:normal;">' +
           'Track posture across standards and categories' +
           '</span></span>',
         x: 0.0175,
         xanchor: 'left',
         font: {
-          size: 24,
-          family: 'Georgia, Times New Roman, Times, serif',
+          size: 20,
           weight: 'bold',
-          color: '#111111'
+          color: font
         }
       },
       annotations: [],
@@ -63,6 +87,6 @@ export default class extends Controller {
     };
 
     Plotly.newPlot(this.element, data, layout, { responsive: true });
-  }
+  };
 }
 

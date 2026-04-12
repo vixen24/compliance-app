@@ -1,6 +1,5 @@
 class Executive::SubsidiaryDashboardController < ApplicationController
-  include Executive::Authentication
-  before_action :authorize_executive!
+  executive_access_only
 
   before_action :set_team, only: %i[show]
   before_action :set_assessment_status, only: %i[show]
@@ -101,8 +100,6 @@ class Executive::SubsidiaryDashboardController < ApplicationController
     # NA (aka Out-of-scope) is subtrated from all attributes
     @draft = @total[:control_by_framework] - @answer_state_count.fetch("approved", 0) - @answer_state_count.fetch("submitted", 0) - @answer_state_count.fetch("rejected", 0)
     @not_assessed = @total[:control_by_framework] - @answer_status_count.fetch("C", 0) - @answer_status_count.fetch("OFI", 0) - @answer_status_count.fetch("NC", 0) - @answer_status_count.fetch("NA", 0)
-
-
 
     @state_labels = [
       "approved",

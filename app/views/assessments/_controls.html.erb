@@ -2,13 +2,14 @@
   <% if @controls.present? %>
     <% @controls.each do |control| %>
       <% active = control&.id == @control&.id %>
-      <li class="rounded-2xl my-3 shadow-md transition-shadow border border-gray-200 card" data-card-id="<%= control.control_id %>" 
+      <li class="bg-base-100 rounded-lg my-2 border border-base-content/10 card" data-card-id="<%= control.control_id %>" 
           data-selectable-card-target="card" data-action="click->selectable-card#select">
         <%= link_to team_assessment_path(Current.team, @assessment, control: control, page: @page, per_page: @per_page, framework: @framework, answer_state: @answer_state, q: @q),
-            class: "block focus:outline-2 focus:outline-secondary rounded-2xl focus:outline-offset-3",  data: { turbo_stream: true } do %>
+            class: "block focus-visible:outline-2 focus-visible:outline-base-content rounded-lg focus-visible:outline-offset-3",  
+            data: { turbo_stream: true } do %>
           <div class="flex flex-col py-2.5 px-3">
             <div class="flex flex-row justify-between gap-x-2 gap-y-0">
-              <div class="tooltip tooltip-bottom before:z-2" data-tip="<%= control&.question %>">
+              <div class="tooltip tooltip-bottom before:z-2" data-tip="<%= control&.question %>" style="--tooltip-delay: 5000ms;">
                 <div class="font-semibold truncate inline-block max-w-xs">
                   <%= control&.question %>
                 </div>
@@ -23,7 +24,6 @@
       </li>
     <% end %>
   <% else %>
-  <!--- Handle nil control state -->
     <div class="text-center font-semibold text-lg">
       <span class="text-3xl sad-emoji">&#9785;</span>
       <div>There are no controls to show for the <%=@answer_state%> state</div>

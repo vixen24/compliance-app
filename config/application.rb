@@ -14,9 +14,6 @@ module ComplianceApp
 
     config.load_defaults 8.0
 
-    # Remove this
-    # config.autoload_paths << Rails.root.join("lib")
-
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
@@ -29,5 +26,9 @@ module ComplianceApp
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+
+    config.mission_control.jobs.base_controller_class = "Admin::JobsController"
+    config.mission_control.jobs.http_basic_auth_enabled = false
   end
 end

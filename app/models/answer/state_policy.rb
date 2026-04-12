@@ -8,7 +8,7 @@ module Answer::StatePolicy
     def answerable? = %w[draft rejected].include?(state) && Current.user.member?
     def auditable? = %w[submitted].include?(state) && Current.user.assessor?
 
-    def submittable?(intent) = intent.in? %w[Submit]
+    def can_be_submitted?(intent) = intent.in? %w[Submit]
 
     def self.default_answer_state_for(role)
       case role.to_s

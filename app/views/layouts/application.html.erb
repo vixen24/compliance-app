@@ -1,9 +1,9 @@
 <!DOCTYPE html> 
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="business">
   <%= render "layouts/shared/head" %>
   
-  <body class="flex flex-row bg-base-300">
-    <%= render "layouts/shared/flash" %>
+  <body class="flex flex-row">
+    <%= render "shared/flash" %>
     <%= yield :left_sidebar if content_for?(:left_sidebar) %>
 
     <main id="main" class="h-screen overflow-y-auto flex-1 flex flex-col gap-6">

@@ -1,15 +1,15 @@
   .panel {
     inline-size: var(--panel-size, 60ch);
     max-inline-size: 100%;
-    text-align: center;
-    border-color: oklch(0.93 0 0);
-    border-radius: var(--radius-2xl);
-    border-style: var(--tw-border-style);
-    border-width: 2px;
 
 
     @media (min-width: 640px) {
       --panel-size: 100%;
+      border-radius: var(--radius-xl);
+      border-color: oklch(0.93 0 0);
+      border-style: var(--tw-border-style);
+      border-width: 2px;
+      margin-top: 28vh;
     }
   }
 
@@ -22,7 +22,7 @@
     --panel-size: 100%;
 
     @media (min-width: 640px) {
-      --panel-size: 48ch;
+      --panel-size: 40ch;
     }
 
   }
@@ -30,5 +30,11 @@
   .panel input:focus-visible,
   .panel textarea:focus-visible,
   .panel button:focus-visible {
-    outline: 1px solid var(--color-secondary);
+    outline: 2px solid var(--color-secondary);
+    outline-offset: 2px;
+  }
+
+  .panel input:focus-visible.border-b-2 {
+    border-bottom: 2px solid var(--color-base-content);
+    outline: none;
   }

@@ -1,4 +1,4 @@
 .card.selected {
-  border: 1px solid #cccccc;
-  background-color: #efefef;
+  border-color: color-mix(in srgb, var(--color-base-content) 20%, transparent);
+  background-color: var(--color-base-300)
 }

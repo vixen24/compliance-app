@@ -1,7 +1,5 @@
 class Executive::UsersController < ApplicationController
-  include Executive::Authentication
-
-  before_action :authorize_executive!
+  executive_access_only
   before_action :set_user, only: [ :show ]
 
   def show

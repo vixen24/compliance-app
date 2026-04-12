@@ -1,26 +1,26 @@
-<% content_for :title, "Assessments" %>
+<% content_for :title, "Subsidiary Assessments" %>
 
 <% content_for :left_sidebar do %>
   <%= render "layouts/shared/left_sidebar" %>
 <% end %>
 
 <div class="h-screen overflow-y-auto">
-  <header class="flex p-8 justify-between items-center">
+  <header class="flex m-6 justify-between items-center">
     <div class="">
-      <h2 class="text-3xl font-bold">
+      <h2 class="text-2xl font-bold">
         Assessments
       </h2>
-      <p class="text-gray-600">View, track, and complete your assessments</p>
+      <p class="text-base-content/80">View, track, and complete your assessments</p>
     </div>
 
     <%= link_to "Create New Assessment", new_team_assessment_path,
       class: "btn bg-primary-content focus:bg-primary rounded-lg text-gray-100",
       hidden: !Current.user.can_create_assessment? %>
   </header>
-  <section class="grid grid-cols-3 gap-4 px-8 ">
+  <section class="grid grid-cols-3 gap-4 px-6">
     <% @assessments.each do |assessment| %>
       <%= link_to team_assessment_path(assessment.team_id, assessment.id) do %>
-        <div class="bg-base-100 shadow-md inset-shadow-2xs p-8 rounded-lg">
+        <div class="bg-base-200 shadow-md inset-shadow-2xs p-8 rounded-lg">
           <div class="flex flex-col gap-2 justify-between flex-wrap">
             <div>
               <div class="flex gap-2 justify-between items-center">

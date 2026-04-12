@@ -4,6 +4,7 @@ class Account < ApplicationRecord
   has_many :teams, dependent: :destroy
   has_many :assessments, dependent: :destroy
   has_many :sessions, through: :users
+  has_many :assessment_batches, dependent: :destroy
 
   validates :name, presence: true
   # before_create :assign_external_account_id
@@ -16,6 +17,9 @@ class Account < ApplicationRecord
       end
     end
   end
+
+  # In on-prem deployments, restrict signups to the first account only
+  def self.accepting_signups = count.zero?
 
   private
 
