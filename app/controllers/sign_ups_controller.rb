@@ -1,7 +1,8 @@
 class SignUpsController < ApplicationController
   rate_limit to: 10, within: 3.minutes, only: :create, with: -> { redirect_to new_sign_up_path, alert: "Try again later." }
   allow_unauthenticated_access only: %i[ new create ]
-  # before_action :ensure_signup_allowed, only: [ :new, :create ]
+
+   layout "public"
 
   def new
     @signup = SignUp.new
