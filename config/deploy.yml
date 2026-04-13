@@ -22,8 +22,8 @@ ssh:
 #
 # Note: If using Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
 proxy:
-  ssl: false # or false if you really don’t want HTTPS
-  host: 77.42.31.168
+  ssl: true
+  host: grccompliance.duckdns.org
   app_port: 3000
   healthcheck:
     path: /up # Your Rails app must respond 200 OK on this path
