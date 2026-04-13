@@ -7,7 +7,7 @@ image: vixen24/compliance_app
 # Deploy to these servers.
 servers:
   web:
-    - 77.42.31.168
+    - hetzner
   # job:
   #   hosts:
   #     - 192.168.0.1
