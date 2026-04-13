@@ -54,7 +54,7 @@ env:
 
     # Match this to any external database server to configure Active Record correctly
     # Use compliance_app-db for a db accessory server on same machine via local kamal docker network.
-    DB_HOST: host.docker.internal
+    DB_HOST: 172.17.0.1
     DB_PORT: 5432
     DB_USERNAME: deploy
     DB_NAME: compliance_production
