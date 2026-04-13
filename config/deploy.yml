@@ -7,7 +7,7 @@ image: vixen24/compliance_app
 # Deploy to these servers.
 servers:
   web:
-    - 52.47.74.177
+    - hetzner
   # job:
   #   hosts:
   #     - 192.168.0.1
@@ -15,7 +15,7 @@ servers:
 
 # Use a different ssh user than root
 ssh:
-  user: ubuntu
+  user: root
 
 # Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
 # Remove this section when using multiple web servers and ensure you terminate SSL at your load balancer.
@@ -23,7 +23,7 @@ ssh:
 # Note: If using Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
 proxy:
   ssl: false # or false if you really don’t want HTTPS
-  host: 52.47.74.177
+  host: hetzner
   app_port: 3000
 
 # Credentials for your image host.
@@ -54,10 +54,10 @@ env:
 
     # Match this to any external database server to configure Active Record correctly
     # Use compliance_app-db for a db accessory server on same machine via local kamal docker network.
-    DB_HOST: ls-db14ef6fbc1e24309279f44b8a9a88587bc5c82e.c1emi6ogggg0.eu-west-3.rds.amazonaws.com
+    DB_HOST: host.docker.internal
     DB_PORT: 5432
-    DB_USERNAME: dbmasteruser
-    DB_NAME: compliance-web-db
+    DB_USERNAME: deploy
+    DB_NAME: compliance_production
 
     # Log everything from Rails
     #RAILS_LOG_LEVEL: debug

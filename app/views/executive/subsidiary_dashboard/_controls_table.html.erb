@@ -1,0 +1,87 @@
+<div id="subsidiary-dashboard-controls-table">
+  <div class="">
+    <div class="grid grid-cols-[0.25fr_8fr_1fr_1fr] gap-6 border-b border-neutral-100 px-8 py-2 font-semibold ">
+      <div>ID</div>
+      <div>Control</div>
+      <div>Status</div>
+      <div>Workflow </div>
+    </div>
+    <% @filtered_controls_per_page.each do |control| %>
+    <div class="grid grid-cols-[0.25fr_8fr_1fr_1fr] space-x-2 gap-6 border-b border-neutral-100 px-8 py-2 hover:bg-neutral-100">
+      <div><%= control.control_id %></div>
+      <div class="">
+        <div class="text-secondary"> <%= control.question %> </div>
+        <div class="flex flex-wrap gap-2 py-2">
+          <%= render_full_framework_code_badges(@assessment, control) %>
+        </div>
+      </div>
+      <div class="uppercase shrink <%= answer_status_classes(control.answer.status_label) %>">
+        <div class="truncate max-w-[60px] md:max-w-[100px] lg:max-w-[120px]  block">
+          <%= control.answer.status_label %>
+        </div>
+      </div>
+      <div class="uppercase shrink <%= answer_state_classes(control.answer) %>">
+        <div class="truncate max-w-[60px] md:max-w-[100px] lg:max-w-[120px]  block">
+          <%= control.answer.state_label %>
+        </div>
+      </div>
+    </div>
+    <% end %>
+  </div>
+  <!--Control Pagination-->
+  <div class="flex items-center gap-4 text-sm py-2 px-6 border-t border-gray-100">
+    <div>
+      <%= form_with url: executive_subsidiary_dashboard_path, method: :get, class: "flex items-center gap-2" do |form| %>
+        <%= form.hidden_field :team, value: @team.id %>
+        <%= form.hidden_field :status, value: @status %>
+        <%= form.hidden_field :id, value: @assessment&.id %>
+        <%= form.hidden_field :framework, value: @framework.id.to_s if @framework %>
+        <%= form.hidden_field :answer_state, value: @answer_state %>
+        <%= form.hidden_field :answer_status, value: @answer_status %>
+        <%= form.hidden_field :page, value: @page %>
+  
+        <%= select_tag :per_page, options_for_select([10, 30, 60, 80], @per_page),
+            class: "select min-w-18 h-8",
+            data:{ turbo_stream: true },
+            onchange: "this.form.submit()" %>
+      <% end %>
+    </div>
+  
+    <% control_count = @filtered_controls.size %>
+    <% total_pages = (control_count.to_f / @per_page).ceil %>
+    <div class="flex flex-1 items-center">
+      <div class="flex gap-4 m-auto items-center">
+        <%= link_to "Previous", executive_subsidiary_dashboard_path(
+            team: @team.id,
+            status: @status,
+            id: @assessment&.id,
+            framework: @framework,
+            answer_state: @answer_state,
+            answer_status: @answer_status,
+            page: @page - 1,
+            per_page: @per_page
+          ),
+          data:{ turbo_stream: true },
+          class: "btn btn-sm #{'invisible' if @page <= 1}"
+        %>
+        <span class="font-semibold"><%= @page %> of <%= total_pages %></span>
+        <%= link_to "Next", executive_subsidiary_dashboard_path(
+            team: @team.id,
+            status: @status,
+            id: @assessment&.id,
+            framework: @framework,
+            answer_state: @answer_state,
+            answer_status: @answer_status,
+            page: @page + 1,
+            per_page: @per_page,
+          ),
+          data:{ turbo_stream: true },
+          class: "btn btn-sm #{'invisible' if @page >= total_pages}"
+        %>
+      </div>
+      <span class="font-semibold pr-2">
+        <%=control_count%> Controls
+      </span>
+    </div>
+  </div>
+</div>

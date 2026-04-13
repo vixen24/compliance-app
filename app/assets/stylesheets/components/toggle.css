@@ -1,0 +1,14 @@
+/* .toggle.toggle-lg::before {
+  height: 2rem;
+  width: 75px;
+  border-radius: var(--radius-selector);
+}
+
+label.toggle.toggle-lg {
+  padding: 3px;
+} */
+
+input[type="checkbox"]:checked {
+  background: var(--color-green-600);
+  border: 2px solid var(--color-green-600);
+}

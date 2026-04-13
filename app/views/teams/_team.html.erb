@@ -1,0 +1,50 @@
+<div id=<%= dom_id(team) %> class="bg-base-100 shadow-md inset-shadow-2xs p-6 rounded-lg">
+  <div class="flex flex-col gap-2 justify-between flex-wrap">
+    <div>
+      <div class="flex gap-2 justify-between items-center">
+        <div class="text-xl text-gray-700 font-bold">
+          <%= team.name %>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <div data-controller="dialog" data-dialog-modal-value="true" data-action="keydown.esc->dialog#close:stop">
+            <button type="button", data-action="dialog#open",
+              class="px-3 py-1.5 inline-flex items-center gap-2 border-none text-sm text-blue-600 hover:text-blue-900 hover:bg-blue-100 rounded-lg transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path> </svg>
+              <span>Edit</span>
+            </button>
+
+            <dialog class="m-auto dialog-panel" style="--panel-size: 48ch" data-dialog-target="dialog" role="dialog" aria-modal="true">
+              <%= turbo_frame_tag "edit-team", src: edit_team_path(team), loading:"lazy" %>
+            </dialog>
+          </div>
+
+          <%= button_to team_path(team), 
+              method: :delete, data: { turbo_confirm: "Are you sure you want to delete #{team&.name}?" },
+              class: "inline-flex items-center gap-1 px-3 py-1.5 text-sm text-red-600 hover:text-red-900 hover:bg-red-100 rounded-lg transition-colors" do %>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+            Delete
+          <% end %>
+        </div>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 border-b border-t border-b-neutral-300 border-t-neutral-300">
+      <div class="m-2 py-1 px-3 border-r border-r-neutral-300">
+        <%= link_to admin_users_path(team: team.id), class:"text-neutral-700 hover:text-primary-content hover:underline" do %>
+          <span class="text-xl font-bold "><%= team.users.size %></span>
+          <span class="inline text-sm"><%= 'User'.pluralize(team.users.size) %></span>
+        <% end %>
+      </div>
+      <div class="m-2 py-1 px-3">
+        <%= link_to admin_assessments_path, class:"text-neutral-700 hover:text-primary-content hover:underline" do %>
+          <span class="text-xl font-bold"><%= team.assessments.size %></span>
+          <span class="inline"><%= 'Assessment'.pluralize(team.assessments.size) %></span>
+        <% end %>
+      </div>
+    </div>
+    <div>
+      <div class="text-sm text-gray-600">Created at <%= team.created_at.strftime("%b %d, %Y %I:%M %p %Z") %></div>
+    </div>
+  </div>
+</div>

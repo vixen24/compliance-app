@@ -1,0 +1,11 @@
+<div class="flex flex-row gap-3 items-center p-2 rounded-lg bg-base-300">
+  <div class="shrink-0 h-9 w-9 bg-linear-to-br from-red-200 to-red-300 rounded-lg flex items-center justify-center">
+    <span class="font-semibold text-red-700 text-sm">
+      <%= Current.user&.name&.split&.map(&:first)&.first(2)&.join&.upcase || Current.user.email_address[0,2].upcase %>
+    </span>
+  </div>
+  <div class="overflow-hidden">
+    <div class="text-sm font-semibold truncate"><%= Current.user.name || Current.user.email_address %></div>
+    <div class="text-sm"><%= Current.user.role.capitalize %></div>
+  </div>
+</div>

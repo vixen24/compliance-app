@@ -1,0 +1,16 @@
+input[type="checkbox"]:checked {
+  border: 2px solid var(--color-neutral-700);
+  background-color: var(--color-neutral-700);
+  color: white;
+  box-shadow: none;
+}
+
+label:has(input[type="checkbox"]) {
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--radius-xl)
+}
+
+label:has(input[type="checkbox"]:checked) {
+  background: color-mix(in srgb, var(--color-primary-content) 10%, white);
+}

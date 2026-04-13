@@ -1,0 +1,113 @@
+<% content_for(:title) { "Account Settings" } %> 
+
+<% content_for :left_sidebar do %>
+  <%= render "/admin/shared/left_sidebar" %>
+<% end %>
+
+<div class="h-screen flex flex-col">
+
+  <header class="px-4 border-b border-neutral-200">
+    <div class="bg-white p-4 rounded-lg">
+      <h1 class="text-2xl font-bold text-gray-900">
+        Account Settings
+      </h1>
+      <p class="mt-1 text-sm text-gray-600">
+        Manage all configuration for organization account
+      </p>
+    </div>
+  </header>
+
+
+  <div class="flex-1 flex gap-4 m-6 min-h-0" data-controller="panels">
+    <div class="w-72 border border-neutral-200 shadow-md transition-shadow rounded-lg overflow-y-auto">
+      <div class="flex flex-col gap-1 my-6 mx-4">
+        <button class="cursor-pointer rounded p-2 w-full text-left font-semibold bg-neutral-800 text-white " data-action="click->panels#switch" data-panel-target="security">Security</button>
+        <button class="cursor-pointer rounded p-2 w-full text-left" data-action="click->panels#switch" data-panel-target="notification">Notification</button>
+      </div>
+    </div>
+
+    <!--Security-->
+    <div class="flex-1 border border-neutral-200 shadow-md transition-shadow rounded-lg p-6 overflow-y-auto flex flex-col gap-6 panel-content" data-panel="security">
+      <div class="flex gap-4 bg-gray-100 p-6 rounded-lg shadow-md hover:shadow-lg hover:-translate-y-px transition-all duration-300">
+        <svg width="80" height="80" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Outer circle frame -->
+          <circle cx="60" cy="60" r="55" stroke="#374151" stroke-width="4" fill="#F3F4F6"/>
+
+          <!-- Connector line -->
+          <line x1="40" y1="60" x2="80" y2="60" stroke="#9CA3AF" stroke-width="4" stroke-linecap="round"/>
+
+          <!-- First factor circle -->
+          <circle cx="35" cy="60" r="18" fill="#3B82F6"/>
+          <path d="M31 60L35 64L43 56" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+          <!-- Second factor circle -->
+          <circle cx="85" cy="60" r="18" fill="#10B981"/>
+          <path d="M81 60L85 64L93 56" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        
+        <%= form_with model: @account, url: admin_setting_path, class:"w-full content-center", method: :patch, local: true,
+            data: { controller: "autosave", action: "change->autosave#debouncedSubmit" } do |form| %>
+          <div class="flex justify-between">
+            <%= form.label :mfa_enabled, "Two-factor Authentication", class: "text-xl font-semibold cursor-pointer" %>
+            <%= form.check_box :mfa_enabled, class: "toggle toggle-xl" %>
+          </div>
+          <div class="leading-6">Add an extra layer of security to all accounts by requiring a one-time password sent to user email address</div>
+        <% end %>
+      </div>
+
+      <div class="flex gap-4 bg-gray-100 p-6 rounded-lg shadow-md hover:shadow-lg hover:-translate-y-px transition-all duration-300">
+        <svg width="80" height="80" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Shield -->
+          <path d="M60 10L100 25V55C100 80 80 100 60 110C40 100 20 80 20 55V25L60 10Z" fill="white" stroke="#3B82F6" stroke-width="6"/>
+          <!-- Lock body -->
+          <rect x="40" y="50" width="40" height="30" rx="6" fill="#374151"/>
+          <!-- Lock shackle -->
+          <path d="M45 50V40C45 32 50 26 60 26C70 26 75 32 75 40V50" stroke="#374151" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+        <%= form_with model: @account, url: admin_setting_path, class:"w-full content-center", method: :patch, local: true,
+            data: { controller: "autosave", action: "change->autosave#debouncedSubmit" } do |form| %>
+          <div class="flex justify-between">
+            <%= form.label :password_complexity, "Password Complexity", class: "text-xl font-semibold cursor-pointer" %>
+            <%= form.check_box :password_complexity, class: "toggle toggle-xl" %>
+          </div>
+          <div class="leading-6">A minimum of 1 uppercase, 1 lowercase, 1 special character and 1 number will be enforced</div>
+        <% end %>
+      </div>
+
+      <div class="flex gap-4 bg-gray-100 p-6 rounded-lg shadow-md hover:shadow-lg hover:-translate-y-px transition-all duration-300">
+        <svg width="80" height="80" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Outer circle frame -->
+          <circle cx="60" cy="60" r="50" stroke="#D1D5DB" stroke-width="8" fill="#F9FAFB"/>
+
+          <!-- Countdown arc (red) -->
+          <path d="M60 10 A50 50 0 0 1 110 60" stroke="#EF4444" stroke-width="8" fill="none" stroke-linecap="round"/>
+
+          <!-- Clock center circle -->
+          <circle cx="60" cy="60" r="6" fill="#374151"/>
+
+          <!-- Hour hand -->
+          <line x1="60" y1="60" x2="60" y2="35" stroke="#374151" stroke-width="4" stroke-linecap="round"/>
+
+          <!-- Minute hand -->
+          <line x1="60" y1="60" x2="85" y2="60" stroke="#374151" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+        <%= form_with model: @account, url: admin_setting_path, class:"w-full content-center", method: :patch, local: true,
+            data: { controller: "autosave", action: "change->autosave#debouncedSubmit" } do |form| %>
+          <div class="flex justify-between">
+            <%= form.label :session_timeout, "Session Timeout", class: "text-xl font-semibold cursor-pointer content-center" %>
+            <%= form.select :session_timeout,
+                Session.options_for_session_timeout,
+                {},
+                class: "select max-w-32 bg-gray-100 font-semibold" %>
+          </div>
+          <div class="">All active session will expire after the value set. Users wil be required to relogin after a session has expired</div>
+        <% end %>
+      </div>
+    </div>
+
+    <!--Notification-->
+    <div class="flex-1 border border-neutral-200 shadow-md transition-shadow rounded-lg p-6 overflow-y-auto flex flex-col gap-6 panel-content hidden" data-panel="notification">
+      
+    </div>
+  </div>
+</div>

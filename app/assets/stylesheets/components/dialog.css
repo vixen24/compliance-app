@@ -1,0 +1,16 @@
+.dialog-panel {
+  inline-size: var(--panel-size, 60ch);
+
+  @media (min-width: 640px) {
+    --panel-size: 100%;
+    border-radius: var(--radius-xl);
+    border-color: oklch(0.93 0 0);
+    border-style: var(--tw-border-style);
+    border-width: 2px;
+  }
+
+  input:focus-visible.border-b-2 {
+    border-bottom: 2px solid var(--color-base-content);
+    outline: none;
+  }
+}

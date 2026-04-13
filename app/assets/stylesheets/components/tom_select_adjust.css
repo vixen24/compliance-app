@@ -1,0 +1,21 @@
+#assessment_batch_team_ids-ts-dropdown {
+  max-height: 140px;
+}
+
+#user_team_ids-ts-dropdown {
+  max-height: 90px;
+}
+
+#team_user_ids_-ts-dropdown {
+  max-height: 80px;
+}
+
+div.focus {
+  outline: 2px solid var(--color-base-content);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+
+  >div.ts-control {
+    border: 1px solid var(--color-base-content);
+  }
+}

@@ -1,0 +1,10 @@
+<%= turbo_stream.action(:close_dialog, nil) %>
+
+<%= turbo_stream.replace "flash" do %>
+  <%= render "shared/flash" %>
+<% end %>
+
+<%# Note: To improve %>
+<%= turbo_stream.replace dom_id(@user) do %>
+  <%= render "admin/users/user", user: @user %>
+<% end %>
