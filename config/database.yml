@@ -27,8 +27,8 @@ test:
 production:
   primary:
     <<: *default
-    database: <%= ENV["DB_NAME"] %>
-    username: <%= ENV["DB_USERNAME"] %>
-    password: <%= ENV["DB_PASSWORD"] %>
-    host: <%= ENV["DB_HOST"] %>
-    port: <%= ENV["DB_PORT"] %>
+    database: compliance_production
+    username: deploy
+    password: choose_a_strong_password
+    host: 172.17.0.1
+    port: 5432
