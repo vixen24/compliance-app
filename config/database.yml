@@ -25,10 +25,19 @@ test:
     host: localhost
 
 production:
-  primary:
+  primary: &primary
     <<: *default
     database: compliance_production
     username: deploy
     password: choose_a_strong_password
     host: 172.17.0.1
     port: 5432
+
+  queue:
+    <<: *primary
+
+  cache:
+    <<: *primary
+
+  cable:
+    <<: *primary
