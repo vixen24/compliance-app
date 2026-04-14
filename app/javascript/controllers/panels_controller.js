@@ -1,3 +1,4 @@
+// NB: Used in admin/setting for layout
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
@@ -6,7 +7,6 @@ export default class extends Controller {
     this.buttons = this.element.querySelectorAll("button[data-panel-target]")
   }
 
-  // Note use in admin/setting
   switch(event) {
     const targetPanel = event.currentTarget.dataset.panelTarget
     const panels = this.element.querySelectorAll(".panel-content")
@@ -19,7 +19,6 @@ export default class extends Controller {
       }
     })
 
-    // Update button styles
     this.buttons.forEach(btn => {
       if (btn.dataset.panelTarget === targetPanel) {
         btn.classList.add("font-semibold", "bg-neutral-800", "text-white")

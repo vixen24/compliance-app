@@ -63,6 +63,10 @@ env:
     DB_USERNAME: deploy
     DB_NAME: compliance_production
 
+    QUEUE_DB_NAME: compliance_production_queue
+    CACHE_DB_NAME: compliance_production_cache
+    CABLE_DB_NAME: compliance_production_cable
+
     # Log everything from Rails
     #RAILS_LOG_LEVEL: debug
 
