@@ -19,6 +19,7 @@ gem "thruster", require: false           # Add HTTP asset caching/compression an
 # gem "sqlite3", ">= 2.1"
 gem "pg"
 gem "mission_control-jobs"
+gem "roo"
 
 gem "image_processing", "~> 1.2"       # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 
@@ -29,7 +30,6 @@ gem "tzinfo-data", platforms: %i[ windows jruby ]
 gem "rotp", "~> 6.3.0"
 
 group :development do
-  gem "roo"
   gem "pp"
   gem "letter_opener"
   gem "web-console"

@@ -34,9 +34,8 @@ proxy:
 registry:
   # Specify the registry server, if you're not using Docker Hub
   # server: registry.digitalocean.com / ghcr.io / ...
+  # server: ghcr.io
   username: vixen24
-
-  # Always use an access token rather than real password when possible.
   password:
     - KAMAL_REGISTRY_PASSWORD
 
@@ -67,7 +66,6 @@ env:
     CACHE_DB_NAME: compliance_production_cache
     CABLE_DB_NAME: compliance_production_cable
 
-    # Log everything from Rails
     #RAILS_LOG_LEVEL: debug
 
 # Aliases are triggered with "bin/kamal <alias>". You can overwrite arguments on invocation:
@@ -77,6 +75,7 @@ aliases:
   shell: app exec --interactive --reuse "bash"
   logs: app logs -f
   dbc: app exec --interactive --reuse "bin/rails dbconsole"
+  import: app exec --interactive --reuse "bin/rails import:controls"
 
 # Use a persistent storage volume for sqlite database files and local Active Storage files.
 # Recommended to change this to a mounted volume path that is backed up off server.
@@ -91,6 +90,7 @@ asset_path: /rails/public/assets
 # Configure the image builder.
 builder:
   arch: amd64
+  remote: ssh://hetzner
 
   # # Build image via remote server (useful for faster amd64 builds on arm64 computers)
   # remote: ssh://docker@docker-builder-server
