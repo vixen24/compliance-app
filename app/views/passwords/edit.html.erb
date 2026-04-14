@@ -1,25 +1,33 @@
 <% content_for(:title) { "Password Reset" } %>
 
-<div class="h-screen mx-auto content-center">
-  <div class="panel panel--centered mb-16 p-12 md:w-2/3 w-full">
-      <div class="justify-items-center p-12 pt-0" style="text-align: -webkit-center">
+<div class="h-screen login-bg">
+  <div class="panel panel--centered mb-16 px-10 py-6 md:w-2/3 w-full mx-auto bg-white/85">
+      <div class="justify-items-center p-2 pt-0" style="text-align: -webkit-center">
         <%= svg_tag "logo.svg", alt: "UBA Logo", class: "w-36" %>
       </div>
 
-      <h1 class="font-semibold text-secondary text-xl">Update your password</h1>
+      <h1 class="font-medium text-center my-2">Password Reset</h1>
+      <div class="bg-amber-50/80 border border-amber-200 px-4 py-3 rounded-lg">
+      <p class="text-sm font-medium text-amber-800 mb-2">Password requirements</p>
+      <ul class="text-sm text-amber-700 space-y-1 list-disc list-inside">
+        <li>1 uppercase, 1 lowercase, 1 number, 1 special</li>
+        <li>Do not reuse old password</li>
+        <li>Both passwords must match</li>
+      </ul>
+    </div>
 
     <%= form_with url: password_path(params[:token]), method: :put, class: "contents" do |form| %>
-      <div class="my-5 mb-3">
+      <div class="my-3">
         <%= form.password_field :password, required: true, autocomplete: "new-password", placeholder: "Enter new password", maxlength: 72, 
           class: "block shadow-sm rounded-md border border-gray-400 focus:outline-solid focus:outline-secondary focus:border-secondary px-3 py-2 mt-2 w-full" %>
       </div>
 
-      <div class="my-5">
+      <div class="my-3">
         <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", placeholder: "Repeat new password", maxlength: 72, 
           class: "block shadow-sm rounded-md border border-gray-400 focus:outline-solid focus:outline-secondary focus:border-secondary px-3 py-2 mt-2 w-full" %>
       </div>
 
-      <div class="inline">
+      <div class="text-center">
         <%= form.submit "Save", class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-primary-content hover:bg-primary text-white inline-block font-medium cursor-pointer" %>
       </div>
     <% end %>

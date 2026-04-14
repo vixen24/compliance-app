@@ -3,7 +3,7 @@ class TeamsController < ApplicationController
   before_action :set_team, only: %i[edit update destroy]
   before_action :set_users, only: %i[new edit create update]
 
-  layout "public"
+  layout "admin"
 
   def index
     @teams = Current.user.account.teams.includes(:users, :assessments).order(:name)

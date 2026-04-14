@@ -1,14 +1,4 @@
-/* Tom-select is used for this */
-/* select[multiple]>option {
-  margin-bottom: 1px;
-  height: 28px;
-  padding: 2px;
-  padding-inline: 8px;
-} */
-
-/* 
-  Firefox quirk: Fixes vertical alignment in only.
-*/
+/* Firefox quirk: Fixes vertical alignment */
 @-moz-document url-prefix() {
   select {
     display: inline-block !important;

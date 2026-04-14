@@ -1,5 +1,4 @@
 .menu :where(li ul):before {
-  /* background-color: white; */
   width: 2px;
   content: "";
   inset-inline-start: 0;

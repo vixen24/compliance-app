@@ -3,29 +3,31 @@ default: &default
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
-# sqlite: &sqlite
-#   adapter: sqlite3
-#   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-#   timeout: 5000
-
 development:
-  primary:
+  primary: &primary_development
     <<: *default
-    database: uba_compliance_development
+    database: compliance_development
     username: UB
     password: postgres42
     host: localhost
 
-test:
-  primary:
-    <<: *default
-    database: uba_compliance_test
-    username: UB
-    password: postgres42
-    host: localhost
+  queue:
+    <<: *primary_development
+    database: compliance_development_queue
+    migrations_paths: db/queue_migrate
+
+  cache:
+    <<: *primary_development
+    database: compliance_development_cache
+    migrations_paths: db/cache_migrate
+
+  cable:
+    <<: *primary_development
+    database: compliance_development_cable
+    migrations_paths: db/cable_migrate
 
 production:
-  primary: &primary
+  primary: &primary_production
     <<: *default
     database: compliance_production
     username: deploy
@@ -34,10 +36,16 @@ production:
     port: 5432
 
   queue:
-    <<: *primary
+    <<: *primary_production
+    database: compliance_production_queue
+    migrations_paths: db/queue_migrate
 
   cache:
-    <<: *primary
+    <<: *primary_production
+    database: compliance_production_cache
+    migrations_paths: db/cache_migrate
 
   cable:
-    <<: *primary
+    <<: *primary_production
+    database: compliance_production_cable
+    migrations_paths: db/cable_migrate

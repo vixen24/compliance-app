@@ -22,7 +22,7 @@
     --panel-size: 100%;
 
     @media (min-width: 640px) {
-      --panel-size: 40ch;
+      --panel-size: 46ch;
     }
 
   }

@@ -13,6 +13,7 @@ class SignUpsController < ApplicationController
 
      if @signup.create_account
       start_new_session_for(@signup.user)
+      redirect_to admin_dashboard_path
      else
       render :new, status: :unprocessable_entity
      end

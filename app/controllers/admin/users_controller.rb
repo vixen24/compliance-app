@@ -8,10 +8,10 @@ class Admin::UsersController < ApplicationController
   before_action :set_teams, only: [ :new, :edit, :create, :update ]
   before_action :set_password_reset, only: [ :new, :edit, :create, :update ]
 
-  layout "public"
+  layout "admin"
 
   def index
-    @users = Current.user.account.users.matching(@q).by_active(@active).by_team(@team).by_role(@role).order(created_at: :desc)
+    @users = Current.user.account.users.non_system.matching(@q).by_active(@active).by_team(@team).by_role(@role).order(created_at: :desc)
   end
 
   def show

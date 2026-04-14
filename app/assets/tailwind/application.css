@@ -7,7 +7,6 @@
 }
 
 @plugin "./daisyui-theme.mjs" {
-  /* custom theme here */
   name: "light";
   default: true;
   --color-primary: oklch(0.4634 0.190175 29.2339);
@@ -17,41 +16,9 @@
 }
 
 @plugin "./daisyui-theme.mjs" {
-  /* custom theme here */
   name: "business";
   --color-primary: oklch(0.4634 0.190175 29.2339);
   --color-primary-content: oklch(0.5549 0.2185 29.79);
   --color-secondary: oklch(0.252 0 0);
   --color-secondary-content: oklch(0.7476 0 0);
-}
-
-@font-face {
-  font-family: "Inter";
-  src: url("Inter-Regular.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Inter";
-  src: url("Inter-Medium.ttf") format("truetype");
-  font-weight: 500;
-}
-
-@font-face {
-  font-family: "Inter";
-  src: url("Inter-SemiBold.ttf") format("truetype");
-  font-weight: 600;
-}
-
-@font-face {
-  font-family: "Inter";
-  src: url("Inter-Bold.ttf") format("truetype");
-  font-weight: 700;
-}
-
-@layer base {
-  html {
-    font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
-  }
 }

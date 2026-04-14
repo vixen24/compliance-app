@@ -1,4 +1,3 @@
-/* url input type */
 input[type="url"][readonly]::placeholder {
   color: transparent
 }

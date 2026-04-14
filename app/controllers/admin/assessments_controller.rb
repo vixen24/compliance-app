@@ -1,6 +1,7 @@
 class Admin::AssessmentsController < ApplicationController
   admin_access_only
-  layout "public"
+
+  layout "admin"
 
   before_action :set_assessment_batch, only: %i[update destroy]
   before_action :set_teams, only: %i[new create]

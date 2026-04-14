@@ -2,7 +2,7 @@ class HomeController < ApplicationController
   def show
     user = Current.user
 
-    if user.owner_or_admin?
+    if user.admin?
       redirect_to admin_dashboard_path
       return
     end

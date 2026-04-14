@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  get  "/signup", to: "sign_ups#new", as: :new_sign_up
+  post "/signup", to: "sign_ups#create", as: :sign_up
+
   get "/signin", to: "sessions#new", as: :sign_in
   delete "/signout", to: "sessions#destroy", as: :sign_out
   resource :session, only: [ :new, :create, :destroy ] do
@@ -6,9 +9,6 @@ Rails.application.routes.draw do
       resource :magic_link
     end
   end
-
-  resource :sign_up, only: [ :new, :create ]
-  get "/signup", to: "sign_ups#new"
 
   resources :accounts
   resources :passwords, param: :token

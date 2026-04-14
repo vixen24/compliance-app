@@ -3,7 +3,7 @@ class Admin::SessionsController < ApplicationController
   before_action :set_search_param, only: [ :index ]
   before_action :set_session, only: [ :destroy ]
 
-  layout "public"
+  layout "admin"
 
   def index
     @sessions = Current.user.account.sessions.matching(@q).includes(:user).order(:user_id)

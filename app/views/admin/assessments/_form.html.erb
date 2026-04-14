@@ -51,7 +51,7 @@
         %>
         <%= field_error(@assessment_batch, :team) %>
       <% elsif %>
-        <%= link_to "Create subsidiary", new_team_path, class: "btn rounded-lg border-0 bg-secondary text-white" %>
+        <div><%= link_to "Click to create subsidiary", teams_path, class: "text-sm hover:text-primary-content", data:{turbo: false} %></div>
       <% end %>
     </fieldset>
 

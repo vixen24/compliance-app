@@ -34,3 +34,7 @@
     transform: rotate(6deg);
   }
 }
+
+.shake {
+  animation: shake 400ms both;
+}

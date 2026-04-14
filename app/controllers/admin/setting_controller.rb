@@ -1,6 +1,7 @@
 class Admin::SettingController < ApplicationController
   admin_access_only
-  layout "public"
+
+  layout "admin"
 
   def show
     @account = Current.user.account

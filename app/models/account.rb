@@ -9,17 +9,28 @@ class Account < ApplicationRecord
   validates :name, presence: true
   # before_create :assign_external_account_id
 
-  class << self
-    def create_with_owner(account:, owner:)
-      create!(**account).tap do |account|
-        account.users.create!(role: :system, name: "System")
-        account.users.create!(**owner.with_defaults(role: :owner))
-      end
+  def self.create_with_owner(account:, owner:)
+    create!(**account).tap do |account|
+      account.create_system_user!
+
+      account.users.create!(
+        **owner.with_defaults(role: :owner)
+      )
     end
   end
 
-  # In on-prem deployments, restrict signups to the first account only
-  def self.accepting_signups = count.zero?
+  def create_system_user!
+    SystemUser.create!(
+      account_id: id,
+      role: "system",
+      name: "System"
+    )
+  end
+
+
+  def self.accepting_signups
+    true
+  end
 
   private
 

@@ -11,7 +11,6 @@ class Admin::Dashboard
         active_users: active_users_count,
         inactive_users: inactive_users_count,
         teams: teams_count,
-        users_without_team: users_without_team_count,
         active_sessions: active_sessions_count,
         storage: storage_metrics,
         open_assessment: open_assessment,
@@ -26,11 +25,11 @@ class Admin::Dashboard
   private
 
   def active_users_count
-    account.users.active.count
+    account.users.non_system.active.count
   end
 
   def inactive_users_count
-    account.users.inactive.count
+    account.users.non_system.inactive.count
   end
 
   def open_assessment
@@ -47,16 +46,6 @@ class Admin::Dashboard
 
   def active_sessions_count
     @active_sessions_count ||= account.sessions.count
-  end
-
-  def users_without_team_count
-    @users_without_team_count ||= account.users
-      .where(
-        "NOT EXISTS (
-          SELECT 1 FROM team_users
-          WHERE team_users.user_id = users.id
-        )"
-      ).count
   end
 
   def mfa_status
