@@ -113,7 +113,7 @@
     </div>
 
     <div>
-      <!--Frameworks in the current view-->
+      <!--Out-of-scope controls-->
       <div class="p-5 pt-4 rounded-lg border border-base-300 shadow hover:shadow-lg transition-shadow duration-300 relative flex items-start gap-4">
         <div class=" inline-flex shrink-0 rounded-xl border border-base-300 bg-background/40 p-2.5 shadow-sm">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d51709" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-git-branch h-5 w-5 text-foreground/80" aria-hidden="true"><line x1="6" x2="6" y1="3" y2="15"></line><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><path d="M18 9a9 9 0 0 1-9 9"></path></svg>
@@ -125,7 +125,7 @@
             </div>
           </div>
           <div class="font-bold text-4xl mt-2">
-            <%= @answer_status_count&.fetch("NA", 0) %>
+            <%= @answer_status_count&.fetch("NA", 0) || 0 %>
           </div>
           <div class="text-sm text-base-content/80 mt-2">
            Out-of-scope controls

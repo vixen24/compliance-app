@@ -29,7 +29,7 @@ class Account < ApplicationRecord
 
 
   def self.accepting_signups
-    true
+    count.zero?
   end
 
   private
