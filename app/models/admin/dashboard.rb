@@ -62,13 +62,14 @@ class Admin::Dashboard
 
   def storage_metrics
     @storage_metrics ||= begin
-      used  = System::Storage.used_bytes
-      total = System::Storage.total_bytes
+      available_bytes  = System::Storage.available_bytes
+      total_bytes = System::Storage.total_bytes
+      used_bytes = (total_bytes - available_bytes).to_f
 
       {
-        used: used,
-        total: total,
-        percent: (used.to_f / total * 100).round(2)
+        used: used_bytes,
+        total: total_bytes,
+        percent: ((used_bytes / total_bytes) * 100).round(2)
       }
     end
   end
