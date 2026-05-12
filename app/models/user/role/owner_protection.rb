@@ -1,4 +1,4 @@
-module User::OwnerProtection
+module User::Role::OwnerProtection
   extend ActiveSupport::Concern
 
   included do

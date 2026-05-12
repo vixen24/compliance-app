@@ -11,7 +11,7 @@ class UsersController < ApplicationController
   end
 
   def create
-    @user = Current.user.account.users.new(user_params)
+    @user = Current.account.users.new(user_params)
 
     if @user.save
       PasswordsMailer.reset(@user).deliver_later

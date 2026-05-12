@@ -1,46 +1,31 @@
 class Executive::SubsidiaryDashboardController < ApplicationController
   executive_access_only
 
-  before_action :set_team, only: %i[show]
+  before_action :set_team
   before_action :set_assessment_status, only: %i[show]
   before_action :set_assessments, only: %i[show]
   before_action :set_assessment, only: %i[show]
   before_action :set_framework, only: %i[show]
-  before_action :set_frameworks, only: %i[show]
   before_action :set_pagination, only: %i[show]
   before_action :set_answer_state, only: %i[show]
   before_action :set_answer_status, only: %i[show]
-  before_action :set_filtered_controls, only: %i[show]
-  before_action :set_filtered_controls_per_page, only: %i[show]
-
-  DEFAULT_STATUS = "open"
 
   def show
-     # @dashboard = Executive::SubsidiaryDashboard.new(team: @team, assessment: @assessment, framework: @framework, page: @page, per_page: @per_page).call
-
-     @total = Hash.new(0)
-
-    return unless @assessment.present?
-
-    @answer_state_count = Answer.count_by(:state, assessment: @assessment, framework: @framework).count
-    @answer_status_count = Answer.count_by(:status, assessment: @assessment, framework: @framework, only_approved: true).count
-
-
-    @total = {
-      control: @assessment.assessment_controls.count,
-      control_by_framework: @assessment.assessment_controls.for_frameworks(@framework).count
-    }
-
-    @oldest_submitted_answer = Answer.oldest_submitted_for_assessment(@assessment.id)
-    @earliest_submitted_answer = Answer.earliest_submitted_for_assessment(@assessment.id)
-
-    build_chart_data
-
-    @compliance_percentage = @total[:control_by_framework]  > 0 ? (@status_values[0].to_f / @total[:control_by_framework] * 100).round : 0
+    @metrics = Dashboard.new(
+      team: @team,
+      assessment: @assessment,
+      framework: @framework,
+      page: @page,
+      per_page: @per_page,
+      answer_state: @answer_state,
+      answer_status: @answer_status,
+      status: @status
+    ).call
   end
 
   private
 
+  DEFAULT_STATUS = "open"
   DEFAULT_PAGE      = 1.freeze
   DEFAULT_PER_PAGE  = 10.freeze
 
@@ -50,7 +35,8 @@ class Executive::SubsidiaryDashboardController < ApplicationController
   end
 
   def set_team
-    @team = params[:team].present? ? (Team.find_by(id: params[:team]) || Team.find_by(name: params[:team])) : Current.user.account.teams.first
+    teams = Current.account.teams
+    @team = params[:team].present? ? teams.where_slug_or_name(params[:team]).first : teams.first
   end
 
   def set_assessment_status
@@ -74,59 +60,11 @@ class Executive::SubsidiaryDashboardController < ApplicationController
     @frameworks = @assessment&.frameworks
   end
 
-  def set_filtered_controls
-    controls = @assessment&.assessment_controls || AssessmentControl.none
-
-@filtered_controls =
-  controls
-    .for_frameworks(@framework)
-    .for_answer_state(@answer_state)
-    .for_answer_status(@answer_status)
-  end
-
-  def set_filtered_controls_per_page
-    @filtered_controls_per_page = @filtered_controls&.paginate(@page, @per_page)&.order(:control_id)
-  end
-
   def set_answer_state
     @answer_state = params[:answer_state] if params[:answer_state].present?
   end
 
   def set_answer_status
     @answer_status = params[:answer_status] if params[:answer_status].present?
-  end
-
-  def build_chart_data
-    # NA (aka Out-of-scope) is subtrated from all attributes
-    @draft = @total[:control_by_framework] - @answer_state_count.fetch("approved", 0) - @answer_state_count.fetch("submitted", 0) - @answer_state_count.fetch("rejected", 0)
-    @not_assessed = @total[:control_by_framework] - @answer_status_count.fetch("C", 0) - @answer_status_count.fetch("OFI", 0) - @answer_status_count.fetch("NC", 0) - @answer_status_count.fetch("NA", 0)
-
-    @state_labels = [
-      "approved",
-      "submitted",
-      "rejected",
-      "draft"
-    ]
-
-    @status_labels = [
-      "C",
-      "OFI",
-      "NC",
-      "NAS"
-    ]
-
-    @state_values = [
-      @answer_state_count.fetch("approved", 0),
-      @answer_state_count.fetch("submitted", 0),
-      @answer_state_count.fetch("rejected", 0),
-      @draft
-    ]
-
-    @status_values = [
-      @answer_status_count.fetch("C", 0),
-      @answer_status_count.fetch("OFI", 0),
-      @answer_status_count.fetch("NC", 0),
-      @not_assessed
-    ]
   end
 end

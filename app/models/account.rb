@@ -1,5 +1,6 @@
 class Account < ApplicationRecord
   # has_one :join_code
+  has_one_attached :logo, dependent: :purge_later
   has_many :users, dependent: :destroy
   has_many :teams, dependent: :destroy
   has_many :assessments, dependent: :destroy
@@ -7,15 +8,13 @@ class Account < ApplicationRecord
   has_many :assessment_batches, dependent: :destroy
 
   validates :name, presence: true
+  validates :subdomain, presence: true, uniqueness: true
   # before_create :assign_external_account_id
 
   def self.create_with_owner(account:, owner:)
     create!(**account).tap do |account|
       account.create_system_user!
-
-      account.users.create!(
-        **owner.with_defaults(role: :owner)
-      )
+      account.users.create!(**owner.with_defaults(role: :owner))
     end
   end
 
@@ -29,7 +28,7 @@ class Account < ApplicationRecord
 
 
   def self.accepting_signups
-    count.zero?
+    true
   end
 
   private

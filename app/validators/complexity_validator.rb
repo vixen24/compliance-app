@@ -1,4 +1,4 @@
-class PasswordComplexityValidator < ActiveModel::EachValidator
+class ComplexityValidator < ActiveModel::EachValidator
   MIN_LENGTH = 8
   UPPERCASE_REGEX = /[A-Z]/
   LOWERCASE_REGEX = /[a-z]/

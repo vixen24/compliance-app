@@ -7,5 +7,5 @@
 }
 
 select[disabled] {
-  background-color: var(--color-base-300)
+  border: 1px solid color-mix(in srgb, var(--color-base-content) 15%, transparent);
 }

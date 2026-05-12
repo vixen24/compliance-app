@@ -6,12 +6,12 @@ class Admin::SessionsController < ApplicationController
   layout "admin"
 
   def index
-    @sessions = Current.user.account.sessions.matching(@q).includes(:user).order(:user_id)
+    @sessions = Current.account.sessions.matching(@q).includes(:user).order(:user_id)
   end
 
   def destroy
     if params[:all]
-      Current.user.account.sessions.where.not(id: Current.session.id).destroy_all
+      Current.account.sessions.where.not(id: Current.session.id).destroy_all
       notice = "All sessions terminated"
     else
       @session.destroy

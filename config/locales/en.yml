@@ -28,4 +28,8 @@
 #       enabled: "ON"
 
 en:
-  hello: "Hello world"
+  activerecord:
+    attributes:
+      assessment_batch:
+        team_ids: "Subsidiary"
+        framework_ids: "Framework"

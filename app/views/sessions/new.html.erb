@@ -3,11 +3,12 @@
 <div class="h-screen login-bg">
   <div>
     <div class="panel panel--centered mb-16 px-10 py-6 md:w-2/3 w-full mx-auto bg-white/85">
-        <div class="justify-items-center p-2 pt-0" style="text-align: -webkit-center;">
-          <%= svg_tag "logo.svg", alt: "UBA Logo", class: "w-26" %>
-        </div>
-    
+      <div style="text-align: -webkit-center" class="justify-items-center">
+        <%= render "layouts/shared/logo" %>
+      </div>
+          
       <%= form_with url: session_url, data: { turbo: false }, class: "contents" do |form| %>
+      <div class="mt-12"></div>
         <div class="my-5 mb-3">
           <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username",
               placeholder: "Enter your email address", value: params[:email_address],

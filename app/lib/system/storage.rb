@@ -1,7 +1,7 @@
 module System
   class Storage
     VOLUME_PATH = "/mnt/HC_Volume_105389341" # for mounted volume
-    PG_DATA_PATH = "/var/lib/postgresql/16/main" # for same server pg
+    # PG_DATA_PATH = "/var/lib/postgresql/16/main" # for same server pg
     PG_DATA_PATH = "/postgres/pgdata" # for development
 
     class << self

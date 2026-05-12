@@ -11,7 +11,7 @@ class Admin::UsersController < ApplicationController
   layout "admin"
 
   def index
-    @users = Current.user.account.users.non_system.matching(@q).by_active(@active).by_team(@team).by_role(@role).order(created_at: :desc)
+    @users = Current.account.users.non_system.matching(@q).by_active(@active).by_team(@team).by_role(@role).order(created_at: :desc)
   end
 
   def show
@@ -22,7 +22,7 @@ class Admin::UsersController < ApplicationController
   end
 
   def create
-    @user = Current.user.account.users.new(user_params)
+    @user = Current.account.users.new(user_params)
 
     if @user.save
       PasswordsMailer.reset(@user).deliver_later
@@ -87,11 +87,11 @@ class Admin::UsersController < ApplicationController
   end
 
   def set_teams
-    @teams = Current.user.account.teams
+    @teams = Current.account.teams
   end
 
   def set_team
-    @team = Team.find_by(id: params[:team]) if params[:team].present?
+    @team = Team.find_by!(id: params[:team]) if params[:team].present?
   end
 
   def set_user

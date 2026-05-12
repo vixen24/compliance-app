@@ -2,9 +2,11 @@
 
 <div class="h-screen login-bg" >
   <div class="panel panel--centered mb-16 p-12 py-6 md:w-2/4 w-full mx-auto bg-white/85">
-    <div class="justify-items-center p-2 pt-0" style="text-align: -webkit-center">
-        <%= svg_tag "logo.svg", alt: "UBA Logo", class: "w-26" %>
-      </div>
+    <div style="text-align: -webkit-center" class="justify-items-center">
+      <%= render "layouts/shared/logo" %>
+    </div>
+          
+
     <div class="">
       <h1 class="font-semibold text-lg text-neutral-700 text-center">Forgot your password?</h1>
       <%= form_with url: passwords_path, data: { turbo: false }, class: "contents" do |form| %>

@@ -7,13 +7,13 @@
           <div class="flex flex-col">
             <label for="user_name" class="text-sm font-medium text-base-content/80">Name</label>
             <%= form.text_field :name, placeholder: "Firstname Lastname", autocomplete: "off",
-                class:"border-b-2 border-gray-200 focus:outline-none w-full #{'border-red-500' if @user.errors[:name].any?}" %>
+                class:"text-base border-b-2 border-gray-200 focus:outline-none w-full #{'border-red-500' if @user.errors[:name].any?}" %>
             <%= field_error(@user, :name) %>
           </div>
           <div class="flex flex-col">
             <label for="user_email_address" class="text-sm font-medium text-base-content/80">Email address</label>
             <%= form.email_field :email_address, required: true, placeholder: "xyz@businessname.com",
-                class:"border-b-2 border-gray-200 focus:outline-none w-full #{'border-red-500' if @user.errors[:email_address].any?}" %>
+                class:"text-base border-b-2 border-gray-200 focus:outline-none w-full #{'border-red-500' if @user.errors[:email_address].any?}" %>
             <%= field_error(@user, :email_address) %>
           </div>
       
@@ -69,7 +69,7 @@
     <% end %>
 
     <div class="my-4 flex gap-4 justify-end">
-      <%= link_to "Cancel", admin_users_path, data:{turbo: false}, class: "btn rounded-lg bg-white border border-neutral-800 text-neutral-800" %>
+      <button type="button" class="btn" data-action="dialog#close">Cancel</button>
       <%= form.button @user.persisted? ? "Update User" : "Create User", type: "submit", class: "btn rounded-lg bg-primary-content text-gray-100 focus:bg-primary border-none" %>
     </div>
   </div>

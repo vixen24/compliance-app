@@ -23,7 +23,7 @@ ssh:
 # Note: If using Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
 proxy:
   ssl: true
-  host: grccompliance.duckdns.org
+  host: cybersecomply.com
   app_port: 3000
   healthcheck:
     path: /up
@@ -70,11 +70,11 @@ env:
 # Aliases are triggered with "bin/kamal <alias>". You can overwrite arguments on invocation:
 # "bin/kamal logs -r job" will tail logs from the first server in the job section.
 aliases:
+  import: app exec --interactive --reuse "bin/rails import:controls"
   console: app exec --interactive --reuse "bin/rails console"
   shell: app exec --interactive --reuse "bash"
   logs: app logs -f
   dbc: app exec --interactive --reuse "bin/rails dbconsole"
-  import: app exec --interactive --reuse "bin/rails import:controls"
 
 # Use a persistent storage volume for sqlite database files and local Active Storage files.
 # Recommended to change this to a mounted volume path that is backed up off server.

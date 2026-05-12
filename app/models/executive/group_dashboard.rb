@@ -31,21 +31,22 @@ class Executive::GroupDashboard
     end
   end
 
-
-
   private
 
   def cache_key
     [
       "executive/group_dashboard",
       account.id,
-      "framework-#{framework&.id}",
+      framework&.id,
       Time.current.beginning_of_hour.to_i  # optional: refresh every hour
     ].join("/")
   end
 
   def compute_compliant_extreme
-    base = Team.where(account_id: account.id).left_joins(assessments: :answers).group("teams.id")
+    base = Team
+            .where(account_id: account.id)
+            .left_joins(assessments: :answers)
+            .group("teams.id")
             .select("teams.id, teams.name, SUM(CASE WHEN answers.status = 'C' THEN 1 ELSE 0 END) AS compliant_count")
 
     counts = base.map { |t| [ t.name, t.compliant_count.to_i ] }.to_h
@@ -59,25 +60,39 @@ class Executive::GroupDashboard
   end
 
   def load_teams
-    @teams = Team.where(account_id: account.id).order(:name).pluck(:id, :name)
+    @teams = Team
+              .where(account_id: account.id)
+              .order(:name)
+              .pluck(:id, :name)
   end
 
   def load_counts
     team_ids = @teams.map(&:first)
-    assessments = Assessment.where(team_id: team_ids, status: "open").pluck(:id, :team_id)
+    assessments = Assessment
+                  .where(team_id: team_ids, status: "open")
+                  .pluck(:id, :team_id)
 
     # Load controls count per team (filtered by framework if present)
-    controls_query = AssessmentControl .joins(:assessment) .where(assessments: { id: assessments.map(&:first) })
-    controls_query = controls_query.joins(control: :frameworks)
-                                   .where(frameworks: { id: framework.id }) if framework.present?
-    @controls_count_by_team = controls_query.group("assessments.team_id").count
+    controls_query = AssessmentControl
+                      .joins(:assessment)
+                      .where(assessments: { id: assessments.map(&:first) })
+    controls_query = controls_query
+                      .joins(control: :frameworks)
+                      .where(frameworks: { id: framework.id }) if framework.present?
+    @controls_count_by_team = controls_query
+                              .group("assessments.team_id")
+                              .count
 
     # Load answers counts grouped by status and state per team
-    answers_query = Answer.joins(assessment_control: :assessment).where(assessment_controls: { assessment_id: assessments.map(&:first) })
-                          .where(state: "approved")
+    answers_query = Answer
+                    .joins(assessment_control: :assessment)
+                    .where(assessment_controls: { assessment_id: assessments.map(&:first) })
+                    .where(state: "approved")
 
     if framework.present?
-      answers_query = answers_query.joins(assessment_control: { control: :frameworks }).where(frameworks: { id: framework.id })
+      answers_query = answers_query
+                      .joins(assessment_control: { control: :frameworks })
+                      .where(frameworks: { id: framework.id })
     end
 
     answers_counts = answers_query.group("assessments.team_id", :status, :state).count
@@ -92,7 +107,7 @@ class Executive::GroupDashboard
 
   def compute_percentages
     @teams.each do |team_id, team_name|
-      team_counts = @answers_counts_by_team[team_id]
+      team_counts = @answers_counts_by_team[team_id] || { C: 0, OFI: 0, NC: 0, NA: 0, approved: 0, rejected: 0 }
       controls_count = @controls_count_by_team[team_id] || 0
       denominator = [ (controls_count - team_counts[:NA]), 1 ].max.to_f
 
@@ -113,8 +128,15 @@ class Executive::GroupDashboard
       @group_controls << controls_count
     end
 
+    def safe_percentage(numerator, denominator)
+      return 0 if denominator.to_f <= 0
+      (numerator.to_f / denominator) * 100
+    end
+
     total_controls = @group_controls.sum.to_f
-    @group_compliance = (@c_count.sum / (total_controls - @nap_count.sum) * 100) rescue 0
-    @assessment_coverage = (((@app_count.sum + @rej_count.sum) / total_controls) * 100) rescue 0
+    denominator = total_controls - @nap_count.sum.to_f
+
+    @group_compliance = safe_percentage(@c_count.sum, denominator)
+    @assessment_coverage = safe_percentage(@app_count.sum + @rej_count.sum, total_controls)
   end
 end

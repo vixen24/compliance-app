@@ -11,7 +11,7 @@ class Admin::AssessmentsController < ApplicationController
   end
 
   def index
-    @assessment_batches = Current.user.account.assessment_batches.includes(assessments: [ team: [], frameworks: [], user: [] ]).order(created_at: :desc)
+    @assessment_batches = Current.account.assessment_batches.available.includes(assessments: [ team: [], frameworks: [], user: [] ]).order(created_at: :desc)
   end
 
   def new
@@ -45,10 +45,9 @@ class Admin::AssessmentsController < ApplicationController
     end
   end
 
-  # Uses background job
   def destroy
     if @assessment_batch.destroy_batch
-      redirect_to admin_assessments_path, notice: "Assessments is deleting..."
+      redirect_to admin_assessments_path, notice: "Moved to Trash. To be deleted in 24 hours"
     else
       redirect_to admin_assessments_path, alert: "Failed to delete assessments"
     end
@@ -57,7 +56,7 @@ class Admin::AssessmentsController < ApplicationController
   private
 
   def set_teams
-    @teams = Current.user.account.teams
+    @teams = Current.account.teams
   end
 
   def set_frameworks
@@ -65,7 +64,7 @@ class Admin::AssessmentsController < ApplicationController
   end
 
   def set_assessment_batch
-    @assessment_batch = Current.user.account.assessment_batches.find_by(id: params[:id])
+    @assessment_batch = Current.account.assessment_batches.find_by(id: params[:id])
   end
 
   def batch_assessment_params
@@ -73,6 +72,6 @@ class Admin::AssessmentsController < ApplicationController
           .tap { |p| p[:team_ids]&.reject!(&:blank?)
                      p[:framework_ids]&.reject!(&:blank?)
                 }
-          .merge(user_id: Current.user.id, account_id: Current.user.account.id)
+          .with_defaults(user_id: Current.user.id, account_id: Current.account.id)
   end
 end

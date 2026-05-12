@@ -1,3 +1,5 @@
 import "@hotwired/turbo-rails"
 import "controllers"
 import "turbo/stream_actions"
+import "lexxy"
+import "@rails/actiontext"

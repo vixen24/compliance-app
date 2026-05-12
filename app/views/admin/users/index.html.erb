@@ -7,8 +7,8 @@
 <div class="h-screen flex flex-col">
 
   <!-- Header Section -->
-  <header class="px-4 border-b border-neutral-200">
-    <div class="p-4 rounded-lg">
+  <header class="px-4">
+    <div class="rounded-lg p-4">
       <div class="flex flex-row justify-between gap-4">
         <div>
           <h1 class="text-2xl font-bold text-gray-900">User Directory</h1>
@@ -20,11 +20,11 @@
             <button type="button", data-action="dialog#open",
               class="btn border-none bg-primary-content focus:bg-primary rounded-lg text-white flex items-center gap-2">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /> </svg>
-              <span>Create User</span>
+              <span class="hidden md:inline">Create User</span>
             </button>
 
             <dialog class="m-auto dialog-panel" style="--panel-size: 48ch" data-dialog-target="dialog" role="dialog" aria-modal="true">
-              <%= turbo_frame_tag "create-new-user", src: new_admin_user_path, loading:"lazy" %>
+              <%= turbo_frame_tag "create-new-user", class: "dialog-turbo-frame", src: new_admin_user_path, loading:"lazy" %>
             </dialog>
           </div>
         </div>
@@ -33,16 +33,14 @@
   </header>
 
   <!-- Filters -->
-  <div class="border-b border-neutral-200 px-4">
-    <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between p-4 bg-white rounded-lg">
-      <div class="text-gray-800 text-lg font-semibold pl-2">
-        <%= @users.count %> Users
-      </div>
+  <div class="mx-8 mb-6">
+    <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between p-3 bg-base-200 border border-base-300/50 rounded-lg">
+      <div class="flex items-center justify-between flex-1 text-sm">
+        <div class="text-base-content/95 text-lg font-semibold pl-2">
+          <%= @users.count %> Users
+        </div>
 
-      
-      <div class="flex items-center gap-4 text-sm">
-
-        <!-- Search by email or name -->
+         <!-- Search by email or name -->
         <div class="">
           <%= form_with url: admin_users_path, method: :get, local: true do |form| %>
           <%= hidden_field_tag :active, @active %>
@@ -58,7 +56,10 @@
             </label>
           <% end %>
         </div>
+      </div>
 
+      
+      <div class="flex items-center gap-4 text-sm">
         <!-- Active/Inactive -->
         <%= form_with url: admin_users_path, method: :get, local: true, data: { controller: "autosave", action: "change->autosave#debouncedSubmit" } do |form| %>
           <%= hidden_field_tag :role, @role %>
@@ -82,7 +83,7 @@
           <div class="">
             <fieldset>
               <%= form.select :team,
-              Current.user.account.teams.for_select,
+              Current.account.teams.for_select,
               { include_blank:"All Subsidiary", selected: @team&.id },
               { class: "select w-full"} %>
             </fieldset>
@@ -112,21 +113,20 @@
         </div>
       </div>
     </div>
-  
   </div>
 
   <!-- Large Screen -->
-  <div class="hidden lg:block border border-neutral-200 rounded-lg m-6 flex-1 min-h-0 overflow-y-auto">
+  <div class="hidden lg:block rounded-lg flex-1 min-h-0 px-8 overflow-y-auto">
     <table id="users" class="w-full">
       <thead>
-        <tr>
-          <th class="px-2 py-1 pl-4 font-normal text-left text-white bg-secondary tracking-wider sticky top-0">Users</th>
-          <th class="px-2 py-1 text-left font-normal text-white bg-secondary tracking-wider sticky top-0">Status</th>
-          <th class="px-2 py-1 text-left font-normal text-white bg-secondary tracking-wider sticky top-0">Subsidiary</th>
-          <th class="px-2 py-1 text-left font-normal text-white bg-secondary tracking-wider sticky top-0">Role</th>
-          <th class="px-2 py-1 text-left font-normal text-white bg-secondary tracking-wider whitespace-nowrap overflow-ellipsis overflow-hidden sticky top-0">Created at</th>
-          <th class="px-2 py-1 text-left font-normal text-white bg-secondary tracking-wider whitespace-nowrap overflow-ellipsis overflow-hidden sticky top-0">Last active</th>
-          <th class="px-2 py-1 pl-4 font-normal text-left text-white bg-secondary tracking-wider sticky top-0">Actions</th>
+        <tr class="bg-base-300">
+          <th class="p-2 pl-4 font-semibold text-left text-base-content/95">Users</th>
+          <th class="p-2 font-semibold text-left text-base-content/95">Status</th>
+          <th class="p-2 font-semibold text-left text-base-content/95">Subsidiary</th>
+          <th class="p-2 font-semibold text-left text-base-content/95">Role</th>
+          <th class="p-2 font-semibold text-left text-base-content/95">Created at</th>
+          <th class="p-2 font-semibold text-left text-base-content/95">Last active</th>
+          <th class="p-2 font-semibold pl-4 text-left text-base-content/95">Actions</th>
         </tr>
       </thead>
       <tbody id="users">

@@ -19,7 +19,7 @@
   </header>
   <section class="grid grid-cols-3 gap-4 px-6">
     <% @assessments.each do |assessment| %>
-      <%= link_to team_assessment_path(assessment.team_id, assessment.id) do %>
+      <%= link_to team_assessment_path(assessment.team, assessment) do %>
         <div class="bg-base-200 shadow-md inset-shadow-2xs p-8 rounded-lg">
           <div class="flex flex-col gap-2 justify-between flex-wrap">
             <div>

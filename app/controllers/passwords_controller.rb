@@ -13,7 +13,7 @@ class PasswordsController < ApplicationController
       PasswordsMailer.reset(user).deliver_later
     end
 
-    redirect_to new_session_path, notice: "Password reset instructions sent to email address."
+    redirect_back fallback_location: new_password_path, notice: "Password reset instructions sent to email address."
   end
 
   def edit

@@ -1,0 +1,57 @@
+lexxy-editor {
+  color: var(--color-base-content);
+  background-color: var(--color-base-100);
+  border: 1px solid color-mix(in srgb, var(--color-base-content) 15%, transparent);
+  border-radius: var(--radius-sm);
+}
+
+lexxy-editor lexxy-toolbar {
+  color: color-mix(in srgb, var(--color-base-content) 80%, transparent);
+  border-block-end: 1px solid color-mix(in srgb, var(--color-base-content) 15%, transparent);
+  padding: 4px;
+}
+
+lexxy-editor lexxy-toolbar .lexxy-editor__toolbar-button {
+  block-size: 32px;
+  background-color: var(--color-base-100);
+
+  svg {
+    fill: color-mix(in srgb, var(--color-base-content) 80%, transparent);
+  }
+}
+
+
+lexxy-editor lexxy-toolbar button {
+  @media (any-hover: hover) {
+    &:hover:not([aria-disabled="true"]) {
+      background: var(--color-base-300);
+    }
+
+    &:focus {
+      background: var(--color-base-300);
+    }
+  }
+}
+
+.text-editor lexxy-editor lexxy-toolbar .lexxy-editor__toolbar-button[aria-pressed="true"] {
+  background: var(--color-base-300);
+
+  svg {
+    fill: var(--color-base-content)
+  }
+}
+
+/* 
+button.lexxy-editor__toolbar-button {
+  &:is(:active):not([aria-disabled="true"]) {
+    background-color: var(--color-base-300);
+  }
+} */
+
+.text-editor .lexxy-editor__toolbar-button {
+
+  &:is(:active):not([aria-disabled="true"]),
+  &[aria-pressed="true"] {
+    background-color: var(--color);
+  }
+}

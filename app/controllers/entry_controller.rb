@@ -1,4 +1,4 @@
-class HomeController < ApplicationController
+class EntryController < ApplicationController
   def show
     user = Current.user
 
@@ -19,5 +19,8 @@ class HomeController < ApplicationController
     else
       render :pending
     end
+  end
+
+  def index
   end
 end

@@ -4,6 +4,6 @@ class Admin::DashboardController < ApplicationController
   layout "admin"
 
   def show
-    @metrics = Admin::Dashboard.new(Current.user.account).call
+    @metrics = Admin::Dashboard.new(Current.account).call
   end
 end

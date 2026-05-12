@@ -24,11 +24,11 @@
           <button type="button", data-action="dialog#open",
             class="btn border-none bg-primary-content focus:bg-primary rounded-lg text-white flex items-center gap-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /> </svg>
-            <span>Create Assessment</span>
+            <span class="hidden md:inline">Create Assessment</span>
           </button>
 
           <dialog class="m-auto dialog-panel" style="--panel-size: 48ch" data-dialog-target="dialog" role="dialog" aria-modal="true">
-            <%= turbo_frame_tag "create-new-assessment", src: new_admin_assessment_path %>
+            <%= turbo_frame_tag "create-new-assessment", class: "dialog-turbo-frame", src: new_admin_assessment_path, loading:"lazy" %>
           </dialog>
         </div>
       </div>

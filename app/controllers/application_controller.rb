@@ -7,6 +7,6 @@ class ApplicationController < ActionController::Base
   # allow_browser versions: :modern
 
   def set_current_team
-    Current.team = Current.user.teams.find_by(id: params[:team_id])
+    Current.team = Current.user.teams.find_by(slug: params[:team_slug])
   end
 end

@@ -11,3 +11,6 @@ pin "plotly_theme", to: "lib/plotly_theme.js"
 pin "plotly.js-basic-dist" # @3.4.0
 pin "process" # @2.1.0
 pin "tom-select"
+pin "lexxy", to: "lexxy.js"
+pin "@rails/activestorage", to: "activestorage.esm.js"
+pin "@rails/actiontext", to: "actiontext.esm.js"

@@ -1,9 +1,10 @@
 class User < ApplicationRecord
-  include OwnerProtection, Role
+  include Role
 
+  has_secure_password
   belongs_to :account
-  has_many :magic_links, dependent: :destroy
   has_many :sessions, dependent: :destroy
+  has_many :magic_links, dependent: :destroy
   has_many :team_users, dependent: :destroy
   has_many :teams, through: :team_users
 
@@ -27,12 +28,12 @@ class User < ApplicationRecord
     end
   end
 
-  has_secure_password
+  validates :password, presence: true, on: :create
   validates :name, presence: true, unless: -> { owner? }
-  validates :role, uniqueness: { scope: :account_id }, if: -> { system? || owner? }
   normalizes :email_address, with: ->(email) { email.strip.downcase.presence }
-  validates :email_address, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }, uniqueness: { scope: :account_id, case_sensitive: false }
-  validates :password, confirmation: true, password_complexity: true, password_history: true
+  validates :role, uniqueness: { scope: :account_id }, if: -> { system? || owner? }
+  validates :password, confirmation: true, complexity: true, history: true, allow_nil: true
+  validates :email_address, format: { with: URI::MailTo::EMAIL_REGEXP }, uniqueness: { scope: :account_id }
 
   def send_magic_link(**attributes)
     attributes[:purpose] = attributes.delete(:for) if attributes.key?(:for)
@@ -41,18 +42,4 @@ class User < ApplicationRecord
       MagicLinkMailer.sign_up_instructions(magic_link).deliver_later
     end
   end
-
-  def system?
-    false
-  end
 end
-
-# scope :no_activity_for, ->(days = 60) { where("last_login_at IS NULL OR last_login_at <= ?", Time.current - days.days) }
-# # app/jobs/deactivate_inactive_users_job.rb
-# class DeactivateInactiveUsersJob < ApplicationJob
-#   queue_as :default
-
-#   def perform
-#     User.no_activity_for(60).update_all(active: false)
-#   end
-# end

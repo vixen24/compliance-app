@@ -31,7 +31,7 @@
       try {
         document.documentElement.setAttribute("data-theme", theme);
       } catch (e) {
-        // ignore if DOM not available
+        // do nothing if DOM is unavailable
       }
     })();
   </script>
@@ -40,5 +40,13 @@
   <link rel="apple-touch-icon" href="/favicon.png">
 
   <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag "lexxy" %>
   <%= javascript_importmap_tags %>
+
+  <style>
+    :root {
+      --color-primary: <%= "#ee4445" %>;
+      --color-secondary: <%= "#ee4445" %>;
+    }
+</style>
 </head>

@@ -4,7 +4,7 @@ class Executive::GroupDashboardController < ApplicationController
   before_action :set_frameworks, only: [ :show ]
 
   def show
-    @metrics = Executive::GroupDashboard.new(account: Current.user.account, framework: @framework).call
+    @metrics = Executive::GroupDashboard.new(account: Current.account, framework: @framework).call
   end
 
   private

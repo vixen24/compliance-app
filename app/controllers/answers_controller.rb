@@ -4,21 +4,17 @@ class AnswersController < ApplicationController
   before_action :upsert_answer, only: %i[create]
   before_action :ensure_auditable!, only: %i[update]
   before_action :ensure_answerable!, only: %i[create]
-  before_action :set_intent, only: %i[create update]
 
   def new
   end
 
   def create
-    if @answer.can_be_submitted?(@intent) && @answer.submitted!
-      respond_to do |format|
-        format.turbo_stream
-        format.html { redirect_to team_assessments_url, notice: "Submitted for review" }
-      end
-    elsif @answer.save
-      head :ok
-    else
-      redirect_back fallback_location: team_assessments_url, alert: answer.errors.full_messages.to_sentence
+    @answer.state = :submitted
+    @answer.save
+
+    respond_to do |format|
+      format.turbo_stream
+      format.html { redirect_to team_assessments_url, notice: "Submitted for review" }
     end
   end
 
@@ -39,12 +35,8 @@ class AnswersController < ApplicationController
 
   private
 
-  def set_intent
-    @intent = params[:intent]&.presence
-  end
-
   def upsert_answer
-    @answer = Answer.upsert_from(answer_params.merge(user_id: Current.user.id))
+    @answer = Answer.upsert_from(answer_params)
   end
 
   def set_answer
@@ -62,6 +54,6 @@ class AnswersController < ApplicationController
   end
 
   def answer_params
-    params.require(:answer).permit(:assessment_control_id, :user_id, :assessment_id, :status, :comment, :url)
+    params.require(:answer).permit(:assessment_control_id, :assessment_id, :status, :comment, :url).with_defaults(user: Current.user)
   end
 end

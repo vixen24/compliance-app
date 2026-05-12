@@ -4,6 +4,7 @@ class AddSearchVectorToUsers < ActiveRecord::Migration[8.2]
   def up
     # Add tsvector column
     add_column :users, :search_vector, :tsvector
+    add_index :users, :search_vector, using: :gin, algorithm: :concurrently
 
     # Populate initial values
     execute <<-SQL.squish
@@ -11,9 +12,6 @@ class AddSearchVectorToUsers < ActiveRecord::Migration[8.2]
       SET search_vector =#{' '}
         to_tsvector('english', coalesce(name,'') || ' ' || coalesce(email_address,''));
     SQL
-
-    # Add index for fast searching
-    add_index :users, :search_vector, using: :gin, algorithm: :concurrently
 
     # Optional: create trigger to auto-update search_vector on insert/update
     execute <<-SQL.squish

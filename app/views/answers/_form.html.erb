@@ -1,0 +1,45 @@
+<%= form_with model: control&.answer || Answer.new, url: team_assessment_answers_path(Current.team, assessment), 
+  id: nested_dom_id(assessment, control, "answer"), local: true do |form| %>
+  <%= form.hidden_field :assessment_control_id, value: control.id %>
+  <%= form.hidden_field :assessment_id, value: assessment.id %>
+
+  <div class="my-4">
+    <%= form.label :status, "Answer", class: "block font-medium" %>
+    <%= form.select :status,
+      Answer::STATUS_LABELS.map { |code, label| [label, code] },
+      { selected: control&.answer&.status },
+      { class: "select uppercase font-medium", 
+        disabled: !control&.answer&.answerable? } 
+    %>
+  </div>
+
+  <div class="my-4">
+    <%= form.label :url, "Evidence URL", class: "block font-medium" %>
+    <div class="inline-flex gap-4 items-stretch w-full">
+      <%= form.url_field :url, placeholder: "",
+          value: control&.answer&.url,
+          class: "input w-full text-base",
+          readonly: !control&.answer&.answerable? %>
+          
+      <%= link_to "Open URL", (control&.answer&.url.presence || "#"), 
+          target: "_blank", 
+          rel: "noopener", 
+          data: { turbo: false }, 
+          title: (control&.answer&.url.presence || "No URL provided"),
+          class:"btn border rounded border-base-content/20"%>
+    </div>
+  </div>
+
+  <div>
+    <%= form.label :url, "Additional Information", class: "block font-medium" %>
+    <div class="text-editor" data-controller="lexxy">
+      <%= form.rich_text_area :comment, readonly:!control&.answer&.answerable? %>
+    </div>
+  </div>
+
+  <% if control.answer&.answerable?%>
+    <div class="flex justify-end mt-4">
+      <%= form.submit "Submit", class:"btn bg-primary-content focus:bg-primary text-white rounded text-base" %>
+    </div>
+  <% end %>
+<% end %>

@@ -6,7 +6,7 @@ class TeamsController < ApplicationController
   layout "admin"
 
   def index
-    @teams = Current.user.account.teams.includes(:users, :assessments).order(:name)
+    @teams = Current.account.teams.includes(:users, :assessments).order(:name)
   end
 
   def new
@@ -48,11 +48,11 @@ class TeamsController < ApplicationController
   private
 
   def set_users
-    @users = Current.user.account.users.regular
+    @users = Current.account.users.regular
   end
 
   def set_team
-    @team = Team.find(params[:id])
+    @team = Team.find_by!(slug: params[:slug])
   end
 
   def team_params

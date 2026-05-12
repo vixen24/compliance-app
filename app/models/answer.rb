@@ -1,8 +1,9 @@
 class Answer < ApplicationRecord
   include Answer::StatePolicy
 
+  has_rich_text :comment
+  belongs_to :assessment, touch: true
   belongs_to :assessment_control
-  belongs_to :assessment
   belongs_to :user
 
   scope :for_frameworks, ->(frameworks = nil) {

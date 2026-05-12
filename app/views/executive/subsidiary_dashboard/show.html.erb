@@ -17,7 +17,7 @@
       <!--Title-->
       <div class="pr-2 flex-2">
         <h2 class="text-3xl font-black pt-2">
-          <% Current.user.role.capitalize %> Information Security Compliance at-a-Glance
+          Information Security Compliance at-a-Glance
         </h2>
         <p class="py-1">
           <div class="text-base-content/95">Monitor compliance posture and approval flow. Use filters to spotlight risk,  </div>
@@ -32,8 +32,8 @@
             <fieldset>
               <legend class="text-white font-medium mb-1.5">Select a country </legend>
               <%= form.select :team,
-              Current.user.account.teams.order(:name).map { |t| [t.name, t.id] },
-                { selected: @team&.id },
+              Current.account.teams.order(:name).map { |t| [t.name, t.slug] },
+                { selected: @team&.slug },
                 {
                   class: "select w-full text-base font-medium"
                 } %>
@@ -51,7 +51,7 @@
         <div class="mt-3 text-white">
           <ul class="space-y-2">
             <li class="flex items-start gap-2">
-              <span class="">-</span><span><%= subsidiary_insight(@compliance_percentage) %></span>
+              <span class="">-</span><span><%= subsidiary_insight(@metrics.compliance_percentage) %></span>
             </li>
           </ul>
         </div>
@@ -62,7 +62,7 @@
   <!--Filters-->
   <%= form_with url: executive_subsidiary_dashboard_path, method: :get, local: true,
     data: { controller: "autosave", action: "change->autosave#debouncedSubmit" } do |form| %>
-    <%= hidden_field_tag :team, @team&.id %>
+    <%= hidden_field_tag :team, @team&.slug %>
 
     <div class="rounded-lg px-8 pt-4 pb-6 mx-6 border border-base-300 items-end shadow-md bg-base-200">
       <div>
@@ -87,8 +87,8 @@
         <fieldset>
           <legend class="font-semibold mb-1 text-base-content/80">Assessment Name</legend>
           <%= form.select :id,
-            @assessments.map { |a| [a.name, a.id] },
-            { selected: @assessment&.id || "" },
+            @metrics.assessments.map { |a| [a.name, a.id] },
+            { selected: @metrics.assessment&.id || "" },
             {
               class: "select w-full"
             } %>
@@ -97,8 +97,8 @@
         <fieldset>
           <legend class="font-semibold mb-1 text-base-content/80">Framework</legend>
           <%= form.select :framework,
-            (@frameworks || []).map { |f| [f.code, f.id] },
-            { include_blank: "All Frameworks", selected: @framework&.id },
+            (@metrics.frameworks || []).map { |f| [f.code, f.id] },
+            { include_blank: "All Frameworks", selected: @metrics.framework&.id },
             {
               class: "select w-full"
             } %>
@@ -121,7 +121,7 @@
           </div>
         </div>
         <div class="font-bold text-4xl mt-2">
-          <%= @total[:control_by_framework] %>
+          <%= @metrics.total[:control_by_framework] %>
         </div>
         <div class="text-sm text-base-content/80 mt-2">
           Total number of controls for framework
@@ -142,7 +142,7 @@
             </div>
           </div>
           <div class="font-bold text-4xl mt-2">
-            <%= @answer_status_count&.fetch("NA", 0) %>
+            <%= @metrics.answer_status_count&.fetch("NA", 0) %>
           </div>
           <div class="text-sm text-base-content/80 mt-2">
            Out-of-scope controls
@@ -163,7 +163,7 @@
           </div>
         </div>
         <div class="font-bold text-4xl mt-2">
-          <%= pluralize((Time.current.to_date - (@oldest_submitted_answer&.to_date || Time.current.to_date)).to_i, "day") %>
+          <%= pluralize((Time.current.to_date - (@metrics.oldest_submitted_answer&.to_date || Time.current.to_date)).to_i, "day") %>
 
         </div>
         <div class="text-sm text-base-content/80 mt-2">
@@ -184,7 +184,7 @@
           </div>
         </div>
         <div class="font-bold text-4xl mt-2">
-          <%= pluralize((Time.current.to_date  - (@earliest_submitted_answer&.to_date || Time.current.to_date)).to_i, "day") %>
+          <%= pluralize((Time.current.to_date  - (@metrics.earliest_submitted_answer&.to_date || Time.current.to_date)).to_i, "day") %>
         </div>
         <div class="text-sm text-base-content/80 mt-2">
           Most recent submission</span>
@@ -198,15 +198,15 @@
 
     <!--Compliance chart-->
     <div class="flex self-start border border-base-300 shadow-md transition-shadow px-4 py-1 rounded-lg w-auto" style="">
-      <div data-controller="compliance-chart" data-compliance-chart-values-value="<%= @status_values.to_json %>" 
-          data-compliance-chart-labels-value="<%= @status_labels.to_json %>" class="">
+      <div data-controller="compliance-chart" data-compliance-chart-values-value="<%= @metrics.status_values.to_json %>" 
+          data-compliance-chart-labels-value="<%= @metrics.status_labels.to_json %>" class="">
       </div>
 
       <div class="legend pr-4 flex flex-col gap-2 place-content-center justify-center">
 
         <% colors = %w[green yellow red blue] %>
 
-        <% @status_labels&.zip(@status_values, colors)&.each do |label, value, color| %>
+        <% @metrics.status_labels&.zip(@metrics.status_values, colors)&.each do |label, value, color| %>
           <!-- Legend with Linear Progress Bars -->
             <div class="legend-item">
               <div class="legend-header">
@@ -216,7 +216,7 @@
                     executive_subsidiary_dashboard_path,
                     method: :get,
                     params: { 
-                      team: @team.id,
+                      team: @team,
                       status: @status,
                       id: @assessment&.id,
                       framework: @framework,
@@ -225,7 +225,7 @@
                     class: "border-0 bg-transparent cursor-pointer" %>
                 </div>
 
-                <% width = number_to_percentage((value.to_f / @total[:control_by_framework]) * 100, precision: 0) || "0%" %>
+                <% width = number_to_percentage((value.to_f / @metrics.total[:control_by_framework]) * 100, precision: 0) || "0%" %>
                 <span class="label__numbers"><%= value %> (<%= width %>)</span>
               </div>
               <div class="progress">
@@ -238,15 +238,15 @@
     
     <!--Workflow chart-->
     <div class="flex self-center border border-base-300 shadow-md transition-shadow px-4 py-1 rounded-lg w-auto" style="">
-      <div data-controller="workflow-chart" data-workflow-chart-values-value="<%= @state_values.to_json %>" 
-          data-workflow-chart-labels-value="<%= @state_labels.to_json %>" class="">
+      <div data-controller="workflow-chart" data-workflow-chart-values-value="<%= @metrics.state_values.to_json %>" 
+          data-workflow-chart-labels-value="<%= @metrics.state_labels.to_json %>" class="">
       </div>
 
       <div class="legend pr-4 flex flex-col gap-2 place-content-center justify-center">
 
         <% colors = %w[green yellow red blue] %>
 
-        <% @state_labels&.zip(@state_values, colors)&.each do |label, value, color| %>
+        <% @metrics.state_labels&.zip(@metrics.state_values, colors)&.each do |label, value, color| %>
           <!-- Legend with Linear Progress Bars -->
             <div class="legend-item">
               <div class="legend-header">
@@ -256,7 +256,7 @@
                     executive_subsidiary_dashboard_path,
                     method: :get,
                     params: { 
-                      team: @team.id,
+                      team: @team,
                       status: @status,
                       id: @assessment&.id,
                       framework: @framework,
@@ -265,7 +265,7 @@
                     class: "border-0 bg-transparent cursor-pointer" %>
                 </div>
 
-                <% width = number_to_percentage((value.to_f / @total[:control_by_framework]) * 100, precision: 0) || "0%" %>
+                <% width = number_to_percentage((value.to_f / @metrics.total[:control_by_framework]) * 100, precision: 0) || "0%" %>
                 <span class="label__numbers"><%= value %> (<%= width %>)</span>
               </div>
               <div class="progress">
@@ -278,12 +278,12 @@
   </div>
 
   <!--Controls Summary-->
-  <div id="controls-summary" class="rounded-lg m-6 border border-base-300 overflow-hidden" data-controller=<%= "scroll-into-view" if @answer_status || @answer_state %>>
-    <div class="bg-base-content/80 px-8 py-1 text-lg text-base-100 font-medium">
-      <% if @answer_status %>
+  <div id="controls-summary" class="rounded-lg m-6 border border-base-300/80 overflow-hidden" data-controller=<%= "scroll-into-view" if @metrics.answer_status || @metrics.answer_state %>>
+    <div class="bg-base-200 border-b border-base-300/80 px-8 py-1 text-lg font-medium">
+      <% if @metrics.answer_status %>
         Showing controls with compliance status: <%= Answer.status_label(@answer_status).titleize %>
-      <% elsif @answer_state %>
-        Showing controls with workflow: <%= @answer_state.titleize %>
+      <% elsif @metrics.answer_state %>
+        Showing controls with workflow: <%= @metrics.answer_state.titleize %>
       <% else %>
         Showing all controls in assessment
       <% end %>
@@ -297,7 +297,7 @@
           <div>Status</div>
           <div>Workflow </div>
         </div>
-        <% @filtered_controls_per_page.each do |control| %>
+        <% @metrics.filtered_controls_per_page.each do |control| %>
         <div class="grid grid-cols-[0.25fr_8fr_1fr_1fr] space-x-2 gap-6 border-b border-base-200 px-8 py-2 hover:bg-base-200">
           <div><%= control.control_id %></div>
           <div class="">
@@ -338,7 +338,7 @@
           <% end %>
         </div>
       
-        <% control_count = @filtered_controls.size %>
+        <% control_count = @metrics.filtered_controls.size %>
         <% total_pages = (control_count.to_f / @per_page).ceil %>
         <div class="flex flex-1 items-center">
           <div class="flex gap-4 m-auto items-center">

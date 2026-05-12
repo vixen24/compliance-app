@@ -16,7 +16,7 @@ class AssessmentsController < ApplicationController
   end
 
   def show
-    @controls = @assessment_controls.order(:control_id).paginate(@page, @per_page)
+    @controls = @assessment_controls.includes(:answer).order(:control_id).paginate(@page, @per_page)
     @control = params[:control].present? ? AssessmentControl.find_by(id: params[:control], assessment_id: @assessment.id) : @controls.first
   end
 
@@ -66,7 +66,7 @@ class AssessmentsController < ApplicationController
   end
 
   def set_assessment
-    @assessment = Current.team.assessments.find(params[:id])
+    @assessment = Current.team.assessments.find_by!(slug: params[:slug])
   end
 
   def set_assessment_controls
@@ -81,11 +81,11 @@ class AssessmentsController < ApplicationController
 
   def ensure_viewable!
     return if Current.user.can_view_assessment?
-    redirect_back fallback_location: root_url, alert: "Access is denied!"
+    redirect_back fallback_location: entry_url, alert: "Access is denied!"
   end
 
   def ensure_assessment_is_open!
      return if @assessment.open?
-     redirect_back fallback_location: root_url, alert: "Accessment is closed!"
+     redirect_back fallback_location: entry_url, alert: "Accessment is closed!"
   end
 end

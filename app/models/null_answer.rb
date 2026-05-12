@@ -1,4 +1,8 @@
 class NullAnswer
+  def persisted? = false
+  def id = nil
+  def model_name = Answer.model_name
+
   def state = "draft"
   def status = "NAS"
   def comment = nil
@@ -15,14 +19,10 @@ class NullAnswer
   STATUS_LABELS = { "NAS"  => "not assessed" }.freeze
   STATE_LABELS = {
     "draft"   => "draft",
-    "approved"  => "approved",
     "submitted" => "pending approval",
     "rejected"  => "rejected"
   }.freeze
 
   def status_label = STATUS_LABELS[status]
   def state_label  = STATE_LABELS[state]
-
-  def persisted? = false
-  def id = nil
 end

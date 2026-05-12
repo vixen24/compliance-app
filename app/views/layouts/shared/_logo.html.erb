@@ -1,0 +1,9 @@
+<% if Current.account&.logo&.attached? %>
+  <% cache [Current.account, Current.account&.logo] do %>
+    <%= image_tag url_for(Current.account.logo), class:"h-[50px]", alt:"Logo" %>
+  <% end %>
+<% else %>
+  <div class="h-[50px] w-28 flex flex-col items-center justify-center border border-dashed border-gray-300 rounded-xl bg-gray-50 text-gray-500">
+    <span class="text-xs font-medium">Logo</span>
+  </div>
+<% end %>

@@ -1,4 +1,4 @@
-class PasswordHistoryValidator < ActiveModel::EachValidator
+class HistoryValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)
     return if value.blank?
     return if record.password_digest_was.blank?

@@ -1,0 +1,21 @@
+<% content_for(:title) { "Account Settings" } %> 
+
+<% content_for :left_sidebar do %>
+  <%= render "/admin/shared/left_sidebar" %>
+<% end %>
+
+<div class="h-screen flex flex-col">
+
+  <header class="px-4 border-b border-neutral-200">
+    <div class="bg-white p-4 rounded-lg">
+      <h1 class="text-2xl font-bold text-gray-900">
+        Account Settings
+      </h1>
+      <p class="mt-1 text-sm text-gray-600">
+        Manage all configuration for organization account
+      </p>
+    </div>
+  </header>
+
+  <%= render "account" %>
+</div>

@@ -11,10 +11,6 @@ class FrameworkControl < ApplicationRecord
     where(control_id: control.control_id)
   }
 
-  def self.for_display(assessment:, control:)
-    for_assessment(assessment).for_control(control).includes(:framework)
-  end
-
   def full_framework_code
     "#{framework.code} #{code}"
   end

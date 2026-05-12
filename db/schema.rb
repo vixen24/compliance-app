@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_04_13_183708) do
+ActiveRecord::Schema[8.2].define(version: 2026_05_12_133546) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -19,8 +19,50 @@ ActiveRecord::Schema[8.2].define(version: 2026_04_13_183708) do
     t.boolean "mfa_enabled", default: false, null: false
     t.string "name", null: false
     t.boolean "password_complexity", default: true, null: false
+    t.string "primary_color"
+    t.string "secondary_color"
     t.integer "session_timeout"
+    t.string "subdomain", null: false
     t.datetime "updated_at", null: false
+    t.index ["subdomain"], name: "index_accounts_on_subdomain", unique: true
+  end
+
+  create_table "action_text_rich_texts", force: :cascade do |t|
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.bigint "record_id", null: false
+    t.string "record_type", null: false
+    t.datetime "updated_at", null: false
+    t.index ["record_type", "record_id", "name"], name: "index_action_text_rich_texts_uniqueness", unique: true
+  end
+
+  create_table "active_storage_attachments", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.bigint "record_id", null: false
+    t.string "record_type", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", force: :cascade do |t|
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.string "content_type"
+    t.datetime "created_at", null: false
+    t.string "filename", null: false
+    t.string "key", null: false
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
   create_table "answers", force: :cascade do |t|
@@ -46,7 +88,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_04_13_183708) do
     t.string "status", default: "open", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
-    t.index "lower((name)::text)", name: "index_assessment_batches_on_lower_name", unique: true
+    t.index "account_id, lower((name)::text)", name: "index_assessment_batches_on_account_and_lower_name", unique: true
     t.index ["account_id"], name: "index_assessment_batches_on_account_id"
     t.index ["name", "status"], name: "index_assessment_batches_on_name_and_status"
     t.index ["user_id"], name: "index_assessment_batches_on_user_id"
@@ -88,6 +130,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_04_13_183708) do
     t.datetime "deleted_at"
     t.date "due_date"
     t.string "name", null: false
+    t.string "slug"
     t.string "status", default: "open", null: false
     t.bigint "team_id", null: false
     t.datetime "updated_at", null: false
@@ -165,6 +208,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_04_13_183708) do
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["team_id"], name: "index_team_users_on_team_id"
+    t.index ["user_id", "team_id"], name: "index_team_users_on_user_id_and_team_id", unique: true
     t.index ["user_id"], name: "index_team_users_on_user_id"
   end
 
@@ -172,7 +216,9 @@ ActiveRecord::Schema[8.2].define(version: 2026_04_13_183708) do
     t.bigint "account_id", null: false
     t.datetime "created_at", null: false
     t.string "name", null: false
+    t.string "slug"
     t.datetime "updated_at", null: false
+    t.index ["account_id", "slug"], name: "index_teams_on_account_id_and_slug", unique: true
     t.index ["account_id"], name: "index_teams_on_account_id"
   end
 
@@ -194,6 +240,8 @@ ActiveRecord::Schema[8.2].define(version: 2026_04_13_183708) do
     t.index ["search_vector"], name: "index_users_on_search_vector", using: :gin
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "answers", "assessment_controls"
   add_foreign_key "answers", "assessments"
   add_foreign_key "answers", "users"

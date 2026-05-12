@@ -29,9 +29,6 @@ export default class extends Controller {
     this.lightTarget.classList.remove("theme-selected")
     this.systemTarget.classList.remove("theme-selected")
     this.businessTarget.classList.remove("theme-selected")
-
     this[`${name}Target`].classList.add("theme-selected")
   }
-
-
 }

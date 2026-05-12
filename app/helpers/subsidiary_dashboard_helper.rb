@@ -1,6 +1,6 @@
 module SubsidiaryDashboardHelper
   def subsidiary_insight(compliance_percentage)
-     return "Compliance data is unavailable" if compliance_percentage.nil?
+     return "Compliance data is unavailable" if compliance_percentage.nil? || compliance_percentage.zero?
 
     case true
     when compliance_percentage <= 30

@@ -7,6 +7,7 @@ gem "turbo-rails"
 gem "stimulus-rails"
 gem "tailwindcss-rails"
 gem "importmap-rails"
+gem "lexxy", "~> 0.9.7.beta"
 
 # Deployment and drivers
 gem "puma", ">= 5.0"
