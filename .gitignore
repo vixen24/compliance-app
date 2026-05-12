@@ -35,7 +35,3 @@
 
 /app/assets/builds/*
 !/app/assets/builds/.keep
-
-# Ignore certificates and private keys
-/config/certificate.pem
-/config/private_key.pem
