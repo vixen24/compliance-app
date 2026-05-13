@@ -17,7 +17,7 @@
       <!--Title-->
       <div class="pr-2 flex-2">
         <h2 class="text-3xl font-black pt-2"> Information Security Compliance at-a-Glance </h2>
-        
+
         <p class="py-1">
           <div class="text-base-content/95">Monitor compliance posture and approval flow. Use filters to spotlight risk,  </div>
           <div class="text-base-content/95"> unblock approvals, and keep standards audit-ready</div>
@@ -174,10 +174,10 @@
   </div>
 
   <!---Charts -->
-  <div class="flex w-full md:flex-wrap gap-8 p-6 mt-0">
+  <div class="flex w-full min-[1800]:flex-wrap gap-8 p-6 mt-0">
 
     <!--Compliance chart-->
-    <div class="flex flex-nowrap flex-1 border border-base-300/60 self-start shadow-md transition-shadow px-4 py-1 rounded-lg w-auto">
+    <div class="flex flex-nowrap max-[800]:flex-wrap flex-1 border border-base-300/60 self-start shadow-md transition-shadow px-4 py-1 rounded-lg w-auto">
       <div data-controller="compliance-chart" data-compliance-chart-values-value="<%= @metrics.status_values.to_json %>" 
           data-compliance-chart-labels-value="<%= @metrics.status_labels.to_json %>" class="flex-none">
       </div>
@@ -216,7 +216,7 @@
     </div>
     
     <!--Workflow chart-->
-    <div class="flex flex-nowrap flex-1 border border-base-300/60 self-center shadow-md transition-shadow px-4 py-1 rounded-lg w-auto">
+    <div class="flex flex-nowrap max-[800]:flex-wrap flex-1 border border-base-300/60 self-center shadow-md transition-shadow px-4 py-1 rounded-lg w-auto">
       <div data-controller="workflow-chart" data-workflow-chart-values-value="<%= @metrics.state_values.to_json %>" 
           data-workflow-chart-labels-value="<%= @metrics.state_labels.to_json %>" class="flex-none">
       </div>

@@ -194,15 +194,15 @@
   </div>
 
   <!---Charts -->
-  <div class="flex justify-between flex-wrap gap-4 mx-6">
+  <div class="flex w-full flex-wrap min-[1800]:flex-nowrap gap-8 px-6">
 
     <!--Compliance chart-->
-    <div class="flex self-start border border-base-300 shadow-md transition-shadow px-4 py-1 rounded-lg w-auto" style="">
+    <div class="flex flex-nowrap max-[800]:flex-wrap flex-1 self-start border border-base-300 shadow-md transition-shadow px-4 py-1 rounded-lg w-auto" style="">
       <div data-controller="compliance-chart" data-compliance-chart-values-value="<%= @metrics.status_values.to_json %>" 
-          data-compliance-chart-labels-value="<%= @metrics.status_labels.to_json %>" class="">
+          data-compliance-chart-labels-value="<%= @metrics.status_labels.to_json %>" class="flex-none">
       </div>
 
-      <div class="legend pr-4 flex flex-col gap-2 place-content-center justify-center">
+      <div class="flex-1 min-w-0 overflow-hidden pr-4 flex flex-col gap-2 place-content-center justify-center">
 
         <% colors = %w[green yellow red blue] %>
 
@@ -237,12 +237,12 @@
     </div>
     
     <!--Workflow chart-->
-    <div class="flex self-center border border-base-300 shadow-md transition-shadow px-4 py-1 rounded-lg w-auto" style="">
+    <div class="flex flex-nowrap max-[800]:flex-wrap flex-1 self-center border border-base-300 shadow-md transition-shadow px-4 py-1 rounded-lg w-auto" style="">
       <div data-controller="workflow-chart" data-workflow-chart-values-value="<%= @metrics.state_values.to_json %>" 
-          data-workflow-chart-labels-value="<%= @metrics.state_labels.to_json %>" class="">
+          data-workflow-chart-labels-value="<%= @metrics.state_labels.to_json %>" class="flex-none">
       </div>
 
-      <div class="legend pr-4 flex flex-col gap-2 place-content-center justify-center">
+      <div class="flex-1 min-w-0 overflow-hidden pr-4 flex flex-col gap-2 place-content-center justify-center">
 
         <% colors = %w[green yellow red blue] %>
 
