@@ -8,8 +8,11 @@ class Account < ApplicationRecord
   has_many :assessment_batches, dependent: :destroy
 
   validates :name, presence: true
-  validates :subdomain, presence: true, uniqueness: true
-  # before_create :assign_external_account_id
+  before_create :assign_external_account_id
+
+  def slug
+    "/#{AccountSlug.encode(external_account_id)}"
+  end
 
   def self.create_with_owner(account:, owner:)
     create!(**account).tap do |account|
@@ -26,14 +29,13 @@ class Account < ApplicationRecord
     )
   end
 
-
   def self.accepting_signups
-    true
+    count.zero?
   end
 
   private
 
-  # def assign_external_account_id
-  #   self.external_account_id ||= ExternalIdSequence.next
-  # end
+  def assign_external_account_id
+    self.external_account_id ||= ExternalIdSequence.next
+  end
 end

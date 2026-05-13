@@ -1,6 +1,7 @@
 class SessionsController < ApplicationController
+  disallow_account_scope except: %i[destroy]
   require_unauthenticated_access only: %i[ new create ]
-  rate_limit to: 10, within: 3.minutes, only: :create, with: -> { redirect_to new_session_path, alert: "Try again later." }
+  rate_limit to: 10, within: 3.minutes, only: :create, with: :rate_limit_exceeded
 
   layout "public"
   def new
@@ -18,10 +19,19 @@ class SessionsController < ApplicationController
 
   def destroy
     terminate_session
-    redirect_to new_session_path, status: :see_other
+    redirect_to new_session_path(script_name: nil), status: :see_other
   end
 
   private
+
+  def rate_limit_exceeded
+    rate_limit_exceeded_message = "Try again later."
+
+    respond_to do |format|
+      format.html { redirect_to new_session_path, alert: rate_limit_exceeded_message }
+      format.json { render json: { message: rate_limit_exceeded_message }, status: :too_many_requests }
+    end
+  end
 
   def invalid_credentials
     redirect_to new_session_path, alert: "Try another email address or password"

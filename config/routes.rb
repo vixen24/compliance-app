@@ -1,4 +1,13 @@
 Rails.application.routes.draw do
+  get "/signin", to: "sessions#new", as: :sign_in
+  delete "/signout", to: "sessions#destroy", as: :sign_out
+
+  resource :session, only: [ :new, :create, :destroy ] do
+    scope module: :sessions do
+      resource :magic_link
+    end
+  end
+
   get  "/signup", to: "sign_ups#new", as: :new_sign_up
   post "/signup", to: "sign_ups#create", as: :sign_up
 
@@ -36,20 +45,5 @@ Rails.application.routes.draw do
   end
 
   get "up" => "rails/health#show", as: :rails_health_check
-
-  # Auth routes require an account context (enforces subdomain login)
-  # e.g. xxx.company.com/signin
-  constraints AccountPresentConstraint.new do
-    get "/", to: "sessions#new", as: :account_root
-    get "/signin", to: "sessions#new", as: :sign_in
-    delete "/signout", to: "sessions#destroy", as: :sign_out
-
-    resource :session, only: [ :new, :create, :destroy ] do
-      scope module: :sessions do
-        resource :magic_link
-      end
-    end
-  end
-
-  root to: "welcome#show"
+  root to: "entry#show"
 end

@@ -10,21 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_05_12_133546) do
+ActiveRecord::Schema[8.2].define(version: 2026_05_12_184813) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
+  create_table "account_external_id_sequences", force: :cascade do |t|
+    t.integer "value", default: 0, null: false
+    t.index ["value"], name: "index_account_external_id_sequences_on_value", unique: true
+  end
+
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.integer "external_account_id", null: false
     t.boolean "mfa_enabled", default: false, null: false
     t.string "name", null: false
     t.boolean "password_complexity", default: true, null: false
     t.string "primary_color"
     t.string "secondary_color"
     t.integer "session_timeout"
-    t.string "subdomain", null: false
     t.datetime "updated_at", null: false
-    t.index ["subdomain"], name: "index_accounts_on_subdomain", unique: true
+    t.index ["external_account_id"], name: "index_accounts_on_external_account_id", unique: true
   end
 
   create_table "action_text_rich_texts", force: :cascade do |t|

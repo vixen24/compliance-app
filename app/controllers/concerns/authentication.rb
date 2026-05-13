@@ -2,6 +2,7 @@ module Authentication
   extend ActiveSupport::Concern
 
   included do
+    before_action :require_account
     before_action :require_authentication
     helper_method :authenticated?
     helper_method :email_address_pending_authentication
@@ -18,15 +19,27 @@ module Authentication
     def allow_unauthenticated_access(**options)
       skip_before_action :require_authentication, **options
     end
+
+    def disallow_account_scope(**options)
+      skip_before_action :require_account, **options
+      before_action :redirect_tenanted_request, **options
+    end
   end
 
   private
+
+    def authenticated?
+      Current.user.present?
+    end
+
     def redirect_tenanted_request
       redirect_to main_app.entry_url if Current.account.present?
     end
 
-    def authenticated?
-      resume_session
+    def require_account
+      unless Current.account.present?
+        redirect_to main_app.new_session_path(script_name: nil)
+      end
     end
 
     def require_authentication
@@ -39,7 +52,7 @@ module Authentication
 
     def request_authentication
       session[:return_to_after_authenticating] = request.url
-      redirect_to main_app.new_session_path
+      redirect_to main_app.new_session_path(script_name: nil)
     end
 
     def after_authentication_url
@@ -83,7 +96,8 @@ module Authentication
     end
 
     def touch_session(session)
-      session.touch # updates updated_at
+      # updates only updated_at attribute
+      session.touch
     end
 
     def terminate_session_if_exists(session)

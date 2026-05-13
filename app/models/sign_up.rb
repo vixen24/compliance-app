@@ -8,15 +8,13 @@ class SignUp
   validates :email_address, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :password, presence: true, complexity: true, confirmation: true
   validate :email_address_must_be_unique
-  validates :subdomain, presence: true, subdomain: true
 
   def save
     return false unless valid?
 
     @account = Account.create_with_owner(
       account: {
-        name: generate_account_name,
-        subdomain: subdomain
+        name: generate_account_name
       },
       owner: {
         email_address: email_address,
@@ -36,7 +34,5 @@ class SignUp
 
   def generate_account_name
     SecureRandom.uuid.gsub("-", "").first(12)
-    # SecureRandom.uuid.gsub("-", "").first(12).to_i(36)
-    # AccountNameGenerator.new(name: full_name).generate
   end
 end

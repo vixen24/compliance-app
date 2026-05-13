@@ -23,10 +23,7 @@ ssh:
 # Note: If using Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
 proxy:
   ssl: true
-  # host: cybersecomply.com
-  hosts:
-    - www.cybersecomply.com
-    - uba.cybersecomply.com
+  host: www.cybersecomply.com
   app_port: 3000
   healthcheck:
     path: /up
