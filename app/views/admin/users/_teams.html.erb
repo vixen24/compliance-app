@@ -1,0 +1,22 @@
+<dialog id="teams-modal-<%= user.id %>" class="p-6 rounded-lg w-full max-w-2xl m-auto">
+  <h2 class="text-lg font-semibold mb-4">
+    Subsidiaries
+  </h2>
+
+  <ul class="grid grid-cols-5 gap-2">
+    <% user.teams.each do |team| %>
+      <span class="px-3 py-1 bg-gray-100 rounded">
+        <%= team.name %>
+      </span>
+    <% end %>
+  </ul>
+
+  <div class="mt-6">
+    <button
+      type="button"
+      class="px-4 py-2 bg-gray-200 rounded float-right hover:bg-gray-300"
+      onclick="document.getElementById('teams-modal-<%= user.id %>').close()">
+      Close
+    </button>
+  </div>
+</dialog>

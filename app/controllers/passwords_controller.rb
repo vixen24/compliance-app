@@ -1,4 +1,5 @@
 class PasswordsController < ApplicationController
+  disallow_account_scope
   require_unauthenticated_access
   before_action :set_user_by_token, only: %i[ edit update ]
   rate_limit to: 10, within: 3.minutes, only: :create, with: -> { redirect_to new_password_path, alert: "Try again later." }
@@ -24,7 +25,7 @@ class PasswordsController < ApplicationController
       @user.sessions.destroy_all
       redirect_to new_session_path, notice: "Password has been reset."
     else
-      redirect_to edit_password_path(params[:token]), alert: "Passwords did not meet requirement."
+      redirect_to edit_password_path(params[:token]), notice: "Passwords did not meet requirement."
     end
   end
 

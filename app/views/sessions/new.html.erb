@@ -1,28 +1,100 @@
 <% content_for(:title) { "Sign in" } %>
 
+<script>
+  function togglePassword() {
+    const input = document.getElementById("password-input")
+    const eye = document.getElementById("eye-icon")
+    const eyeOff = document.getElementById("eye-off-icon")
+
+    const isHidden = input.type === "password"
+
+    input.type = isHidden ? "text" : "password"
+
+    eye.classList.toggle("hidden")
+    eyeOff.classList.toggle("hidden")
+  }
+</script>
+
 <div class="h-screen login-bg">
-  <div>
-    <div class="panel panel--centered mb-16 px-10 py-6 md:w-2/3 w-full mx-auto bg-white/85">
-      <div style="text-align: -webkit-center" class="justify-items-center">
-        <%= render "layouts/shared/logo" %>
+  <div class="">
+    <div class="panel panel--centered mb-16 px-10 py-8 md:w-2/3 w-full mx-auto bg-white/85">
+      <div style="text-align: -webkit-center" class="justify-items-center"> 
+        <%= render "layouts/shared/our_logo" %>
       </div>
+
+      <div class="text-normal mt-2 text-black/60 font-light text-center">Sign into your workspace</div>
           
       <%= form_with url: session_url, data: { turbo: false }, class: "contents" do |form| %>
       <div class="mt-12"></div>
         <div class="my-5 mb-3">
-          <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username",
+          <label class="input">
+            <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <g
+                stroke-linejoin="round"
+                stroke-linecap="round"
+                stroke-width="2.5"
+                fill="none"
+                stroke="currentColor"
+              >
+                <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+              </g>
+            </svg>
+            <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username",
               placeholder: "Enter your email address", value: params[:email_address],
-              class: "text-base text-neutral-700 block shadow-sm rounded-lg border border-gray-400 focus:outline-secondary focus:border-secondary px-4 py-2 w-full" %>
+              class: "text-base text-black/80" %>
+          </label>
         </div>
   
         <div class="my-3">
-          <%= form.password_field :password, required: true, autocomplete: "off", placeholder: "Enter your password",
-              maxlength: 72, class: "text-base text-neutral-700 block shadow-sm rounded-lg border border-gray-400 focus:outline-secondary focus:border-secondary px-4 py-2 w-full" %>
+          <label class="input relative">
+
+            <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
+                <path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"></path>
+                <circle cx="16.5" cy="7.5" r=".5" fill="currentColor"></circle>
+              </g>
+            </svg>
+
+            <%= form.password_field :password,
+              id: "password-input",
+              required: true,
+              autocomplete: "off",
+              placeholder: "Enter your password",
+              maxlength: 24,
+              class: "text-base text-black/80 pr-10" %>
+
+            <button
+              type="button"
+              onclick="togglePassword()"
+              class="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1.5"
+              aria-label="Toggle password visibility">
+
+              <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-eye h-4 w-4 text-black/85 hidden">
+                <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+
+              <svg id="eye-off-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-eye-off h-4 w-4 text-black/60">
+                <path d="M10.733 5.076A10.744 10.744 0 0 1 12 5c4.478 0 8.268 2.943 9.543 7a1 1 0 0 1 0 .696 10.75 10.75 0 0 1-4.043 5.145"></path>
+                <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"></path>
+                <path d="M17.479 17.499A10.75 10.75 0 0 1 12 19c-4.478 0-8.268-2.943-9.543-7a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"></path>
+                <path d="m2 2 20 20"></path>
+              </svg>
+
+            </button>
+          </label>
         </div>
   
         <div class="col-span-6 flex flex-col items-center gap-1">
           <div class="py-2 inline">
-            <%= form.button type: "submit", class: "group bg-primary-content text-white hover:bg-primary px-3.5 py-2 inline-flex items-center justify-center rounded-full active:scale-95 transition" do %>
+            <%= form.button type: "submit", class: "group bg-black/95 text-white hover:bg-black/85 px-3.5 py-2 inline-flex items-center justify-center rounded-full active:scale-95 transition" do %>
               <span class="text-base font-medium">Sign In</span>
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition-transform group-hover:translate-x-1"
                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"> <path stroke-linecap="round"

@@ -5,7 +5,7 @@
 
     @media (min-width: 640px) {
       --panel-size: 100%;
-      border-radius: var(--radius-xl);
+      border-radius: var(--radius-2xl);
       border-color: oklch(0.93 0 0);
       border-style: var(--tw-border-style);
       border-width: 2px;
@@ -27,7 +27,6 @@
 
   }
 
-  .panel input:focus-visible,
   .panel textarea:focus-visible,
   .panel button:focus-visible {
     outline: 2px solid var(--color-secondary);

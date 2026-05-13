@@ -10,8 +10,9 @@ class SessionsController < ApplicationController
   def create
     user = User.authenticate_by(params.permit(:email_address, :password))
 
-    return invalid_credentials unless user
-    return inactive_account unless user.active?
+    return redirect_for_invalid_credentials unless user
+    return redirect_for_inactive_account unless user.active?
+    return redirect_for_password_reset if user.force_password_reset?
     return require_mfa(user) if user.account.mfa_enabled?
 
     sign_in(user)
@@ -33,12 +34,16 @@ class SessionsController < ApplicationController
     end
   end
 
-  def invalid_credentials
+  def redirect_for_invalid_credentials
     redirect_to new_session_path, alert: "Try another email address or password"
   end
 
-  def inactive_account
+  def redirect_for_inactive_account
     redirect_to new_session_path, alert: "Inactive account. Contact administrator"
+  end
+
+  def redirect_for_password_reset
+    redirect_to new_password_path, alert: "Please reset your password before signing in"
   end
 
   def require_mfa(user)

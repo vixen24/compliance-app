@@ -29,7 +29,7 @@ module Authentication
   private
 
     def authenticated?
-      Current.user.present?
+      resume_session
     end
 
     def redirect_tenanted_request
@@ -76,7 +76,7 @@ module Authentication
     end
 
     def resume_session
-      # Current.session =|| find_session_by_cookie
+      # Current.session ||= find_session_by_cookie
       return Current.session if Current.session
 
       session = find_session_by_cookie

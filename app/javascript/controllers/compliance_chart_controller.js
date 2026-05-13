@@ -74,8 +74,8 @@ export default class extends Controller {
         }
       },
       annotations: [],
-      height: 390,
-      width: 430,
+      height: 360,
+      width: 420,
       responsive: true,
       showlegend: false,
       legend: {

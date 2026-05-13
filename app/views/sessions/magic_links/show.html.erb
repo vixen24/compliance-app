@@ -3,16 +3,18 @@
 <div class="h-screen login-bg">
   <div class="mt-[24vh]">
 
-      <div class="panel panel--centered mb-16 px-10 py-6 md:w-2/3 w-full mx-auto bg-white/85">
+      <div class="panel panel--centered mb-16 px-10 py-8 md:w-2/3 w-full mx-auto bg-white/85">
         <div class="flex flex-col gap-2 <%= "shake" if flash[:alert] || flash[:shake] %>">
           <div style="text-align: -webkit-center" class="justify-items-center">
-            <%= render "layouts/shared/logo" %>
+            <%= render "layouts/shared/our_logo" %>
           </div>
           
           <header class="text-center">
-            <h1 class="text-xl font-bold m-0"><%= @page_title %></h1>
-            <p class="m-2 text"> Then enter the verification code included in the email below: </p>
+            <h1 class="text-lg text-black/80 font-medium m-0"><%= @page_title %></h1>
+            <p class="m-2 text-black/60 px-6"> Enter the verification code included in the email. </p>
           </header>
+
+          <div class="mt-6"></div>
         
           <%= form_with url: session_magic_link_path, method: :post, html: { data: { controller: "magic-link", turbo: false } } do |form| %>
             <%= form.text_field :code, required: true, class: "rounded-xl border border-solid border-gray-500 w-full py-3 uppercase font-mono text-4xl font-black tracking-[1ch] text-center",
@@ -21,7 +23,7 @@
                 data: { magic_link_target: "input", action: "keydown.enter->magic-link#submitOnEnter paste->magic-link#submitOnPaste" } %>
           <% end %>
         
-          <p class="text-center mt-2">The code sent to <strong><%= email_address_pending_authentication %></strong> expires in <%= distance_of_time_in_words(MagicLink::EXPIRATION_TIME) %>.</p>
+          <p class="text-center text-black/80 mt-2">The code sent to <strong><%= email_address_pending_authentication %></strong> expires in <%= distance_of_time_in_words(MagicLink::EXPIRATION_TIME) %>.</p>
         </div>
         
         <% if Rails.env.development? && flash[:magic_link_code].present? %>
@@ -34,7 +36,3 @@
 
   </div>
 </div>
-
-<%# <% content_for :footer do %>
-<%#   <%= render "sessions/footer" %>
-<%# <% end %>

@@ -9,7 +9,7 @@ Turbo.StreamActions.redirect = function () {
 
 Turbo.StreamActions.close_dialog = function () {
   const dialog = document.querySelector("dialog[open]")
-  const dialog_turbo_frame = document.querySelector(".dialog-turbo-frame")
+  const dialog_turbo_frame = dialog.querySelector(".dialog-turbo-frame")
   if (dialog) dialog.close()
   if (dialog_turbo_frame) dialog_turbo_frame.reload()
 }

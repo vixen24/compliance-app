@@ -3,7 +3,7 @@ class SignUp
   include ActiveModel::Validations
 
   attr_reader :account, :user
-  attr_accessor :subdomain, :email_address, :password, :password_confirmation
+  attr_accessor :email_address, :password, :password_confirmation
 
   validates :email_address, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :password, presence: true, complexity: true, confirmation: true
