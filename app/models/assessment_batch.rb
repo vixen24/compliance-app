@@ -1,4 +1,7 @@
 class AssessmentBatch < ApplicationRecord
+  belongs_to :user
+  belongs_to :account
+
   has_many :assessments, dependent: :destroy
 
   attr_accessor :team_ids, :framework_ids
@@ -8,20 +11,13 @@ class AssessmentBatch < ApplicationRecord
   scope :available, -> { where(deleted_at: nil) }
   scope :discarded, -> { where.not(deleted_at: nil) }
 
-  validates :name,
-            presence: true,
+  validates :name, presence: true,
             length: { maximum: 72 },
             uniqueness: { scope: :account_id }
-
   validates :framework_ids, presence: true
   validates :team_ids, presence: true
+  validates :year, presence: true
 
-
-  def self.status_options_for_select
-    statuses.keys.map { |s| [ s.humanize, s ] }
-  end
-
-  # creates AssessmentBatch & associated assessments, frameworks, and controls
   def save_batch
     return false unless valid?
 
@@ -55,31 +51,20 @@ class AssessmentBatch < ApplicationRecord
     soft_delete && schedule_cleanup
   end
 
-  # Triggered by scheduled job
-  def delete_assessments(batch_size)
-    AssessmentControl.where(assessment_id: assessment_ids(id)).in_batches(of: batch_size).delete_all
-    AssessmentFramework.where(assessment_id: assessment_ids(id)).in_batches(of: batch_size).delete_all
-    Assessment.where(assessment_batch_id: id).in_batches(of: batch_size).delete_all
-  end
+  # Triggered by assessment_batch_cleanup job
+  def delete_associated_records
+    ids = assessments.select(:id)
 
-  # Triggered by scheduled job
-  def delete_batch
+    Answer.where(assessment_id: ids).delete_all
+    AssessmentControl.where(assessment_id: ids).delete_all
+    AssessmentFramework.where(assessment_id: ids).delete_all
+    Assessment.where(assessment_batch_id: id).delete_all
     AssessmentBatch.discarded.where(id: id).delete_all
   end
 
   private
 
-  # def team_ids_presence
-  #   if team_ids.blank?
-  #     errors.add(:base, "Select at least one subsidiary")
-  #   end
-  # end
-
-  # def framework_ids_presence
-  #   if framework_ids.blank?
-  #     errors.add(:base, "Select at least one framework")
-  #   end
-  # end
+  def normalize_slug(value) = value.to_s.parameterize
 
   def validate_assessments
     assessments = build_assessments
@@ -98,6 +83,7 @@ class AssessmentBatch < ApplicationRecord
       Assessment.new(
         name: name,
         slug: normalize_slug(name),
+        year: year,
         team_id: team_id,
         framework_ids: framework_ids,
         user_id: user_id,
@@ -114,6 +100,7 @@ class AssessmentBatch < ApplicationRecord
       {
         name: name,
         slug: normalize_slug(name),
+        year: year,
         team_id: team_id,
         user_id: user_id,
         account_id: account_id,
@@ -180,20 +167,14 @@ class AssessmentBatch < ApplicationRecord
   end
 
   def soft_delete
-    update_all(:status, "closed", deleted_at: Time.current, updated_at: Time.current)
-    assessments.update_all(:status, "closed", deleted_at: Time.current, updated_at: Time.current)
+    ActiveRecord::Base.transaction do
+      assessments.update_all(status: "closed", deleted_at: Time.current)
+      update_columns(status: "closed", deleted_at: Time.current)
+    end
   end
 
   def schedule_cleanup
     AssessmentBatchCleanupJob.set(wait: 24.hours).perform_later(self)
     true
-  end
-
-  def assessment_ids(batch_id)
-    Assessment.where(assessment_batch_id: batch_id).select(:id)
-  end
-
-  def normalize_slug(value)
-    value.to_s.parameterize
   end
 end

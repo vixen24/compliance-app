@@ -4,7 +4,7 @@ namespace :import do
     require "roo"
     require "pp"
 
-    file_path = "db/seeds/controls.xlsx" # Default path
+    file_path = "db/seeds/controls_may_26.xlsx"
 
     begin
       puts "✅ Extracting data from file ..."

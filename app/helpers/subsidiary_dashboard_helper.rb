@@ -1,15 +1,18 @@
 module SubsidiaryDashboardHelper
   def subsidiary_insight(compliance_percentage)
-     return "Compliance data is unavailable" if compliance_percentage.nil? || compliance_percentage.zero?
+    return "Compliance data is unavailable" if compliance_percentage.nil? || compliance_percentage.zero?
 
-    case true
+    case
     when compliance_percentage <= 30
       "Overall control environment is unreliable at this point in time"
-    when compliance_percentage > 30 && @compliance_percentage <= 49
+
+    when compliance_percentage <= 49
       "Overall control environment is weak"
-    when compliance_percentage > 49 && @compliance_percentage <= 69
+
+    when compliance_percentage <= 69
       "Overall control environment is acceptable but constrained by gaps"
-    when compliance_percentage >= 70
+
+    else
       "Overall control environment is healthy"
     end
   end

@@ -6,7 +6,8 @@ class Dashboard
               :state_labels, :status_labels, :state_values, :status_values,
               :draft, :not_assessed, :compliance_percentage,
               :filtered_controls, :filtered_controls_per_page,
-              :assessments, :frameworks, :framework_controls_by_control
+              :assessments, :frameworks, :framework_controls_by_control,
+              :total_framework_excluding_not_applicable
 
   def initialize(team:, assessment:, framework:, page:, per_page:, answer_state: nil, answer_status: nil, status: "open")
     @team = team
@@ -28,6 +29,7 @@ class Dashboard
       preload_framework_controls
       load_submitted_answers_in_one_query
       build_chart_data
+      total_framework_excluding_NA
       compute_compliance_percentage
       self
     end
@@ -179,8 +181,12 @@ class Dashboard
     ]
   end
 
+  def total_framework_excluding_NA
+    @total_framework_excluding_not_applicable = @total[:control_by_framework].to_i - @answer_status_count.fetch("NA", 0)
+  end
+
   def compute_compliance_percentage
-    total = @total[:control_by_framework].to_i
+    total = @total_framework_excluding_not_applicable.to_i
     compliant = @status_values.to_a[0].to_i
 
     @compliance_percentage =

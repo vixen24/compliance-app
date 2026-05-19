@@ -138,8 +138,9 @@ export default class extends Controller {
 
     this.element.on('plotly_click', (event) => {
       const subsidiary = event.points[0].x;
+      const external_account_id = window.location.pathname.split('/')[1];
 
-      window.location.href = `/executive/subsidiary_dashboard?team=${encodeURIComponent(subsidiary)}`;
+      window.location.href = `/${external_account_id}/executive/subsidiary_dashboard?team=${encodeURIComponent(subsidiary)}`;
     });
   }
 }

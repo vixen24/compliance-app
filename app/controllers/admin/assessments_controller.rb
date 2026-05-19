@@ -1,11 +1,13 @@
 class Admin::AssessmentsController < ApplicationController
-  admin_access_only
+  include CompactArrayParams
 
-  layout "admin"
+  admin_access_only
 
   before_action :set_assessment_batch, only: %i[update destroy]
   before_action :set_teams, only: %i[new create]
   before_action :set_frameworks, only: %i[new create]
+
+  layout "admin"
 
   def show
   end
@@ -15,11 +17,13 @@ class Admin::AssessmentsController < ApplicationController
   end
 
   def new
-    @assessment_batch = AssessmentBatch.new
+    @assessment_batch = AssessmentBatch.new(year: Date.current.year)
   end
 
   def create
-    @assessment_batch = AssessmentBatch.new(batch_assessment_params)
+    @assessment_batch = Current.account.assessment_batches.new(
+      batch_assessment_params.merge(user: Current.user)
+    )
 
     if @assessment_batch.save_batch
       respond_to do |format|
@@ -68,10 +72,8 @@ class Admin::AssessmentsController < ApplicationController
   end
 
   def batch_assessment_params
-    params.require(:assessment_batch).permit(:name, :status, team_ids: [], framework_ids: [])
-          .tap { |p| p[:team_ids]&.reject!(&:blank?)
-                     p[:framework_ids]&.reject!(&:blank?)
-                }
-          .with_defaults(user_id: Current.user.id, account_id: Current.account.id)
+    compact_array_params(
+      params.expect(assessment_batch: [ :name, :status, :year, team_ids: [], framework_ids: [] ])
+    )
   end
 end

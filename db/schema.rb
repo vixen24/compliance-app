@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_05_13_162420) do
+ActiveRecord::Schema[8.2].define(version: 2026_05_19_144951) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -93,10 +93,12 @@ ActiveRecord::Schema[8.2].define(version: 2026_05_13_162420) do
     t.string "status", default: "open", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.integer "year"
     t.index "account_id, lower((name)::text)", name: "index_assessment_batches_on_account_and_lower_name", unique: true
     t.index ["account_id"], name: "index_assessment_batches_on_account_id"
     t.index ["name", "status"], name: "index_assessment_batches_on_name_and_status"
     t.index ["user_id"], name: "index_assessment_batches_on_user_id"
+    t.index ["year"], name: "index_assessment_batches_on_year"
   end
 
   create_table "assessment_controls", force: :cascade do |t|
@@ -141,10 +143,12 @@ ActiveRecord::Schema[8.2].define(version: 2026_05_13_162420) do
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.string "version"
+    t.integer "year"
     t.index ["account_id"], name: "index_assessments_on_account_id"
     t.index ["assessment_batch_id"], name: "index_assessments_on_assessment_batch_id"
     t.index ["team_id"], name: "index_assessments_on_team_id"
     t.index ["user_id"], name: "index_assessments_on_user_id"
+    t.index ["year"], name: "index_assessments_on_year"
   end
 
   create_table "controls", force: :cascade do |t|

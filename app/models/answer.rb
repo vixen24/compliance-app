@@ -43,6 +43,40 @@ class Answer < ApplicationRecord
     "rejected"  => "rejected"
   }.freeze
 
+  class << self
+    def status_label(label)
+      STATUS_LABELS[label] || NullAnswer::STATUS_LABELS[label]
+    end
+
+    def status_key_from_label(label)
+      STATUS_LABELS.key(label) || NullAnswer::STATUS_LABELS.key(label)
+    end
+
+    def state_key_from_label(state)
+      STATE_LABELS[state] || NullAnswer::STATE_LABELS.key(state)
+    end
+
+    def upsert_from(attrs)
+      find_or_initialize_by(assessment_control_id: attrs[:assessment_control_id], assessment_id: attrs[:assessment_id]).tap { |a| a.assign_attributes(attrs) }
+    end
+
+    def count_by(attribute, assessment:, framework: nil, only_approved: false)
+      scope = approved if only_approved
+      scope = scope.for_assessment_control(assessment) if only_approved
+      scope = for_assessment_control(assessment) unless only_approved
+      scope = scope.for_framework_control(framework) if framework.present?
+      scope.group(attribute)
+    end
+
+    def oldest_submitted_for_assessment(assessment_id)
+      where(assessment_id: assessment_id, state: :submitted) .order(:created_at) .pick(:created_at)
+    end
+
+    def earliest_submitted_for_assessment(assessment_id)
+      where(assessment_id: assessment_id, state: :submitted).order(created_at: :desc).pick(:created_at)
+    end
+  end
+
   def status_label
     if state.to_s != "approved"
       "not assessed"
@@ -51,40 +85,8 @@ class Answer < ApplicationRecord
     end
   end
 
-  def self.status_label(label)
-    STATUS_LABELS[label] || NullAnswer::STATUS_LABELS[label]
-  end
-
   def state_label
-    STATUS_LABELS[state] || NullAnswer::STATE_LABELS[state]
-  end
-
-  def self.status_key_from_label(label)
-    STATUS_LABELS.key(label) || NullAnswer::STATUS_LABELS.key(label)
-  end
-
-  def self.state_key_from_label(state)
-    STATE_LABELS[state] || NullAnswer::STATE_LABELS.key(state)
-  end
-
-  def self.upsert_from(attrs)
-    find_or_initialize_by(assessment_control_id: attrs[:assessment_control_id], assessment_id: attrs[:assessment_id]).tap { |a| a.assign_attributes(attrs) }
-  end
-
-  def self.count_by(attribute, assessment:, framework: nil, only_approved: false)
-    scope = approved if only_approved
-    scope = scope.for_assessment_control(assessment) if only_approved
-    scope = for_assessment_control(assessment) unless only_approved
-    scope = scope.for_framework_control(framework) if framework.present?
-    scope.group(attribute)
-  end
-
-  def self.oldest_submitted_for_assessment(assessment_id)
-    where(assessment_id: assessment_id, state: :submitted) .order(:created_at) .pick(:created_at)
-  end
-
-  def self.earliest_submitted_for_assessment(assessment_id)
-    where(assessment_id: assessment_id, state: :submitted).order(created_at: :desc).pick(:created_at)
+    STATE_LABELS[state] || NullAnswer::STATE_LABELS[state]
   end
 end
 

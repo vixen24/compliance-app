@@ -210,7 +210,7 @@
           <!-- Legend with Linear Progress Bars -->
             <div class="legend-item">
               <div class="legend-header">
-                <div class="label">
+                <div class="flex items-center gap-2 text-sm font-semibold">
                   <span class="dot <%= color %>"></span> 
                   <%= button_to Answer.status_label(label).titleize,
                     executive_subsidiary_dashboard_path,
@@ -225,8 +225,8 @@
                     class: "border-0 bg-transparent cursor-pointer" %>
                 </div>
 
-                <% width = number_to_percentage((value.to_f / @metrics.total[:control_by_framework]) * 100, precision: 0) || "0%" %>
-                <span class="label__numbers"><%= value %> (<%= width %>)</span>
+                <% width = number_to_percentage((value.to_f / @metrics.total_framework_excluding_not_applicable) * 100, precision: 0) || "0%" %>
+                <span><%= value %> (<%= width %>)</span>
               </div>
               <div class="progress">
                 <div class="progress-fill <%= color %>" style="width: <%= width %>"></div>
@@ -250,7 +250,7 @@
           <!-- Legend with Linear Progress Bars -->
             <div class="legend-item">
               <div class="legend-header">
-                <div class="label">
+                <div class="flex items-center gap-2 text-sm font-semibold">
                   <span class="dot <%= color %>"></span> 
                   <%= button_to Answer.state_key_from_label(label).titleize,
                     executive_subsidiary_dashboard_path,
@@ -266,7 +266,7 @@
                 </div>
 
                 <% width = number_to_percentage((value.to_f / @metrics.total[:control_by_framework]) * 100, precision: 0) || "0%" %>
-                <span class="label__numbers"><%= value %> (<%= width %>)</span>
+                <span><%= value %> (<%= width %>)</span>
               </div>
               <div class="progress">
                 <div class="progress-fill <%= color %>" style="width: <%= width %>"></div>
@@ -323,15 +323,15 @@
       <div class="flex items-center gap-4 text-sm py-2 px-6 border-t border-base-200">
         <div>
           <%= form_with url: executive_subsidiary_dashboard_path, method: :get, class: "flex items-center gap-2" do |form| %>
-            <%= form.hidden_field :team, value: @team.id %>
-            <%= form.hidden_field :status, value: @status %>
-            <%= form.hidden_field :id, value: @assessment&.id %>
-            <%= form.hidden_field :framework, value: @framework.id.to_s if @framework %>
-            <%= form.hidden_field :answer_state, value: @answer_state %>
-            <%= form.hidden_field :answer_status, value: @answer_status %>
-            <%= form.hidden_field :page, value: @page %>
+            <%= form.hidden_field :team, value: @team.slug %>
+            <%= form.hidden_field :status, value: @metrics.status %>
+            <%= form.hidden_field :id, value: @metrics.assessment&.id %>
+            <%= form.hidden_field :framework, value: @metrics.framework.id.to_s if @metrics.framework %>
+            <%= form.hidden_field :answer_state, value: @metrics.answer_state %>
+            <%= form.hidden_field :answer_status, value: @metrics.answer_status %>
+            <%= form.hidden_field :page, value: @metrics.page %>
       
-            <%= select_tag :per_page, options_for_select([10, 30, 60, 80], @per_page),
+            <%= select_tag :per_page, options_for_select([10, 30, 60, 80], @metrics.per_page),
                 class: "select min-w-18 h-8",
                 data:{ turbo_stream: true },
                 onchange: "this.form.submit()" %>
@@ -339,35 +339,37 @@
         </div>
       
         <% control_count = @metrics.filtered_controls.size %>
-        <% total_pages = (control_count.to_f / @per_page).ceil %>
+        <% total_pages = (control_count.to_f / @metrics.per_page).ceil %>
         <div class="flex flex-1 items-center">
           <div class="flex gap-4 m-auto items-center">
             <%= link_to "Previous", executive_subsidiary_dashboard_path(
                 team: @team.id,
-                status: @status,
-                id: @assessment&.id,
-                framework: @framework,
-                answer_state: @answer_state,
-                answer_status: @answer_status,
-                page: @page - 1,
-                per_page: @per_page
+                status: @metrics.status,
+                id: @metrics.assessment&.id,
+                framework: @metrics.framework,
+                answer_state: @metrics.answer_state,
+                answer_status: @metrics.answer_status,
+                page: @metrics.page - 1,
+                per_page: @metrics.per_page
               ),
               data:{ turbo_stream: true },
-              class: "btn btn-sm #{'invisible' if @page <= 1}"
+              class: "btn btn-sm #{'invisible' if @metrics.page <= 1}"
             %>
-            <span class="font-semibold"><%= @page %> of <%= total_pages %></span>
+            <span class="font-semibold">
+              <%= @metrics.page %> of <%= total_pages %>
+            </span>
             <%= link_to "Next", executive_subsidiary_dashboard_path(
-                team: @team.id,
-                status: @status,
-                id: @assessment&.id,
-                framework: @framework,
-                answer_state: @answer_state,
-                answer_status: @answer_status,
-                page: @page + 1,
-                per_page: @per_page,
+                team: @team.slug,
+                status: @metrics.status,
+                id: @metrics.assessment&.id,
+                framework: @metrics.framework,
+                answer_state: @metrics.answer_state,
+                answer_status: @metrics.answer_status,
+                page: @metrics.page + 1,
+                per_page: @metrics.per_page,
               ),
               data:{ turbo_stream: true },
-              class: "btn btn-sm #{'invisible' if @page >= total_pages}"
+              class: "btn btn-sm #{'invisible' if @metrics.page >= total_pages}"
             %>
           </div>
           <span class="font-semibold pr-2">

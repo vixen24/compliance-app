@@ -13,32 +13,42 @@
     </div>
   <% end %>
     
-  <div class="flex flex-col gap-y-4 px-8 mt-2">
-    <div class="w-full">
+  <div class="flex flex-col gap-y-4 px-6 mt-2">
+
+    <div>
+      <%= form.label :year, "Year", class: "label text-sm font-semibold font-semibold" %>
+      <%= form.select :year,
+        options_for_select((Date.current.year - 1..Date.current.year + 1).to_a, @assessment_batch.year),
+        {prompt: "Select year"},
+        required: true,
+        class: "select w-full" %>
+
+      <%= field_error(@assessment_batch, :year) %>
+    </div>
+    
+    <div>
+      <%= form.label :name, "Name", class: "label text-sm font-semibold" %>
       <%= form.text_field :name, required: true, autocomplete: "off", placeholder: "Name of assessment",
-          class: "text-lg font-medium border-b-2 border-base-300 w-full" %>
+          class: "input w-full" %>
       <%= field_error(@assessment_batch, :name) %>
     </div>
 
-    <fieldset class="">
-      <legend class="text-sm font-medium text-base-content/80"> Framework </legend>
-
-      <div class="w-full">
-        <%= form.select :framework_ids,
-          options_from_collection_for_select(Framework.all, :id, :code, @assessment_batch.framework_ids || []),
-          {}, multiple: true, class: "",
-          data: {
-            controller: "tom-select w-full",
-            tom_select_placeholder_value: "Click to select..."
-          }
-        %>
-        <%= field_error(@assessment_batch, :framework) %>
-      </div>
-    </fieldset>
-
-    <fieldset class="">
-      <legend class="text-sm font-medium text-base-content/80"> Subsidiary </legend>
+    <div>
+      <%= form.label :name, "Framework", class: "label text-sm font-semibold" %>
+      <%= form.select :framework_ids,
+        options_from_collection_for_select(Framework.all, :id, :code, @assessment_batch.framework_ids || []),
+        {}, multiple: true, class: "",
+        data: {
+          controller: "tom-select w-full",
+          tom_select_placeholder_value: "Click to select..."
+        }
+      %>
+      <%= field_error(@assessment_batch, :framework) %>
+    </div>
+      <%# <legend class="text-sm font-semibold font-medium text-base-content/80"> Subsidiary </legend> %>
+    <div>
       <% if @teams.present?%>
+      <%= form.label :name, "Subsidiary", class: "label text-sm font-semibold" %>
         <%= form.select :team_ids,
             options_from_collection_for_select(@teams, :id, :name, @assessment_batch.team_ids || []),
             {},
@@ -51,21 +61,20 @@
         %>
         <%= field_error(@assessment_batch, :team) %>
       <% elsif %>
-        <div><%= link_to "Click to create subsidiary", teams_path, class: "text-sm hover:text-primary-content", data:{turbo: false} %></div>
+        <div><%= link_to "Click to create subsidiary", teams_path, class: "text-sm font-semibold hover:text-primary-content", data:{turbo: false} %></div>
       <% end %>
-    </fieldset>
+    </div>
+    
+    <div>
+      <%= form.label :name, "Status", class: "label text-sm font-semibold" %>
+      <%= form.select :status,
+          assessment_batch_status_options,
+          {selected: @assessment_batch.status },
+          class: "select w-full"
+      %>
+    </div>
 
-    <fieldset class="">
-      <legend class="text-sm font-medium text-base-content/80"> Status </legend>
-        <%= form.select :status,
-            AssessmentBatch.status_options_for_select,
-            {selected: @assessment_batch.status },
-            class: "select w-full"
-        %>
-    </fieldset>
-  </div>
-
-  <div class="pr-8 pb-8 flex gap-4 justify-end mt-8">
+  <div class="pb-6 pt-4 flex gap-4 justify-end">
     <button type="button" class="btn" data-action="dialog#close">Cancel</button>
     <%= submit_tag "Create", class: "btn rounded-lg bg-primary-content text-base text-gray-100 focus:bg-primary border-none" %>
   </div>

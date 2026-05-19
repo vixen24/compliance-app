@@ -11,7 +11,7 @@ class Executive::SubsidiaryDashboardController < ApplicationController
   before_action :set_answer_status, only: %i[show]
 
   def show
-    @metrics = Dashboard.new(
+    @metrics = Executive::SubsidiaryDashboard.new(
       team: @team,
       assessment: @assessment,
       framework: @framework,
@@ -21,6 +21,9 @@ class Executive::SubsidiaryDashboardController < ApplicationController
       answer_status: @answer_status,
       status: @status
     ).call
+    puts "--------------------------------"
+    puts "yay"
+    puts @metrics.filtered_controls_per_page.inspect
   end
 
   private

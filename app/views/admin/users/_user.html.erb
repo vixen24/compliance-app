@@ -32,8 +32,10 @@
           more
         </button>
       <% end %>
+
+      <%# teams dialog box %>
+      <%= render "teams", user:user %>
     </div>
-    <%= render "teams", user:user %>
   </td>
   <td class="p-2 text-sm whitespace-nowrap">
     <%= user.role.capitalize %>

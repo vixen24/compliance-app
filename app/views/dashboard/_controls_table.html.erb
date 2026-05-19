@@ -16,7 +16,7 @@
         </div>
       </div>
       <div class="uppercase shrink <%= answer_status_classes(control.answer.status_label) %>">
-        <div class="truncate max-w-[60px] md:max-w-[100px] lg:max-w-[120px]  block">
+        <div class="truncate max-w-[60px] md:max-w-[100px] lg:max-w-[120px] block">
           <%= control.answer.status_label %>
         </div>
       </div>
@@ -64,7 +64,9 @@
           data:{ turbo_stream: true },
           class: "btn btn-sm #{'invisible' if @metrics.page <= 1}"
         %>
-        <span class="font-semibold"><%= @metrics.page %> of <%= total_pages %></span>
+        <span class="font-semibold">
+          <%= @metrics.page %> of <%= total_pages %>
+        </span>
         <%= link_to "Next", team_dashboard_path(
             team: @team.id,
             status: @metrics.status,

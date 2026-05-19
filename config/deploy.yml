@@ -13,7 +13,7 @@ servers:
   #     - 192.168.0.1
   #   cmd: bin/jobs
 
-# Use a different ssh user than root
+# How you connect to your server
 ssh:
   user: root
 
@@ -56,7 +56,7 @@ env:
 
     # Match this to any external database server to configure Active Record correctly
     # Use compliance_app-db for a db accessory server on same machine via local kamal docker network.
-    DB_HOST: 172.17.0.1
+    DB_HOST: compliance_app-db
     DB_PORT: 5432
     DB_USERNAME: deploy
     DB_NAME: compliance_production
@@ -104,20 +104,21 @@ builder:
 # Use accessory services (secrets come from .kamal/secrets).
 # accessories:
 #   db:
-#     image: mysql:8.0
-#     host: 192.168.0.2
+#     image: postgres:16
+#     host: compliance_app-db
 #     # Change to 3306 to expose port to the world instead of just local network.
-#     port: "127.0.0.1:3306:3306"
+#     # port: "127.0.0.1:3306:3306"
 #     env:
 #       clear:
-#         MYSQL_ROOT_HOST: '%'
+#         POSTGRES_USER: deploy
+#         POSTGRES_DB: compliance_production
 #       secret:
-#         - MYSQL_ROOT_PASSWORD
-#     files:
-#       - config/mysql/production.cnf:/etc/mysql/my.cnf
-#       - db/production.sql:/docker-entrypoint-initdb.d/setup.sql
+#         - DB_PASSWORD
+#     # files:
+#     #   - config/mysql/production.cnf:/etc/mysql/my.cnf
+#     #   - db/production.sql:/docker-entrypoint-initdb.d/setup.sql
 #     directories:
-#       - data:/var/lib/mysql
+#       - /mnt/HC_Volume_105389341/postgres:/var/lib/postgresql/data
 #   redis:
 #     image: redis:7.0
 #     host: 192.168.0.2

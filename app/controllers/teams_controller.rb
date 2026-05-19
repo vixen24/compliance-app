@@ -17,7 +17,7 @@ class TeamsController < ApplicationController
   end
 
   def create
-    @team = Team.new(team_params)
+    @team = Current.account.teams.new(team_params)
 
     if @team.save
       respond_to do |format|
@@ -56,6 +56,6 @@ class TeamsController < ApplicationController
   end
 
   def team_params
-    params.require(:team).permit(:name, :account_id, user_ids: [])
+    params.expect(team: [ :name, user_ids: [] ])
   end
 end

@@ -10,7 +10,7 @@ pin "turbo/stream_actions", to: "turbo/stream_actions.js"
 pin "plotly_theme", to: "lib/plotly_theme.js"
 pin "plotly.js-basic-dist" # @3.4.0
 pin "process" # @2.1.0
-pin "tom-select"
+pin "tom-select" # @2.5.2
 pin "lexxy", to: "lexxy.js"
 pin "@rails/activestorage", to: "activestorage.esm.js"
 pin "@rails/actiontext", to: "actiontext.esm.js"

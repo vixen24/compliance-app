@@ -190,7 +190,7 @@
           <!-- Legend with Linear Progress Bars -->
             <div class="legend-item">
               <div class="legend-header">
-                <div class="label">
+                <div class="flex items-center gap-2 text-sm font-semibold">
                   <span class="dot <%= color %>"></span> 
                   <%= button_to Answer.status_label(label).titleize,
                     team_dashboard_path,
@@ -204,8 +204,8 @@
                     class: "border-0 bg-transparent cursor-pointer" %>
                 </div>
 
-                <% width = number_to_percentage((value.to_f / @metrics.total[:control_by_framework]) * 100, precision: 0) || "0%" %>
-                <span class="label__numbers"><%= value %> (<%= width %>)</span>
+                <% width = number_to_percentage((value.to_f / @metrics.total_framework_excluding_not_applicable) * 100, precision: 0) || "0%" %>
+                <span><%= value %> (<%= width %>)</span>
               </div>
               <div class="progress">
                 <div class="progress-fill <%= color %>" style="width: <%= width %>"></div>
@@ -229,7 +229,7 @@
           <!-- Legend with Linear Progress Bars -->
             <div class="legend-item">
               <div class="legend-header">
-                <div class="label">
+                <div class="flex items-center gap-2 text-sm font-semibold">
                   <span class="dot <%= color %>"></span> 
                   <%= button_to Answer.state_key_from_label(label).titleize,
                     team_dashboard_path,
@@ -244,7 +244,7 @@
                 </div>
 
                 <% width = number_to_percentage((value.to_f / @metrics.total[:control_by_framework]) * 100, precision: 0) || "0%" %>
-                <span class="label__numbers"><%= value %> (<%= width %>)</span>
+                <span><%= value %> (<%= width %>)</span>
               </div>
               <div class="progress">
                 <div class="progress-fill <%= color %>" style="width: <%= width %>"></div>
