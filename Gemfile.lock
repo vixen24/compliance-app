@@ -440,7 +440,7 @@ DEPENDENCIES
   jbuilder
   kamal
   letter_opener
-  lexxy (~> 0.9.7.beta)
+  lexxy (~> 0.9.12.beta)
   memory_profiler
   mission_control-jobs
   pg
@@ -466,4 +466,4 @@ DEPENDENCIES
   web-console
 
 BUNDLED WITH
-   2.6.5
+   4.0.11
