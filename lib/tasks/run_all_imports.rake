@@ -14,6 +14,7 @@ namespace :imports do
       "import:kenya_answers",
       "import:liberia_answers",
       "import:mali_answers",
+      "import:mozambique_answers",
       "import:senegal_answers",
       "import:sierraleone_answers",
       "import:tanzania_answers",
