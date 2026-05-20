@@ -9,6 +9,7 @@ namespace :imports do
       "import:congobr_answers",
       "import:congodr_answers",
       "import:gabon_answers",
+      "import:ghana_answers",
       "import:guinea_answers",
       "import:ivorycoast_answers",
       "import:kenya_answers",
