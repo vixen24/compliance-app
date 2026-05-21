@@ -56,7 +56,7 @@ module Authentication
     end
 
     def after_authentication_url
-      session.delete(:return_to_after_authenticating) || entry_url
+      session.delete(:return_to_after_authenticating) || entry_url(script_name: Current.session.user.account.slug)
     end
 
     def redirect_authenticated_user

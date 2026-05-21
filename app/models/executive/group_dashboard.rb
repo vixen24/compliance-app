@@ -22,13 +22,13 @@ class Executive::GroupDashboard
   end
 
   def call
-    Rails.cache.fetch(cache_key, expires_in: 10.minutes) do
+      # Rails.cache.fetch(cache_key, expires_in: 10.minutes) do
       load_teams
       load_counts
       compute_percentages
       compute_compliant_extreme
       self
-    end
+    # end
   end
 
   private
@@ -40,23 +40,6 @@ class Executive::GroupDashboard
       framework&.id,
       Time.current.beginning_of_hour.to_i  # optional: refresh every hour
     ].join("/")
-  end
-
-  def compute_compliant_extreme
-    base = Team
-            .where(account_id: account.id)
-            .left_joins(assessments: :answers)
-            .group("teams.id")
-            .select("teams.id, teams.name, SUM(CASE WHEN answers.status = 'C' THEN 1 ELSE 0 END) AS compliant_count")
-
-    counts = base.map { |t| [ t.name, t.compliant_count.to_i ] }.to_h
-    min_count = counts.values.min
-    max_count = counts.values.max
-
-    least = counts.select { |_, v| v == min_count }.keys
-    most  = counts.select { |_, v| v == max_count }.keys
-
-    @compliant_extreme = CompliantExtreme.new(most, least)
   end
 
   def load_teams
@@ -103,6 +86,18 @@ class Executive::GroupDashboard
       @answers_counts_by_team[team_id][status.to_sym] += count if status
       @answers_counts_by_team[team_id][state.to_sym]  += count if state
     end
+  end
+
+  def compute_compliant_extreme
+    pairs = labels.zip(c_values).compact
+
+    max = pairs.max_by(&:last).last
+    min = pairs.min_by(&:last).last
+
+    most  = pairs.select { |_, v| v == max }.map(&:first)
+    least = pairs.select { |_, v| v == min }.map(&:first)
+
+    @compliant_extreme = CompliantExtreme.new(most, least)
   end
 
   def compute_percentages

@@ -1,0 +1,16 @@
+<div class="flex-1">
+  <label for="team_slug" class="text-sm font-medium text-base-content/80 text">
+    Subsidiary
+  </label>
+  <%= form_tag current_team_path, method: :patch, class: "contents", local: true do %>
+    <%= select_tag :team_slug,                                    
+        options_from_collection_for_select(
+          Current.user.teams.order(:name), 
+          :slug, 
+          :name, 
+          Current.team&.slug
+        ),
+        class: "select mt-1 w-full font-semibold",
+        onchange: "this.form.submit()" %>
+  <% end %>
+</div>
