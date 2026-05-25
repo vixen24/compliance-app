@@ -61,10 +61,10 @@ export default class extends Controller {
       plot_bgcolor: bg,
 
       title: {
-        text: '<span>Workflow Velocity' +
+        text: '<span style="font-size:20px; font-weight:400">Workflow Velocity</span>' +
           '<br><span style="font-size:14px; font-weight:normal">' +
           'Drafts, approvals, and blocks across the portfolio.' +
-          '</span></span>',
+          '</span>',
         x: 0.0175,
         xanchor: 'left',
         font: {

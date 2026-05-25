@@ -4,6 +4,10 @@
   cursor: not-allowed;
 }
 
+.btn:active {
+  background-color: inherit !important;
+}
+
 .btn-bg-red {
   background-color: var(--color-primary-content);
 

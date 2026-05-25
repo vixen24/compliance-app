@@ -1,12 +1,19 @@
 class Executive::GroupDashboard
-  attr_reader :account, :framework, :teams, :labels, :c_values, :ofi_values, :nc_values, :nas_values, :c_count, :ofi_count,
-      :nc_count, :nap_count, :app_count, :rej_count, :group_controls, :group_compliance, :assessment_coverage, :compliant_extreme
+  attr_reader :account, :framework, :status, :assessment_batch, :labels, :c_values, :ofi_values,
+              :nc_values, :nas_values, :c_count, :ofi_count, :nc_count, :nap_count, :app_count,
+              :rej_count, :group_controls, :group_compliance, :assessment_coverage, :compliant_extreme
 
-  CompliantExtreme = Struct.new(:most, :least)
+  CompliantExtreme = Struct.new(:most, :least) do
+    def initialize(most = nil, least = nil)
+      super(most || [], least || [])
+    end
+  end
 
-  def initialize(account:, framework: nil)
+  def initialize(account:, status:, framework: nil, assessment_batch:)
     @account   = account
+    @status = status
     @framework = framework
+    @assessment_batch = assessment_batch
     @labels        = []
     @c_values      = []
     @ofi_values    = []
@@ -19,11 +26,14 @@ class Executive::GroupDashboard
     @app_count     = []
     @rej_count     = []
     @group_controls = []
+    @group_compliance = 0
+    @assessment_coverage = 0
+    @compliant_extreme = CompliantExtreme.new
   end
 
   def call
       # Rails.cache.fetch(cache_key, expires_in: 10.minutes) do
-      load_teams
+      load_teams_from_account
       load_counts
       compute_percentages
       compute_compliant_extreme
@@ -42,17 +52,16 @@ class Executive::GroupDashboard
     ].join("/")
   end
 
-  def load_teams
-    @teams = Team
-              .where(account_id: account.id)
-              .order(:name)
-              .pluck(:id, :name)
+  def load_teams_from_account
+    @teams = @account.teams.order(:name).pluck(:id, :name)
   end
 
   def load_counts
-    team_ids = @teams.map(&:first)
-    assessments = Assessment
-                  .where(team_id: team_ids, status: "open")
+    return unless @assessment_batch.present?
+
+    assessments = @assessment_batch
+                  .assessments
+                  .where(status: @status)
                   .pluck(:id, :team_id)
 
     # Load controls count per team (filtered by framework if present)
@@ -61,7 +70,7 @@ class Executive::GroupDashboard
                       .where(assessments: { id: assessments.map(&:first) })
     controls_query = controls_query
                       .joins(control: :frameworks)
-                      .where(frameworks: { id: framework.id }) if framework.present?
+                      .where(frameworks: { id: @framework.id }) if @framework.present?
     @controls_count_by_team = controls_query
                               .group("assessments.team_id")
                               .count
@@ -75,7 +84,7 @@ class Executive::GroupDashboard
     if framework.present?
       answers_query = answers_query
                       .joins(assessment_control: { control: :frameworks })
-                      .where(frameworks: { id: framework.id })
+                      .where(frameworks: { id: @framework.id })
     end
 
     answers_counts = answers_query.group("assessments.team_id", :status, :state).count
@@ -88,32 +97,20 @@ class Executive::GroupDashboard
     end
   end
 
-  def compute_compliant_extreme
-    pairs = labels.zip(c_values).compact
-
-    max = pairs.max_by(&:last).last
-    min = pairs.min_by(&:last).last
-
-    most  = pairs.select { |_, v| v == max }.map(&:first)
-    least = pairs.select { |_, v| v == min }.map(&:first)
-
-    @compliant_extreme = CompliantExtreme.new(most, least)
-  end
-
   def compute_percentages
+    return unless @assessment_batch.present?
+
     @teams.each do |team_id, team_name|
       team_counts = @answers_counts_by_team[team_id] || { C: 0, OFI: 0, NC: 0, NA: 0, approved: 0, rejected: 0 }
       controls_count = @controls_count_by_team[team_id] || 0
       denominator = [ (controls_count - team_counts[:NA]), 1 ].max.to_f
 
-      # Chart data
       @labels        << team_name
       @c_values      << ((team_counts[:C].to_f   / denominator) * 100).round
       @ofi_values    << ((team_counts[:OFI].to_f / denominator) * 100).round
       @nc_values     << ((team_counts[:NC].to_f  / denominator) * 100).round
       @nas_values    << (((controls_count - team_counts.values_at(:C, :OFI, :NC, :NA).sum) / denominator) * 100).round
 
-      # Raw counts for tables/other metrics
       @c_count   << team_counts[:C]
       @ofi_count << team_counts[:OFI]
       @nc_count  << team_counts[:NC]
@@ -123,15 +120,28 @@ class Executive::GroupDashboard
       @group_controls << controls_count
     end
 
-    def safe_percentage(numerator, denominator)
-      return 0 if denominator.to_f <= 0
-      (numerator.to_f / denominator) * 100
-    end
-
     total_controls = @group_controls.sum.to_f
     denominator = total_controls - @nap_count.sum.to_f
 
     @group_compliance = safe_percentage(@c_count.sum, denominator)
     @assessment_coverage = safe_percentage(@app_count.sum + @rej_count.sum, total_controls)
+  end
+
+  def safe_percentage(numerator, denominator)
+    return 0 if denominator.to_f <= 0
+    (numerator.to_f / denominator) * 100
+  end
+
+  def compute_compliant_extreme
+    return unless @assessment_batch.present?
+    return if c_values.all?(&:zero?)
+
+    pairs = labels.zip(c_values)
+    max = pairs.max_by(&:last).last
+    min = pairs.min_by(&:last).last
+    most  = pairs.select { |_, v| v == max }.map(&:first)
+    least = pairs.select { |_, v| v == min }.map(&:first)
+
+    @compliant_extreme = CompliantExtreme.new(most, least)
   end
 end

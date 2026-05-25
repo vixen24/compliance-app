@@ -5,13 +5,6 @@
 <% end %>
 
 <div class="flex flex-col">
-  <div class="border-b border-base-300">
-    <!--Back button -->
-    <%= link_to "javascript:history.back()", class: "mx-4 my-2 flex items-center gap-1 hover:bg-gray-200 w-fit rounded-lg py-1 px-3" do %>
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" class="w-4 h-4"><path d="M10 19l-7-7 7-7"/><path d="M3 12h18"/></svg>
-      Back
-    <% end %>
-  </div>
   <header class="m-6">
     <div class="flex gap-6">
       <!--Title-->
@@ -120,7 +113,7 @@
             CONTROLS
           </div>
         </div>
-        <div class="font-bold text-4xl mt-2">
+        <div class="font-semibold text-2xl mt-2">
           <%= @metrics.total[:control_by_framework] %>
         </div>
         <div class="text-sm text-base-content/80 mt-2">
@@ -141,7 +134,7 @@
               NOT APPLICABLE
             </div>
           </div>
-          <div class="font-bold text-4xl mt-2">
+          <div class="font-semibold text-2xl mt-2">
             <%= @metrics.answer_status_count&.fetch("NA", 0) %>
           </div>
           <div class="text-sm text-base-content/80 mt-2">
@@ -162,7 +155,7 @@
             LONGEST AWAITING APPROVAL
           </div>
         </div>
-        <div class="font-bold text-4xl mt-2">
+        <div class="font-semibold text-2xl mt-2">
           <%= pluralize((Time.current.to_date - (@metrics.oldest_submitted_answer&.to_date || Time.current.to_date)).to_i, "day") %>
 
         </div>
@@ -183,7 +176,7 @@
             LATEST SUBMISSION
           </div>
         </div>
-        <div class="font-bold text-4xl mt-2">
+        <div class="font-semibold text-2xl mt-2">
           <%= pluralize((Time.current.to_date  - (@metrics.earliest_submitted_answer&.to_date || Time.current.to_date)).to_i, "day") %>
         </div>
         <div class="text-sm text-base-content/80 mt-2">

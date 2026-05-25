@@ -1,0 +1,49 @@
+<%= form_with url: executive_group_dashboard_path, 
+              method: :get, 
+              local: true,
+              data: {  
+                controller: "autosave", 
+                action: "change->autosave#debouncedSubmit" 
+              } do |form| %>
+
+  <div class="flex rounded-xl p-4 px-6 mx-6 mb-6 border 
+              border-base-200 items-end shadow-sm">
+    <div class="self-center inline-flex gap-2">
+      <%= render "icons/filter" %>
+      <span class="font-medium text-base-content/95">
+        Filters
+      </span>
+      <div class="w-px h-[26px] mx-2.5 bg-base-content/30"></div>
+    </div>
+
+    <div class="flex gap-8 w-full ml-2">   
+
+      <fieldset class="">
+        <%= form.select :status,
+          Assessment.statuses.keys.map { |k| [k.humanize, k] },
+          { selected: @status },
+          {
+            class: "select min-w-[240px] bg-base-200 rounded-lg"
+          } %>
+      </fieldset>
+
+      <fieldset class="w-full">
+        <%= form.select :id,
+          @assessment_batches.map { |ab| [ab.name, ab.id] },
+          { selected: @assessment_batch&.id },
+          {
+            class: "select w-full bg-base-200 rounded-lg"
+          } %>
+      </fieldset>
+      
+      <fieldset class="w-full">
+        <%= form.select :framework,
+          (@frameworks || []).map { |f| [f.code, f.id] },
+          { include_blank: "All Frameworks", selected: @framework&.id },
+          {
+            class: "select w-full bg-base-200 rounded-lg"
+          } %>
+      </fieldset>
+    </div>
+  </div>
+<% end %>

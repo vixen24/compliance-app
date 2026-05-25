@@ -18,7 +18,7 @@
     <div>
       <%= form.label :year, "Year", class: "label text-sm font-semibold font-semibold" %>
       <%= form.select :year,
-        options_for_select((Date.current.year - 1..Date.current.year + 1).to_a, @assessment_batch.year),
+        options_for_select((Date.current.year - 2..Date.current.year + 1).to_a, @assessment_batch.year),
         {prompt: "Select year"},
         required: true,
         class: "select w-full" %>
@@ -45,7 +45,7 @@
       %>
       <%= field_error(@assessment_batch, :framework) %>
     </div>
-      <%# <legend class="text-sm font-semibold font-medium text-base-content/80"> Subsidiary </legend> %>
+      
     <div>
       <% if @teams.present?%>
       <%= form.label :name, "Subsidiary", class: "label text-sm font-semibold" %>
@@ -61,7 +61,12 @@
         %>
         <%= field_error(@assessment_batch, :team) %>
       <% elsif %>
-        <div><%= link_to "Click to create subsidiary", teams_path, class: "text-sm font-semibold hover:text-primary-content", data:{turbo: false} %></div>
+        <div>
+          <%= link_to "Click to create subsidiary", 
+              teams_path, 
+              class: "text-sm font-semibold hover:text-primary-content", 
+              data:{turbo: false} %>
+        </div>
       <% end %>
     </div>
     

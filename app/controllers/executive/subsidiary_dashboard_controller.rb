@@ -21,9 +21,6 @@ class Executive::SubsidiaryDashboardController < ApplicationController
       answer_status: @answer_status,
       status: @status
     ).call
-    puts "--------------------------------"
-    puts "yay"
-    puts @metrics.filtered_controls_per_page.inspect
   end
 
   private

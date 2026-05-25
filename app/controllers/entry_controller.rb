@@ -13,7 +13,7 @@ class EntryController < ApplicationController
       return
     end
 
-    team = Current.team || user.teams.first
+    team = Current.team || user.teams.order(:name).first
 
     if team.present?
       redirect_to team_dashboard_path(team, script_name: user.account.slug)

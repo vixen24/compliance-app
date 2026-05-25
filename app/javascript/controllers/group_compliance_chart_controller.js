@@ -130,8 +130,9 @@ export default class extends Controller {
           color: font
         }
       },
+      responsive: true,
       autosize: true,
-      height: 580
+      height: 540
     };
 
     Plotly.newPlot(this.element, data, layout, { responsive: true });

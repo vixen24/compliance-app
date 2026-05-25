@@ -61,10 +61,10 @@ export default class extends Controller {
       plot_bgcolor: bg,
 
       title: {
-        text: '<span>Compliance Overview' +
+        text: '<span style="font-size:20px; font-weight:400">Compliance Overview</span>' +
           '<br><span style="font-size:14px; font-weight:normal;">' +
           'Track posture across standards and categories' +
-          '</span></span>',
+          '</span>',
         x: 0.0175,
         xanchor: 'left',
         font: {

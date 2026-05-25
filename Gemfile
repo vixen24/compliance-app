@@ -17,7 +17,6 @@ gem "solid_cable"
 gem "bootsnap", require: false
 gem "kamal", require: false
 gem "thruster", require: false           # Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
-# gem "sqlite3", ">= 2.1"
 gem "pg"
 gem "mission_control-jobs"
 gem "roo"
@@ -41,7 +40,8 @@ group :development do
 end
 
 group :test do
-  gem "capybara"                         # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
+  gem "sqlite3", ">= 2.1"
+  gem "capybara"                                                      # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "selenium-webdriver"
 end
 

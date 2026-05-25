@@ -5,18 +5,11 @@
 <% end %>
 
 <div class="flex flex-col">
-  <div class="border-b border-base-300">
-    <!--Back button -->
-    <%= link_to "javascript:history.back()", class: "mx-4 my-2 flex items-center gap-1 hover:bg-gray-200 w-fit rounded-lg py-1 px-3" do %>
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" class="w-4 h-4"><path d="M10 19l-7-7 7-7"/><path d="M3 12h18"/></svg>
-      Back
-    <% end %>
-  </div>
   <header class="m-6">
     <div class="flex gap-6">
       <!--Title-->
       <div class="pr-2 flex-2">
-        <h2 class="text-3xl font-black pt-2"> Information Security Compliance at-a-Glance </h2>
+        <h2 class="text-3xl font-black pt-2 dark:text-white"> Information Security Compliance at-a-Glance </h2>
 
         <p class="py-1">
           <div class="text-base-content/95">Monitor compliance posture and approval flow. Use filters to spotlight risk,  </div>
@@ -47,8 +40,8 @@
     <div class="rounded-lg px-8 pt-4 pb-6 mx-6 border border-base-300/60 items-end shadow-md bg-base-200">
       <div>
         <span class="flex items-center gap-1 pb-1">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d51709" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"> <path d="M4 6h16M7 12h10M10 18h4"/> </svg>
-          <span class="font-semibold"> FILTERS </span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"> <path d="M4 6h16M7 12h10M10 18h4"/> </svg>
+          <span class="font-medium text-sm"> FILTERS </span>
         </span>
       </div>
         
@@ -96,11 +89,11 @@
       </div>
       <div>
         <div class="flex items-center justify-between">
-          <div class="text-sm font-semibold">
+          <div class="text-sm text-base-content/85 font-semibold">
             CONTROLS
           </div>
         </div>
-        <div class="font-bold text-4xl mt-2">
+        <div class="font-semibold text-2xl mt-2">
           <%= @metrics.total[:control_by_framework] %>
         </div>
         <div class="text-sm text-base-content/80 mt-2">
@@ -117,11 +110,11 @@
         </div>
         <div>
           <div class="flex items-center justify-between">
-            <div class="text-sm font-semibold">
+            <div class="text-sm text-base-content/85 font-semibold">
               NOT APPLICABLE
             </div>
           </div>
-          <div class="font-bold text-4xl mt-2">
+          <div class="font-semibold text-2xl mt-2">
             <%= @metrics.answer_status_count&.fetch("NA", 0) %>
           </div>
           <div class="text-sm text-base-content/80 mt-2">
@@ -138,11 +131,11 @@
       </div>
       <div>
         <div class="flex items-center justify-between">
-          <div class="text-sm font-semibold">
+          <div class="text-sm text-base-content/85 font-semibold">
             LONGEST AWAITING APPROVAL
           </div>
         </div>
-        <div class="font-bold text-4xl mt-2">
+        <div class="font-semibold text-2xl mt-2">
           <%= pluralize((Time.current.to_date - (@metrics.oldest_submitted_answer&.to_date || Time.current.to_date)).to_i, "day") %>
 
         </div>
@@ -159,11 +152,11 @@
       </div>
       <div>
         <div class="flex items-center justify-between">
-          <div class="text-sm font-semibold">
+          <div class="text-sm text-base-content/85 font-semibold">
             LATEST SUBMISSION
           </div>
         </div>
-        <div class="font-bold text-4xl mt-2">
+        <div class="font-semibold text-2xl mt-2">
           <%= pluralize((Time.current.to_date  - (@metrics.earliest_submitted_answer&.to_date || Time.current.to_date)).to_i, "day") %>
         </div>
         <div class="text-sm text-base-content/80 mt-2">
@@ -177,7 +170,7 @@
   <div class="flex w-full flex-wrap min-[1800]:flex-nowrap gap-8 p-6 mt-0">
 
     <!--Compliance chart-->
-    <div class="flex flex-nowrap max-[800]:flex-wrap flex-1 border border-base-300/60 self-start shadow-md transition-shadow px-4 py-1 rounded-lg w-auto">
+    <div class="flex flex-nowrap max-[800]:flex-wrap flex-1 border border-base-300/60 self-start shadow-md transition-shadow px-4 rounded-lg w-auto">
       <div data-controller="compliance-chart" data-compliance-chart-values-value="<%= @metrics.status_values.to_json %>" 
           data-compliance-chart-labels-value="<%= @metrics.status_labels.to_json %>" class="flex-none">
       </div>
@@ -216,7 +209,7 @@
     </div>
     
     <!--Workflow chart-->
-    <div class="flex flex-nowrap max-[800]:flex-wrap flex-1 border border-base-300/60 self-center shadow-md transition-shadow px-4 py-1 rounded-lg w-auto">
+    <div class="flex flex-nowrap max-[800]:flex-wrap flex-1 border border-base-300/60 self-center shadow-md transition-shadow px-4 rounded-lg w-auto">
       <div data-controller="workflow-chart" data-workflow-chart-values-value="<%= @metrics.state_values.to_json %>" 
           data-workflow-chart-labels-value="<%= @metrics.state_labels.to_json %>" class="flex-none">
       </div>
