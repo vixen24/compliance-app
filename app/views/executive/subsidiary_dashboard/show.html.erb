@@ -27,6 +27,9 @@
                         controller: "autosave", 
                         action: "change->autosave#debouncedSubmit" 
                       } do |form| %>
+            <%= hidden_field_tag :status, @status %>
+            <%= hidden_field_tag :id, @assessment&.id %>
+            <%= hidden_field_tag :framework, @framework&.id %>
           
           <fieldset class="mt-2">              
             <legend class="text-white font-medium mb-1.5">

@@ -34,14 +34,14 @@ class Executive::GroupDashboard
   end
 
   def call
-      # Rails.cache.fetch(cache_key, expires_in: 10.minutes) do
+    Rails.cache.fetch(cache_key, expires_in: 10.minutes) do
       load_base_data
       load_control_counts
       load_answer_counts
       compute_percentages
       compute_compliant_extreme
       self
-    # end
+    end
   end
 
   private
@@ -49,13 +49,16 @@ class Executive::GroupDashboard
   def cache_key
     [
       "executive/group_dashboard",
-      account.id,
-      framework&.id,
-      Time.current.beginning_of_hour.to_i  # optional: refresh every hour
-    ].join("/")
+      account&.cache_key_with_version,
+      assessment_batch&.cache_key_with_version,
+      framework&.cache_key_with_version,
+      status
+    ].compact.join("/")
   end
 
   def load_base_data
+    return unless @assessment_batch.present?
+
     @teams = @assessment_batch
               .assessments
               .joins(:team)

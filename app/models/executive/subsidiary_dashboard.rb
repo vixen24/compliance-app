@@ -23,7 +23,7 @@ class Executive::SubsidiaryDashboard
   def call
     initialize_defaults
 
-      # Rails.cache.fetch(cache_key, expires_in: 10.minutes) do
+    Rails.cache.fetch(cache_key, expires_in: 10.minutes) do
       load_assessments_with_frameworks
       load_all_control_data
       preload_framework_controls
@@ -32,7 +32,7 @@ class Executive::SubsidiaryDashboard
       total_framework_excluding_NA
       compute_compliance_percentage
       self
-    # end
+    end
   end
 
   private
