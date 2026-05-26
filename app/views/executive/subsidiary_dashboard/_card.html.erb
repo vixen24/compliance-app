@@ -1,0 +1,22 @@
+<div class="p-4 rounded-xl shadow border border-base-300 
+            hover:shadow-lg transition-shadow duration-300 
+            relative flex items-start gap-6">
+
+  <%= render "icons/#{card[:icon]}" %>
+
+  <div>
+    <div class="flex items-center justify-between">
+      <div class="text-sm font-semibold text-base-content/85">
+        <%= card[:title] %>
+      </div>
+    </div>
+
+    <div class="font-semibold dark:text-white text-2xl mt-2">
+      <%= card[:value] %>
+    </div>
+
+    <div class="text-sm text-base-content/80 mt-2">
+      <%= card[:description] %>
+    </div>
+  </div>
+</div>

@@ -38,17 +38,17 @@ module GroupDashboardHelper
       },
 
       {
-        title: "MOST COMPLIANT SUBSIDIARIES",
-        value: metrics.c_values&.count { |v| v > 70 },
-        description: "Subsidiaries with 70% and above",
-        icon: "shield-check"
-      },
-
-      {
         title: "NUMBER OF SUBSIDIARIES",
         value: metrics.assessment_batch&.assessments&.count || 0,
         description: "Subsidiaries in view",
         icon: "landmark"
+      },
+
+      {
+        title: "MOST COMPLIANT SUBSIDIARIES",
+        value: metrics.c_values&.count { |v| v > 70 },
+        description: "Subsidiaries with 70% and above",
+        icon: "shield-check"
       }
     ]
   end

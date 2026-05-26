@@ -9,6 +9,8 @@ class Executive::GroupDashboard
     end
   end
 
+  BASE_COUNTS = { C: 0, OFI: 0, NC: 0, NA: 0, approved: 0, rejected: 0 }.freeze
+
   def initialize(account:, status:, framework: nil, assessment_batch:)
     @account   = account
     @status = status
@@ -33,8 +35,9 @@ class Executive::GroupDashboard
 
   def call
       # Rails.cache.fetch(cache_key, expires_in: 10.minutes) do
-      load_teams_from_account
-      load_counts
+      load_base_data
+      load_control_counts
+      load_answer_counts
       compute_percentages
       compute_compliant_extreme
       self
@@ -52,33 +55,42 @@ class Executive::GroupDashboard
     ].join("/")
   end
 
-  def load_teams_from_account
-    @teams = @account.teams.order(:name).pluck(:id, :name)
+  def load_base_data
+    @teams = @assessment_batch
+              .assessments
+              .joins(:team)
+              .distinct
+              .order("teams.name")
+              .pluck("teams.id", "teams.name")
+
+    @assessment_ids = @assessment_batch
+                        .assessments
+                        .pluck(:id)
   end
 
-  def load_counts
+  def load_control_counts
     return unless @assessment_batch.present?
 
-    assessments = @assessment_batch
-                  .assessments
-                  .where(status: @status)
-                  .pluck(:id, :team_id)
+    scope = AssessmentControl
+              .joins(:assessment)
+              .where(assessments: { id: @assessment_ids })
 
-    # Load controls count per team (filtered by framework if present)
-    controls_query = AssessmentControl
-                      .joins(:assessment)
-                      .where(assessments: { id: assessments.map(&:first) })
-    controls_query = controls_query
-                      .joins(control: :frameworks)
-                      .where(frameworks: { id: @framework.id }) if @framework.present?
-    @controls_count_by_team = controls_query
-                              .group("assessments.team_id")
-                              .count
+    if @framework.present?
+      scope = scope
+                .joins(control: :frameworks)
+                .where(frameworks: { id: @framework.id })
+    end
+
+    @controls_count_by_team = scope.group("assessments.team_id").count
+  end
+
+  def load_answer_counts
+    return unless @assessment_batch.present?
 
     # Load answers counts grouped by status and state per team
     answers_query = Answer
                     .joins(assessment_control: :assessment)
-                    .where(assessment_controls: { assessment_id: assessments.map(&:first) })
+                    .where(assessment_controls: { assessment_id: @assessment_ids })
                     .where(state: "approved")
 
     if framework.present?
@@ -137,8 +149,10 @@ class Executive::GroupDashboard
     return if c_values.all?(&:zero?)
 
     pairs = labels.zip(c_values)
+
     max = pairs.max_by(&:last).last
     min = pairs.min_by(&:last).last
+
     most  = pairs.select { |_, v| v == max }.map(&:first)
     least = pairs.select { |_, v| v == min }.map(&:first)
 
