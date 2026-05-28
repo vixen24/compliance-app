@@ -55,10 +55,12 @@ Rails.application.configure do
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
-  # config.action_mailer.raise_delivery_errors = false
+  onfig.action_mailer.raise_delivery_errors = true
 
   # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "cybersecomply.com" }
+  # config.action_mailer.default_url_options = { host: "cybersecomply.com" }
+  # config.action_mailer.delivery_method = :postmark
+  # config.action_mailer.postmark_settings = { api_token: Rails.application.credentials.dig(:postmark, :api_token) }
 
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via rails credentials:edit.
   # config.action_mailer.smtp_settings = {

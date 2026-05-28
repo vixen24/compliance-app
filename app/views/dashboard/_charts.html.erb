@@ -1,0 +1,80 @@
+<div class="flex w-full flex-wrap min-[1800]:flex-nowrap gap-8 px-6 pb-0 pt-8">
+
+  <!--Compliance chart-->
+  <div class="flex flex-nowrap max-[800]:flex-wrap flex-1 border border-base-300/60 self-start shadow-md transition-shadow px-4 rounded-lg w-auto">
+    <div data-controller="compliance-chart" data-compliance-chart-values-value="<%= @metrics.status_values.to_json %>" 
+        data-compliance-chart-labels-value="<%= @metrics.status_labels.to_json %>" class="flex-none">
+    </div>
+
+    <div class="flex-1 min-w-0 overflow-hidden pr-4 flex flex-col gap-2 place-content-center justify-center">
+
+      <% colors = %w[green yellow red blue] %>
+
+      <% @metrics.status_labels&.zip(@metrics.status_values, colors)&.each do |label, value, color| %>
+        <!-- Legend with Linear Progress Bars -->
+          <div class="legend-item">
+            <div class="legend-header">
+              <div class="flex items-center gap-2 text-sm font-semibold">
+                <span class="dot <%= color %>"></span> 
+                <%= button_to Answer.status_label(label).titleize,
+                  team_dashboard_path,
+                  method: :get,
+                  params: { 
+                    status: @metrics.status,
+                    id: @metrics.assessment&.id,
+                    framework: @metrics.framework,
+                    answer_status: label
+                    },
+                  class: "border-0 bg-transparent cursor-pointer" %>
+              </div>
+
+              <% width = number_to_percentage((value.to_f / @metrics.total_framework_excluding_not_applicable) * 100, precision: 0) || "0%" %>
+              <span><%= value %> (<%= width %>)</span>
+            </div>
+            <div class="progress">
+              <div class="progress-fill <%= color %>" style="width: <%= width %>"></div>
+            </div>
+          </div>
+        <% end %>
+    </div>
+  </div>
+  
+  <!--Workflow chart-->
+  <div class="flex flex-nowrap max-[800]:flex-wrap flex-1 border border-base-300/60 self-center shadow-md transition-shadow px-4 rounded-lg w-auto">
+    <div data-controller="workflow-chart" data-workflow-chart-values-value="<%= @metrics.state_values.to_json %>" 
+        data-workflow-chart-labels-value="<%= @metrics.state_labels.to_json %>" class="flex-none">
+    </div>
+
+    <div class="flex-1 min-w-0 overflow-hidden pr-4 flex flex-col gap-2 place-content-center justify-center">
+
+      <% colors = %w[green yellow red blue] %>
+
+      <% @metrics.state_labels&.zip(@metrics.state_values, colors)&.each do |label, value, color| %>
+        <!-- Legend with Linear Progress Bars -->
+          <div class="legend-item">
+            <div class="legend-header">
+              <div class="flex items-center gap-2 text-sm font-semibold">
+                <span class="dot <%= color %>"></span> 
+                <%= button_to Answer.state_key_from_label(label).titleize,
+                  team_dashboard_path,
+                  method: :get,
+                  params: { 
+                    status: @metrics.status,
+                    id: @metrics.assessment&.id,
+                    framework: @metrics.framework,
+                    answer_state: label
+                  },
+                  class: "border-0 bg-transparent cursor-pointer" %>
+              </div>
+
+              <% width = number_to_percentage((value.to_f / @metrics.total[:control_by_framework]) * 100, precision: 0) || "0%" %>
+              <span><%= value %> (<%= width %>)</span>
+            </div>
+            <div class="progress">
+              <div class="progress-fill <%= color %>" style="width: <%= width %>"></div>
+            </div>
+          </div>
+        <% end %>
+    </div>
+  </div> 
+</div>

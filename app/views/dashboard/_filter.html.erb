@@ -1,0 +1,50 @@
+<%= form_with url: team_dashboard_path, 
+              method: :get, 
+              local: true, 
+              data: { 
+                controller: "autosave", 
+                action: "change->autosave#debouncedSubmit" 
+              } do |form| %>
+
+  <div class="rounded-lg px-8 pt-4 pb-6 mx-6 border border-base-300/60 items-end shadow-md bg-base-200">
+    <div>
+      <span class="flex items-center gap-1 pb-1">
+        <%= render "icons/filter" %>
+        <span class="font-medium text-sm"> Filter</span>
+      </span>
+    </div>
+      
+    <div class="grid grid-cols-[1fr_1fr_1fr] gap-8">
+      <!-- Assessment Status -->
+      <fieldset>
+        <legend class="text-sm mb-1 text-base-content/80">Assessment State</legend>
+        <%= form.select :status,
+          Assessment.statuses.keys.map { |k| [k.humanize, k] },
+          { selected: @metrics.status },
+          {
+            class: "select w-full"
+          } %>
+      </fieldset>
+      <!-- Assessment Name -->
+      <fieldset>
+        <legend class="text-sm mb-1 text-base-content/80">Assessment Name</legend>
+        <%= form.select :id,
+          @metrics.assessments.map { |a| [a.name, a.id] },
+          { selected: @metrics.assessment&.id || "" },
+          {
+            class: "select w-full"
+          } %>
+      </fieldset>
+      <!-- Framework -->
+      <fieldset>
+        <legend class="text-sm mb-1 text-base-content/80">Framework</legend>
+        <%= form.select :framework,
+          (@metrics.frameworks || []).map { |f| [f.code, f.id] },
+          { include_blank: "All Frameworks", selected: @metrics.framework&.id },
+          {
+            class: "select w-full"
+          } %>
+      </fieldset>
+    </div>
+  </div>
+<% end %>

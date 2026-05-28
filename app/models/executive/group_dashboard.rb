@@ -1,7 +1,8 @@
 class Executive::GroupDashboard
-  attr_reader :account, :framework, :status, :assessment_batch, :labels, :c_values, :ofi_values,
-              :nc_values, :nas_values, :c_count, :ofi_count, :nc_count, :nap_count, :app_count,
-              :rej_count, :group_controls, :group_compliance, :assessment_coverage, :compliant_extreme
+  attr_reader :account, :framework, :status, :assessment_batch, :labels, :c_values,
+              :ofi_values, :nc_values, :nas_values, :c_count, :ofi_count, :nc_count,
+              :nap_count, :app_count, :rej_count, :group_controls, :group_compliance,
+              :assessment_coverage, :compliant_extreme
 
   CompliantExtreme = Struct.new(:most, :least) do
     def initialize(most = nil, least = nil)

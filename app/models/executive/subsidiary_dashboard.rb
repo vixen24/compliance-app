@@ -140,6 +140,7 @@ class Executive::SubsidiaryDashboard
     # Use one query with MIN/MAX aggregation instead of 2 separate queries
     result = Answer.where(assessment_id: assessment.id)
                    .where.not(updated_at: nil)
+                   .where(state: "submitted")
                    .pick(
                      Arel.sql("MIN(updated_at) as oldest"),
                      Arel.sql("MAX(updated_at) as earliest")

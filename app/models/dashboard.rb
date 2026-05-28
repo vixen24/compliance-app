@@ -79,7 +79,6 @@ class Dashboard
   def load_assessments_with_frameworks
     @assessments = team.assessments
                       .where(status: status)
-                      .includes(:frameworks)  # Eager load to avoid N+1
                       .order(created_at: :desc)
 
     @frameworks = assessment&.frameworks
@@ -140,6 +139,7 @@ class Dashboard
     # Use one query with MIN/MAX aggregation instead of 2 separate queries
     result = Answer.where(assessment_id: assessment.id)
                    .where.not(updated_at: nil)
+                   .where(state: "submitted")
                    .pick(
                      Arel.sql("MIN(updated_at) as oldest"),
                      Arel.sql("MAX(updated_at) as earliest")

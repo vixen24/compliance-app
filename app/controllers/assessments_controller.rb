@@ -81,11 +81,11 @@ class AssessmentsController < ApplicationController
 
   def ensure_viewable!
     return if Current.user.can_view_assessment?
-    redirect_back fallback_location: entry_url, alert: "Access is denied!"
+    redirect_back fallback_location: entry_url, alert: "Permission denied"
   end
 
   def ensure_assessment_is_open!
      return if @assessment.open?
-     redirect_back fallback_location: entry_url, alert: "Accessment is closed!"
+     redirect_back fallback_location: entry_url, alert: "Assessment is closed"
   end
 end

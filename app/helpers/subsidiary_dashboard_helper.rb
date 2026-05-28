@@ -35,17 +35,24 @@ module SubsidiaryDashboardHelper
 
       {
         title: "LONGEST AWAITING APPROVAL",
-        value: pluralize((Time.current.to_date - (metrics.oldest_submitted_answer&.to_date || Time.current.to_date)).to_i, "day"),
+        value: days_ago(metrics.oldest_submitted_answer),
         description: "Oldest submission awaiting approval",
         icon: "clock"
       },
 
       {
         title: "LATEST SUBMISSION",
-        value: pluralize((Time.current.to_date - (metrics.earliest_submitted_answer&.to_date || Time.current.to_date)).to_i, "day"),
+        value: days_ago(metrics.earliest_submitted_answer),
         description: "Most recent submission",
         icon: "send"
       }
     ]
+  end
+
+  private
+
+  def days_ago(date)
+    days = (Time.current.to_date - (date&.to_date || Time.current.to_date)).to_i
+    pluralize(days, "day")
   end
 end

@@ -6,13 +6,12 @@ class Answer < ApplicationRecord
   belongs_to :assessment_control
   belongs_to :user
 
+  scope :approved, -> { where(state: :approved) }
+  scope :compliant, -> { where(status: "C") }
+
   scope :for_frameworks, ->(frameworks = nil) {
     framework_ids = Array(frameworks).map { |f| f.respond_to?(:id) ? f.id : f }.compact
     framework_ids.any? ? joins(assessment_control: { control: :frameworks }).where(frameworks: { id: framework_ids }).distinct : all
-  }
-
-  scope :for_open_assessment_for_team, ->(team) {
-    joins(assessment_control: :assessment).where(assessments: { status: "open", team_id: team.id })
   }
 
   scope :for_assessment_control, ->(assessment) {
@@ -23,11 +22,8 @@ class Answer < ApplicationRecord
     joins(assessment_control: { control: :framework_controls }).where(framework_controls: { framework_id: framework.id }).distinct
   }
 
-  scope :approved, -> { where(state: :approved) }
-  scope :compliant, -> { where(status: "C") }
-
   validates :assessment_control_id, uniqueness: { scope: :assessment_id }
-  validates :url, format: { with: URI::DEFAULT_PARSER.make_regexp, message: "must be a valid URL" }, allow_blank: true
+  validates :url, format: { with: URI::DEFAULT_PARSER.make_regexp, message: "must have a valid URL" }, allow_blank: true
 
   STATUS_LABELS = {
     "C"   => "compliant",
@@ -57,23 +53,10 @@ class Answer < ApplicationRecord
     end
 
     def upsert_from(attrs)
-      find_or_initialize_by(assessment_control_id: attrs[:assessment_control_id], assessment_id: attrs[:assessment_id]).tap { |a| a.assign_attributes(attrs) }
-    end
-
-    def count_by(attribute, assessment:, framework: nil, only_approved: false)
-      scope = approved if only_approved
-      scope = scope.for_assessment_control(assessment) if only_approved
-      scope = for_assessment_control(assessment) unless only_approved
-      scope = scope.for_framework_control(framework) if framework.present?
-      scope.group(attribute)
-    end
-
-    def oldest_submitted_for_assessment(assessment_id)
-      where(assessment_id: assessment_id, state: :submitted) .order(:created_at) .pick(:created_at)
-    end
-
-    def earliest_submitted_for_assessment(assessment_id)
-      where(assessment_id: assessment_id, state: :submitted).order(created_at: :desc).pick(:created_at)
+      find_or_initialize_by(
+        assessment_control_id: attrs[:assessment_control_id],
+        assessment_id: attrs[:assessment_id]
+      ).tap { |a| a.assign_attributes(attrs) }
     end
   end
 

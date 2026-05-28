@@ -39,7 +39,7 @@ class Executive::GroupDashboardController < ApplicationController
   end
 
   def set_framework
-    @framework = @assessment_batch.assessments.first.frameworks&.find(params[:framework]) if params[:framework].present?
+    @framework = @assessment_batch&.assessments&.first&.frameworks&.find(params[:framework]) if params[:framework].present?
   end
 
   def set_frameworks

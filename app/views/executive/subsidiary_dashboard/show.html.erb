@@ -1,4 +1,4 @@
-<% content_for(:title) { "Subsidiary Dashbaord" } %>
+<% content_for(:title) { "Subsidiary Dashboard" } %>
 
 <% content_for :left_sidebar do %>
   <%= render "executive/shared/left_sidebar" %>
@@ -18,8 +18,8 @@
         </p>
       </div>
 
+      <!-- Team/Subsidiary -->
       <div class="bg-primary-content/95 py-4 px-5 rounded-2xl flex-1">
-        <!-- Team/Subsidiary -->
         <%= form_with url: executive_subsidiary_dashboard_path, 
                       method: :get, 
                       local: true, 
@@ -35,7 +35,7 @@
             <legend class="text-white font-medium mb-1.5">
               Select a country 
             </legend>
-            <label for="team" class="select relative w-full">
+            <label for="team" class="select relative w-full pl-2">
               <%= render "icons/globe" %>
               <%= form.select :team,
                 Current.account.teams.order(:name).map { |t| [t.name, t.slug] },
@@ -65,52 +65,7 @@
     </div>
   </header>
 
-  <!--Filters-->
-  <%= form_with url: executive_subsidiary_dashboard_path, method: :get, local: true,
-    data: { controller: "autosave", action: "change->autosave#debouncedSubmit" } do |form| %>
-    <%= hidden_field_tag :team, @team&.slug %>
-
-    <div class="flex rounded-xl p-4 px-6 mx-6 mb-6 border 
-              border-base-200 items-end shadow-sm">
-      <div class="self-center inline-flex gap-2">
-          <%= render "icons/filter" %>
-          <span class="font-medium text-base-content/95"> 
-            Filters 
-          </span>
-          <div class="w-px h-[26px] mx-2.5 bg-base-content/30"></div>
-      </div>
-        
-      <div class="flex gap-8 w-full ml-2">
-        
-        <fieldset>
-          <%= form.select :status,
-            Assessment.statuses.keys.map { |k| [k.humanize, k] },
-            { selected: @status },
-            {
-              class: "select min-w-[240px] bg-base-200 rounded-lg"
-            } %>
-        </fieldset>
-        
-        <fieldset class="w-full">
-          <%= form.select :id,
-            @metrics.assessments.map { |a| [a.name, a.id] },
-            { selected: @metrics.assessment&.id || "" },
-            {
-              class: "select w-full bg-base-200 rounded-lg"
-            } %>
-        </fieldset>
-        
-        <fieldset class="w-full">
-          <%= form.select :framework,
-            (@metrics.frameworks || []).map { |f| [f.code, f.id] },
-            { include_blank: "All Frameworks", selected: @metrics.framework&.id },
-            {
-              class: "select w-full bg-base-200 rounded-lg"
-            } %>
-        </fieldset>
-      </div>
-    </div>
-  <% end %>
+  <%= render "filter" %>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 m-6 mt-0">
     <% subsidiary_dashboard_cards(@metrics).each do |card| %>
