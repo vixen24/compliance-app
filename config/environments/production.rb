@@ -55,7 +55,7 @@ Rails.application.configure do
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
-  onfig.action_mailer.raise_delivery_errors = true
+  config.action_mailer.raise_delivery_errors = true
 
   # Set host to be used by links generated in mailer templates.
   # config.action_mailer.default_url_options = { host: "cybersecomply.com" }
