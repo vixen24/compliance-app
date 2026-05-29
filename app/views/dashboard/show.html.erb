@@ -9,11 +9,17 @@
     <div class="flex gap-6">
       <!--Title-->
       <div class="pr-2 flex-2">
-        <h2 class="text-3xl font-black pt-2 dark:text-white"> Information Security Compliance at-a-Glance </h2>
+        <h2 class="text-3xl font-black pt-2 dark:text-white"> 
+          Information Security Compliance at-a-Glance 
+        </h2>
 
         <p class="py-1">
-          <div class="text-base-content/95">Monitor compliance posture and approval flow. Use filters to spotlight risk,  </div>
-          <div class="text-base-content/95"> unblock approvals, and keep standards audit-ready</div>
+          <div class="text-base-content/95">
+            Monitor compliance posture and approval flow. Use filters to spotlight risk,  
+          </div>
+          <div class="text-base-content/95"> 
+            unblock approvals, and keep standards audit-ready
+          </div>
         </p>
       </div>
 
@@ -34,13 +40,10 @@
     </div>
   </header>
 
-  <!--Filters-->
   <%= render "filter" %>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 px-6 pb-0 pt-8">
-    <% dashboard_cards(@metrics).each do |card| %>
-      <%= render "card", card:card %>
-    <% end %>
+    <%= render partial: "card", collection: dashboard_cards(@metrics), as: :card %>
   </div>
 
   <%= render "charts"%>

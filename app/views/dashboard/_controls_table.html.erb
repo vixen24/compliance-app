@@ -1,6 +1,9 @@
-<div id="" class="rounded-lg m-6 mt-8 border border-base-300/80 overflow-hidden" 
-            data-controller=<%= "scroll-into-view" if @metrics.answer_status || @metrics.answer_state %>>
-    <div class="bg-base-200 border-b border-base-300/80 px-8 py-1 text-lg font-medium">
+<div id="dashboard-controls-table" 
+      class="rounded-lg m-6 mt-8 border border-base-300/80 overflow-hidden md:h-[96vh] flex flex-col" 
+      data-controller=<%= "scroll-into-view" if @metrics.answer_status || @metrics.answer_state %>
+    >
+
+    <div class="bg-base-200 border-b border-base-300/80 px-8 py-1 text-lg font-medium shrink-0">
       <% if @metrics.answer_status %>
         Showing controls with compliance status: <%= Answer.status_label(@metrics.answer_status).titleize %>
       <% elsif @metrics.answer_state %>
@@ -10,16 +13,18 @@
       <% end %>
     </div>
 
-    <div id="dashboard-controls-table">
-      <div id="">
-        <div class="grid grid-cols-[0.25fr_8fr_1fr_1fr] gap-6 px-8 py-2 font-medium bg-base-100">
+
+      <div class="flex-1 overflow-y-auto scrollbar-stable">
+        <div class="grid grid-cols-[0.25fr_8fr_1fr_1fr] gap-6 px-8 py-2 
+                    font-medium border-b border-base-200 bg-base-100 sticky top-0 z-10">
           <div>ID</div>
           <div>Control</div>
           <div>Status</div>
           <div>Workflow </div>
         </div>
         <% @metrics.filtered_controls_per_page.each do |control| %>
-        <div class="grid grid-cols-[0.25fr_8fr_1fr_1fr] space-x-2 gap-6 border-b border-base-200 px-8 py-2 hover:bg-base-200">
+        <div class="grid grid-cols-[0.25fr_8fr_1fr_1fr] space-x-2 gap-6 
+                    border-b border-base-200 px-8 py-2 hover:bg-base-200">
           <div><%= control.control_id %></div>
           <div class="">
             <div class="font-semibold"> <%= control.question %> </div>
@@ -40,6 +45,7 @@
         </div>
         <% end %>
       </div>
+
       <!--Controls pagination-->
       <div class="flex items-center gap-4 text-sm py-2 px-6 border-t border-base-200">
         <div>
@@ -64,7 +70,6 @@
         <div class="flex flex-1 items-center">
           <div class="flex gap-4 m-auto items-center">
             <%= link_to "Previous", team_dashboard_path(
-                team: @team.id,
                 status: @metrics.status,
                 id: @metrics.assessment&.id,
                 framework: @metrics.framework,
@@ -80,7 +85,6 @@
               <%= @metrics.page %> of <%= total_pages %>
             </span>
             <%= link_to "Next", team_dashboard_path(
-                team: @team.id,
                 status: @metrics.status,
                 id: @metrics.assessment&.id,
                 framework: @metrics.framework,
@@ -98,6 +102,5 @@
           </span>
         </div>
       </div>
-    </div>
   </div>
 </div>

@@ -1,22 +1,38 @@
-<div id="subsidiary-dashboard-controls-table">
-  <div class="">
-    <div class="grid grid-cols-[0.25fr_8fr_1fr_1fr] gap-6 px-8 py-2 font-medium bg-base-100">
+<div id="subsidiary-dashboard-controls-table" 
+     class="rounded-lg m-6 border border-base-300/80 overflow-hidden md:h-[96vh] flex flex-col" 
+     data-controller=<%= "scroll-into-view" if @metrics.answer_status || @metrics.answer_state %>
+  >
+
+  <div class="bg-base-200 border-b border-base-300/80 px-8 py-1 text-lg font-medium shrink-0">
+    <% if @metrics.answer_status %>
+      Showing controls with compliance status: <%= Answer.status_label(@answer_status).titleize %>
+    <% elsif @metrics.answer_state %>
+      Showing controls with workflow: <%= @metrics.answer_state.titleize %>
+    <% else %>
+      Showing all controls in assessment
+    <% end %>
+  </div>
+
+  <div class="flex-1 overflow-y-auto scrollbar-stable">
+    <div class="grid grid-cols-[0.25fr_8fr_1fr_1fr] gap-6 px-8 py-2 
+                font-medium border-b border-base-200 bg-base-100 sticky top-0 z-10">
       <div>ID</div>
       <div>Control</div>
       <div>Status</div>
       <div>Workflow </div>
     </div>
     <% @metrics.filtered_controls_per_page.each do |control| %>
-    <div class="grid grid-cols-[0.25fr_8fr_1fr_1fr] space-x-2 gap-6 border-b border-base-200 px-8 py-2 hover:bg-base-200">
+    <div class="grid grid-cols-[0.25fr_8fr_1fr_1fr] space-x-2 gap-6 
+                border-b border-base-200 px-8 py-2 hover:bg-base-200">
       <div><%= control.control_id %></div>
       <div class="">
         <div class="font-semibold"> <%= control.question %> </div>
         <div class="flex flex-wrap gap-2 py-2">
-          <%= render_full_framework_code_badges(@metrics.assessment, control, @metrics.framework_controls_by_control) %>
+          <%= render_full_framework_code_badges(@assessment, control) %>
         </div>
       </div>
       <div class="uppercase shrink <%= answer_status_classes(control.answer.status_label) %>">
-        <div class="truncate max-w-[60px] md:max-w-[100px] lg:max-w-[120px] block">
+        <div class="truncate max-w-[60px] md:max-w-[100px] lg:max-w-[120px]  block">
           <%= control.answer.status_label %>
         </div>
       </div>
@@ -28,62 +44,64 @@
     </div>
     <% end %>
   </div>
-  <!--Control Pagination-->
-  <div class="flex items-center gap-4 text-sm py-2 px-6 border-t border-base-200">
-    <div>
-      <%= form_with url: executive_subsidiary_dashboard_path, method: :get, class: "flex items-center gap-2" do |form| %>
-        <%= form.hidden_field :team, value: @team.id %>
-        <%= form.hidden_field :status, value: @metrics.status %>
-        <%= form.hidden_field :id, value: @metrics.assessment&.id %>
-        <%= form.hidden_field :framework, value: @metrics.framework.id.to_s if @metrics.framework %>
-        <%= form.hidden_field :answer_state, value: @metrics.answer_state %>
-        <%= form.hidden_field :answer_status, value: @metrics.answer_status %>
-        <%= form.hidden_field :page, value: @metrics.page %>
-  
-        <%= select_tag :per_page, options_for_select([10, 30, 60, 80], @metrics.per_page),
-            class: "select min-w-18 h-8",
-            data:{ turbo_stream: true },
-            onchange: "this.form.submit()" %>
-      <% end %>
-    </div>
-  
-    <% control_count = @metrics.filtered_controls.size %>
-    <% total_pages = (control_count.to_f / @metrics.per_page).ceil %>
-    <div class="flex flex-1 items-center">
-      <div class="flex gap-4 m-auto items-center">
-        <%= link_to "Previous", executive_subsidiary_dashboard_path(
-            team: @team.slug,
-            status: @metrics.status,
-            id: @metrics.assessment&.id,
-            framework: @metrics.framework,
-            answer_state: @metrics.answer_state,
-            answer_status: @metrics.answer_status,
-            page: @metrics.page - 1,
-            per_page: @metrics.per_page
-          ),
-          data:{ turbo_stream: true },
-          class: "btn btn-sm #{'invisible' if @metrics.page <= 1}"
-        %>
-        <span class="font-semibold">
-          <%= @page %> of <%= total_pages %>
-        </span>
-        <%= link_to "Next", executive_subsidiary_dashboard_path(
-            team: @team.slug,
-            status: @metrics.status,
-            id: @metrics.assessment&.id,
-            framework: @metrics.framework,
-            answer_state: @metrics.answer_state,
-            answer_status: @metrics.answer_status,
-            page: @metrics.page + 1,
-            per_page: @metrics.per_page,
-          ),
-          data:{ turbo_stream: true },
-          class: "btn btn-sm #{'invisible' if @metrics.page >= total_pages}"
-        %>
+   
+    <!--Control Pagination-->
+    <div class="flex items-center gap-4 text-sm py-2 px-6 border-t border-base-200">
+      <div>
+        <%= form_with url: executive_subsidiary_dashboard_path, method: :get, class: "flex items-center gap-2" do |form| %>
+          <%= form.hidden_field :team, value: @team.slug %>
+          <%= form.hidden_field :status, value: @metrics.status %>
+          <%= form.hidden_field :id, value: @metrics.assessment&.id %>
+          <%= form.hidden_field :framework, value: @metrics.framework.id.to_s if @metrics.framework %>
+          <%= form.hidden_field :answer_state, value: @metrics.answer_state %>
+          <%= form.hidden_field :answer_status, value: @metrics.answer_status %>
+          <%= form.hidden_field :page, value: @metrics.page %>
+    
+          <%= select_tag :per_page, options_for_select([10, 30, 60, 80], @metrics.per_page),
+              class: "select min-w-18 h-8",
+              data:{ turbo_stream: true },
+              onchange: "this.form.submit()" %>
+        <% end %>
       </div>
-      <span class="font-semibold pr-2">
-        <%=control_count%> Controls
-      </span>
+    
+      <% control_count = @metrics.filtered_controls.size %>
+      <% total_pages = (control_count.to_f / @metrics.per_page).ceil %>
+      <div class="flex flex-1 items-center">
+        <div class="flex gap-4 m-auto items-center">
+          <%= link_to "Previous", executive_subsidiary_dashboard_path(
+              team: @team.slug,
+              status: @metrics.status,
+              id: @metrics.assessment&.id,
+              framework: @metrics.framework,
+              answer_state: @metrics.answer_state,
+              answer_status: @metrics.answer_status,
+              page: @metrics.page - 1,
+              per_page: @metrics.per_page
+            ),
+            data:{ turbo_stream: true },
+            class: "btn btn-sm #{'invisible' if @metrics.page <= 1}"
+          %>
+          <span class="font-semibold">
+            <%= @metrics.page %> of <%= total_pages %>
+          </span>
+          <%= link_to "Next", executive_subsidiary_dashboard_path(
+              team: @team.slug,
+              status: @metrics.status,
+              id: @metrics.assessment&.id,
+              framework: @metrics.framework,
+              answer_state: @metrics.answer_state,
+              answer_status: @metrics.answer_status,
+              page: @metrics.page + 1,
+              per_page: @metrics.per_page,
+            ),
+            data:{ turbo_stream: true },
+            class: "btn btn-sm #{'invisible' if @metrics.page >= total_pages}"
+          %>
+        </div>
+        <span class="font-semibold pr-2">
+          <%=control_count%> Controls
+        </span>
+      </div>
     </div>
   </div>
 </div>
