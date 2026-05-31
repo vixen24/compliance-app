@@ -1,8 +1,19 @@
 .active-link__selected {
   background-color: var(--color-primary-content);
-  border-left-color: var(--color-primary-content);
-  border-radius: var(--radius-sm);
-  color: var(--color-white);
+  border-radius: var(--radius-lg);
+  color: white;
+
+  .active_link__icon {
+    fill: white;
+    width: 1.35rem;
+    height: 1.35rem;
+    flex-shrink: 0;
+  }
+}
+
+.active_link__icon {
+  width: 1.35rem;
+  height: 1.35rem;
 }
 
 .active-link:focus-visible {

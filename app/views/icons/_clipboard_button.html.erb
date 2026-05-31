@@ -1,0 +1,9 @@
+<!-- Copy button (right side) -->
+<div data-controller="clipboard" data-clipboard-text-value="<%= @login_url %>">
+  <button type="button"
+          data-action="click->clipboard#copy"
+          class="absolute right-2 top-1/2 -translate-y-1/2 bg-white border rounded-lg 
+                  px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50 transition">
+    Copy
+  </button>
+</div>

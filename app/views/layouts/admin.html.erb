@@ -18,7 +18,7 @@
   </head>
   
   <body class="flex flex-row">
-    <%= render "shared/flash" %>
+    <%= render "layouts/shared/flash" %>
     <%= yield :left_sidebar if content_for?(:left_sidebar) %>
 
     <main id="main" class="h-screen overflow-y-auto flex-1 flex flex-col">

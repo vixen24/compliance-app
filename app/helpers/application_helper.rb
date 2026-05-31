@@ -10,9 +10,9 @@ module ApplicationHelper
   end
 
   def page_title(separator = " - ")
-    app_name = Rails.configuration.x.app_name
+    name = Rails.application.config.app_name
     content = content_for(:title)
-    content.present? ? "#{content}#{separator}#{app_name}" : app_name
+    content.present? ? "#{content}#{separator}#{name}" : name
   end
 
   # def svg_tag(filename, options = {})

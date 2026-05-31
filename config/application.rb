@@ -8,8 +8,7 @@ Bundler.require(*Rails.groups)
 
 module ComplianceApp
   class Application < Rails::Application
-    config.x.app_name = "UBA Compliance"
-    config.x.company_name = "United Bank for Africa"
+    config.app_name = "Cybersecomply"
     config.x.support_email = ""
 
     config.load_defaults 8.0

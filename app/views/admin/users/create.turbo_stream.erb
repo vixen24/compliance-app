@@ -1,7 +1,7 @@
 <%= turbo_stream.action(:close_dialog, nil) %>
 
 <%= turbo_stream.replace "flash" do %>
-  <%= render "shared/flash" %>
+  <%= render "layouts/shared/flash" %>
 <% end %>
 
 <%= turbo_stream.prepend "users" do %>

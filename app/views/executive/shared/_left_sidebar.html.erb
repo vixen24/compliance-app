@@ -1,4 +1,5 @@
-<aside class="h-screen w-64 shrink-0 hidden xl:block bg-base-200 border-r border-base-200 overflow-y-auto min-h-0">
+<aside class="h-screen w-64 shrink-0 hidden xl:block bg-base-200
+              border-r border-base-200 overflow-y-auto min-h-0">
   <div class="h-full flex flex-col justify-between">
     <nav>
       <div class="p-4 content-center justify-self-center" 
@@ -8,19 +9,26 @@
       <ul class="menu w-full pt-0">
         <li>
           <div class="hover:bg-transparent cursor-auto">
-            <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="currentColor"><path d="M520-600v-240h320v240H520ZM120-440v-400h320v400H120Zm400 320v-400h320v400H520Zm-400 0v-240h320v240H120Zm80-400h160v-240H200v240Zm400 320h160v-240H600v240Zm0-480h160v-80H600v80ZM200-200h160v-80H200v80Zm160-320Zm240-160Zm0 240ZM360-280Z"/></svg>
-            <h2 class="font-medium text-lg pl-0">Dashboard</h2>
+            <h2 class="font-medium text-base-content/90 text-base pl-0">Dashboard</h2>
           </div>
           
-          <ul class="menu w-auto text-base hover:rounded-none">
+          <ul class="menu pt-0 ml-6 w-auto text-base hover:rounded-none">
             <li>
-              <%= active_link_to executive_group_dashboard_path, false, true, class:"font-medium active:bg-transparent p-2 rounded-sm active-link" do %>
-              Group
+              <%= active_link_to executive_group_dashboard_path, 
+                  false, 
+                  true, 
+                  class:"active:bg-transparent p-2 rounded-sm active-link" do %>
+              <svg class="active_link__icon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M600-200v-40h-80q-33 0-56.5-23.5T440-320v-320h-80v40q0 33-23.5 56.5T280-520H160q-33 0-56.5-23.5T80-600v-160q0-33 23.5-56.5T160-840h120q33 0 56.5 23.5T360-760v40h240v-40q0-33 23.5-56.5T680-840h120q33 0 56.5 23.5T880-760v160q0 33-23.5 56.5T800-520H680q-33 0-56.5-23.5T600-600v-40h-80v320h80v-40q0-33 23.5-56.5T680-440h120q33 0 56.5 23.5T880-360v160q0 33-23.5 56.5T800-120H680q-33 0-56.5-23.5T600-200ZM160-760v160-160Zm520 400v160-160Zm0-400v160-160Zm0 160h120v-160H680v160Zm0 400h120v-160H680v160ZM160-600h120v-160H160v160Z"/></svg>
+              <span class="active_link__text font-medium">Group</span>
               <% end %>
             </li>
             <li>
-              <%= active_link_to executive_subsidiary_dashboard_path, false, true, class:"font-medium active:bg-transparent p-2 rounded-sm active-link" do %>
-              Subsidiary
+              <%= active_link_to executive_subsidiary_dashboard_path, 
+                  false, 
+                  true, 
+                  class:"font-medium active:bg-transparent p-2 rounded-sm active-link" do %>
+              <svg class="active_link__icon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M480-340q33 0 56.5-23.5T560-420q0-33-23.5-56.5T480-500q-33 0-56.5 23.5T400-420q0 33 23.5 56.5T480-340ZM160-120q-33 0-56.5-23.5T80-200v-440q0-33 23.5-56.5T160-720h160v-80q0-33 23.5-56.5T400-880h160q33 0 56.5 23.5T640-800v80h160q33 0 56.5 23.5T880-640v440q0 33-23.5 56.5T800-120H160Zm0-80h640v-440H160v440Zm240-520h160v-80H400v80ZM160-200v-440 440Z"/></svg>
+              <span class="active_link__text font-medium">Subsidiary</span>
               <% end %>
             </li>
           </ul>

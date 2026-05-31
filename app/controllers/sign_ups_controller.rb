@@ -1,5 +1,6 @@
 class SignUpsController < ApplicationController
-  rate_limit to: 10, within: 3.minutes, only: :create, with: -> { redirect_to new_sign_up_path, alert: "Try again later." }
+  rate_limit to: 10, within: 3.minutes, only: :create,
+             with: -> { redirect_to new_sign_up_path, alert: "Try again later." }
   skip_before_action :require_account
   allow_unauthenticated_access only: %i[ new create ]
   before_action :ensure_signup_allowed, only: %i[ new create ]
@@ -26,7 +27,7 @@ class SignUpsController < ApplicationController
   private
 
   def signup_params
-    params.expect(sign_up: [ :email_address, :password, :password_confirmation ])
+    params.expect(sign_up: [ :name, :email_address, :password, :password_confirmation ])
   end
 
   def ensure_signup_allowed

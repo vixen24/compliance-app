@@ -34,23 +34,23 @@ development:
 production:
   primary: &primary_production
     <<: *default
-    database: <%= ENV.fetch("DB_NAME", "compliance_production") %>
-    username: <%= ENV.fetch("DB_USERNAME", "compliance") %>
-    password: <%= ENV.fetch("DB_PASSWORD", "compliance") %>
-    host: <%= ENV.fetch("DB_HOST", "localhost") %>
-    port: <%= ENV.fetch("DB_PORT", "5432") %>
+    database: <%= ENV.fetch("POSTGRES_DB") %>
+    username: <%= ENV.fetch("POSTGRES_USER") %>
+    password: <%= ENV.fetch("POSTGRES_PASSWORD") %>
+    host: <%= ENV.fetch("POSTGRES_HOST") %>
+    port: <%= ENV.fetch("POSTGRES_PORT") %>
 
   queue:
     <<: *primary_production
-    database: <%= ENV.fetch("QUEUE_DB_NAME", "compliance_production_queue") %>
+    database: <%= ENV.fetch("QUEUE_DB") %>
     migrations_paths: db/queue_migrate
 
   cache:
     <<: *primary_production
-    database: <%= ENV.fetch("CACHE_DB_NAME", "compliance_production_cache") %>
+    database: <%= ENV.fetch("CACHE_DB") %>
     migrations_paths: db/cache_migrate
 
   cable:
     <<: *primary_production
-    database: <%= ENV.fetch("CABLE_DB_NAME", "compliance_production_cable") %>
+    database: <%= ENV.fetch("CABLE_DB") %>
     migrations_paths: db/cable_migrate

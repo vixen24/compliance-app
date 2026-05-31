@@ -2,7 +2,7 @@ lexxy-editor {
   color: var(--color-base-content);
   background-color: var(--color-base-100);
   border: 1px solid color-mix(in srgb, var(--color-base-content) 15%, transparent);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-lg);
 }
 
 lexxy-editor lexxy-toolbar {

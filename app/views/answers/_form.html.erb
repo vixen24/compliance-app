@@ -1,5 +1,7 @@
-<%= form_with model: control&.answer || Answer.new, url: team_assessment_answers_path(Current.team, assessment), 
-  id: nested_dom_id(assessment, control, "answer"), local: true do |form| %>
+<%= form_with model: control&.answer || Answer.new, 
+              url: team_assessment_answers_path(Current.team, assessment), 
+              id: nested_dom_id(assessment, control, "answer"), 
+              local: true do |form| %>
   <%= form.hidden_field :assessment_control_id, value: control.id %>
   <%= form.hidden_field :assessment_id, value: assessment.id %>
 
@@ -39,7 +41,8 @@
 
   <% if control.answer&.answerable?%>
     <div class="flex justify-end mt-4">
-      <%= form.submit "Submit", class:"btn bg-primary-content focus:bg-primary text-white rounded text-base" %>
+      <%= form.submit "Submit", class:"btn bg-primary-content focus:bg-primary 
+                                       text-white rounded-lg text-base" %>
     </div>
   <% end %>
 <% end %>

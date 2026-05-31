@@ -68,6 +68,7 @@ export default class extends Controller {
         x: 0.0175,
         xanchor: 'left',
         font: {
+          family: "Inter ui-sans-serif, system-ui, sans-serif",
           size: 20,
           weight: 'bold',
           color: font
