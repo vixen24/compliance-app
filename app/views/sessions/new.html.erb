@@ -22,8 +22,10 @@
         <%= render "layouts/shared/our_logo" %>
       </div>
 
-      <div class="text-normal mt-2 text-black/60 font-light text-center">Sign into your workspace</div>
-          
+      <div class="text-normal mt-2 text-black/60 font-light text-center">
+        Sign into your workspace
+      </div>
+
       <%= form_with url: session_url, data: { turbo: false }, class: "contents" do |form| %>
       <div class="mt-12"></div>
         <div class="my-5 mb-3">
@@ -93,11 +95,21 @@
   
         <div class="col-span-6 flex flex-col items-center gap-1">
           <div class="py-2 inline">
-            <%= form.button type: "submit", class: "group bg-black/95 text-white hover:bg-black/85 px-3.5 py-2 inline-flex items-center justify-center rounded-full active:scale-95 transition" do %>
+            <%= form.button type: "submit", 
+                class: "group bg-black/95 text-white hover:bg-black/85 px-3.5 
+                        py-2 inline-flex items-center justify-center rounded-full 
+                        active:scale-95 transition" do %>
               <span class="text-base font-medium">Sign In</span>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition-transform group-hover:translate-x-1"
-                fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"> <path stroke-linecap="round"
-                stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" 
+                   class="h-6 w-6 transition-transform group-hover:translate-x-1"
+                   fill="none" 
+                   viewBox="0 0 24 24" 
+                   stroke="currentColor" 
+                   stroke-width="3"> 
+                <path stroke-linecap="round"
+                      stroke-linejoin="round" 
+                      d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
             <% end %>
           </div>
   

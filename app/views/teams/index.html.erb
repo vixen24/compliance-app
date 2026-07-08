@@ -21,15 +21,28 @@
           <%= pluralize(@teams.size, 'Subsidiary') %>
         </div>
         <div class="flex gap-8 items-center">
-          <div data-controller="dialog" data-dialog-modal-value="true" data-action="keydown.esc->dialog#close:stop">
-            <button type="button", data-action="dialog#open",
-              class="btn border-none bg-primary-content focus:bg-primary rounded-lg text-white flex items-center gap-2">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /> </svg>
-              <span class="hidden md:inline">Create User</span>
+          <div data-controller="dialog" 
+               data-dialog-modal-value="true" 
+               data-action="keydown.esc->dialog#close:stop">
+            <button type="button" data-action="dialog#open"
+              class="btn border-none bg-primary-content focus:bg-primary 
+                     rounded-lg text-white flex items-center gap-2">
+              <%= render "icons/plus" %>
+              <span class="hidden md:inline">
+                Create User
+              </span>
             </button>
 
-            <dialog class="m-auto dialog-panel" style="--panel-size: 48ch" data-dialog-target="dialog" role="dialog" aria-modal="true">
-              <%= turbo_frame_tag "create-new-team", class: "dialog-turbo-frame", src: new_team_path, loading:"lazy" %>
+            <dialog class="m-auto dialog-panel" 
+                    style="--panel-size: 48ch" 
+                    data-dialog-target="dialog" 
+                    role="dialog" 
+                    aria-modal="true">
+              <%= turbo_frame_tag "create-new-team", 
+                  class: "dialog-turbo-frame", 
+                  src: new_team_path, 
+                  loading:"lazy" 
+              %>
             </dialog>
           </div>
       </div>
@@ -38,7 +51,8 @@
 
   <div class="flex-1 min-h-0 overflow-y-auto">
     <div class="m-6">
-      <section id="teams_list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <section id="teams_list" class="grid grid-cols-1 sm:grid-cols-2 
+                                      md:grid-cols-3 lg:grid-cols-4 gap-6">
         <%= render @teams %>
       </section>
     </div>

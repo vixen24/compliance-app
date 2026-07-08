@@ -1,4 +1,6 @@
-<%= form_with model: [:admin, @user],  url: @user.persisted? ? admin_user_path(@user, password_reset: @password_reset) : admin_users_path, class: "contents" do |form| %>
+<%= form_with model: [:admin, @user],  
+    url: @user.persisted? ? admin_user_path(@user, password_reset: @password_reset) : admin_users_path, 
+    class: "contents" do |form| %>
   <div class="flex flex-col gap-y-3 px-6">
 
     <% unless @password_reset %>

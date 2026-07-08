@@ -1,9 +1,21 @@
-<div id= "control_content" class="flex flex-col justify-between border border-base-200 bg-base-200 overflow-y-auto flex-1 rounded-lg scrollbar-stable p-6 ml-3 m-6 shadow-md transition-shadow">
+<div id= "control_content" 
+     class="flex flex-col justify-between border border-base-300 
+            overflow-y-auto flex-1 rounded-lg scrollbar-stable p-6 
+            ml-3 m-6 shadow-md transition-shadow">
     <% if @control.present? %>
       <div> 
         <div class="flex flex-row justify-between gap-4">
-          <div class="mb-4"><h2 class="text-xl font-medium"><%= @control&.question %></h2></div>
-          <div><%= render "answers/state", assessment: @assessment, control: @control, suffix: 1 %></div>
+          <div class="mb-4">
+            <h2 class="text-xl font-medium">
+              <%= @control&.question %>
+            </h2>
+          </div>
+          <div>
+            <%= render "answers/state", 
+                assessment: @assessment, 
+                control: @control, 
+                suffix: 1 %>
+          </div>
         </div>
       
         <div class="flex flex-wrap gap-2 mt-4 mb-8">
@@ -11,8 +23,13 @@
         </div>   
         
         <!--Subsidiary response -->
-        <details class="border-2 border-base-300 rounded-xl px-6 py-6 mb-4 bg-base-300" data-controller="details" data-details-key-value="user">
-          <summary class="text-lg font-medium mb-1 cursor-pointer">Subsidiary Response</summary>
+        <details 
+          data-controller="details" 
+          data-details-key-value="user"
+          class="border-2 border-base-200 rounded-xl px-6 py-6 mb-4 bg-base-100">
+          <summary class="text-lg mb-1 cursor-pointer">
+            Subsidiary Response
+          </summary>
           <%= render "answers/form", control: @control, assessment: @assessment %>           
         </details>
 
@@ -20,11 +37,24 @@
         <% if @control.answer&.auditable? %>
           <div class="border-2 border-base-300 rounded-2xl px-6 py-6">
             <details data-controller="details" data-details-key-value="assessor">
-              <summary class="font-medium mb-1 cursor-pointer">Assessor Review</summary>
-              <%= form_with model: @control.answer, url: team_assessment_answer_path(assessment_id: @assessment, answer_id: @control.answer.id), local: true do |form| %>
+              <summary class="font-medium mb-1 cursor-pointer">
+                Assessor Review
+              </summary>
+              <%= form_with model: @control.answer, 
+                    url: team_assessment_answer_path(
+                      assessment_slug: @assessment.slug, 
+                      id: @control.answer.id
+                    ), 
+                    local: true do |form| %>
                   <div class="flex flex-row gap-4 justify-end">
-                    <%= form.submit "Reject", name: "intent", class: "btn bg-primary-content dark:bg-primary-content/50 focus:bg-primary dark:focus:bg-primary-content/20 text-white text-base border-none" %>
-                    <%= form.submit "Approve", name: "intent", class: "btn bg-green-500 dark:bg-green-500/50 dark:focus:bg-green-500/20 focus:bg-success text-white text-base border-none active:bg-transparent" %>
+                    <%= form.submit "Reject", name: "intent", 
+                        class: "btn bg-primary-content dark:bg-primary-content/50 
+                                focus:bg-primary dark:focus:bg-primary-content/20 
+                                text-white text-base border-none" %>
+                    <%= form.submit "Approve", name: "intent", 
+                        class: "btn bg-green-500 dark:bg-green-500/50 
+                                dark:focus:bg-green-500/20 focus:bg-success 
+                                text-white text-base border-none active:bg-transparent" %>
                   </div>
               <% end %>
             </details>

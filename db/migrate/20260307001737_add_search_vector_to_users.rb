@@ -1,37 +1,25 @@
 class AddSearchVectorToUsers < ActiveRecord::Migration[8.2]
-  disable_ddl_transaction!  # GIN index can be created concurrently
-
   def up
-    # Add tsvector column
-    add_column :users, :search_vector, :tsvector
-    add_index :users, :search_vector, using: :gin, algorithm: :concurrently
+    return unless connection.adapter_name == "PostgreSQL"
 
-    # Populate initial values
-    execute <<-SQL.squish
-      UPDATE users
-      SET search_vector =#{' '}
-        to_tsvector('english', coalesce(name,'') || ' ' || coalesce(email_address,''));
-    SQL
+    add_column :users,
+               :search_vector,
+               :tsvector,
+               as: "(
+                 to_tsvector('english', coalesce(name,'') || ' ' || coalesce(email_address,''))
+               )",
+               stored: true
 
-    # Optional: create trigger to auto-update search_vector on insert/update
-    execute <<-SQL.squish
-      CREATE FUNCTION users_search_vector_trigger() RETURNS trigger AS $$
-      begin
-        new.search_vector :=
-          to_tsvector('english', coalesce(new.name,'') || ' ' || coalesce(new.email_address,''));
-        return new;
-      end
-      $$ LANGUAGE plpgsql;
-
-      CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE
-      ON users FOR EACH ROW EXECUTE FUNCTION users_search_vector_trigger();
-    SQL
+    add_index :users,
+              :search_vector,
+              using: :gin,
+              algorithm: :concurrently
   end
 
   def down
-    execute "DROP TRIGGER IF EXISTS tsvectorupdate ON users;"
-    execute "DROP FUNCTION IF EXISTS users_search_vector_trigger();"
-    remove_index :users, :search_vector
+    return unless connection.adapter_name == "PostgreSQL"
+
+    remove_index :users, :search_vector if index_exists?(:users, :search_vector)
     remove_column :users, :search_vector
   end
 end

@@ -1,0 +1,16 @@
+<% user = local_assigns[:user] %>
+<% label = local_assigns[:label] %>
+<% size = local_assigns[:size] || 32 %>
+<% label = user ? user.initials : label %>
+<% color = user ? avatar_color(user) : default_avatar_color %>
+
+<div class="avatar">
+  <div class="flex items-center justify-center shrink-0 
+              rounded-full bg-linear-to-br <%= color[:bg] %>"
+       style="width: <%= size %>px; height: <%= size %>px;">
+    <div class="font-semibold whitespace-nowrap truncate tracking-wider 
+        <%= label ? 'text-sm/loose' : 'text-sm' %>  <%= color[:text] %>">
+      <%= label %>
+    </div>
+  </div>
+</div>

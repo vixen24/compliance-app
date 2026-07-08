@@ -11,21 +11,22 @@ class User < ApplicationRecord
   scope :matching, ->(query) do
     return all if query.blank?
 
-    if connection.adapter_name == "PostgreSQL"
-      quoted_query = connection.quote(query)
-      ts_query = "websearch_to_tsquery('english', #{quoted_query})"
+    ts_query = sanitize_sql_array([
+      "websearch_to_tsquery('english', ?)",
+      query
+    ])
 
-      from_subquery = <<~SQL
-        (SELECT #{table_name}.*, ts_rank_cd(search_vector, #{ts_query}) AS rank
-        FROM #{table_name}
-        WHERE search_vector @@ #{ts_query}) AS #{table_name}
-      SQL
-
-      from(Arel.sql(from_subquery)).order("rank DESC")
-    else
-      where("name LIKE :q OR email_address LIKE :q", q: "%#{query}%")
-        .limit(10)
-    end
+    from(<<~SQL)
+      (
+        SELECT users.*,
+              ts_rank_cd(search_vector, #{ts_query}) AS rank
+        FROM users
+        WHERE search_vector @@ #{ts_query}
+          OR name ILIKE #{connection.quote("%#{query}%")}
+          OR email_address ILIKE #{connection.quote("%#{query}%")}
+      ) users
+    SQL
+    .order(Arel.sql("rank DESC"))
   end
 
   validates :password, presence: true, on: :create
@@ -34,6 +35,18 @@ class User < ApplicationRecord
   validates :role, uniqueness: { scope: :account_id }, if: -> { system? || owner? }
   validates :password, confirmation: true, complexity: true, history: true, allow_nil: true
   validates :email_address, format: { with: URI::MailTo::EMAIL_REGEXP }, uniqueness: { scope: :account_id }
+
+  def initials(limit: 2)
+    return "" if name.blank?
+
+    name
+      .to_s
+      .split
+      .first(limit)
+      .map { |part| part[0] }
+      .join
+      .upcase
+  end
 
   def send_magic_link(**attributes)
     attributes[:purpose] = attributes.delete(:for) if attributes.key?(:for)

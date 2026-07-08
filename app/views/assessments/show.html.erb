@@ -19,7 +19,7 @@
 
   <div class="flex flex-row flex-1 not-first-of-type:overflow-hidden">
     <!-- Controls section -->
-    <div class="bg-base-200 xl:w-120 rounded-lg flex flex-col justify-between border border-base-200 m-6 mr-3 shadow-md transition-shadow">
+    <div class="xl:w-120 rounded-lg flex flex-col justify-between border border-base-300 m-6 mr-3 shadow-md transition-shadow">
 
       <!-- Control filters -->
       <div class="p-4 pb-4 ">
@@ -31,7 +31,7 @@
               <%= form.select :answer_state,
                 Answer.states.keys.map { |s| [s.titleize, s] },
                 { include_blank: "All States", selected: @answer_state },
-                class: "select font-semibold", 
+                class: "select", 
                 onchange: "this.form.submit()" %>
             <% end %>
           </div>
@@ -42,7 +42,7 @@
               <%= select_tag :framework,
                 options_from_collection_for_select(@assessment.frameworks, :id, :code, @framework&.id),
                 include_blank: "All Frameworks",
-                class: "select font-semibold w-full",
+                class: "select w-full",
                 onchange: "this.form.submit()" %>
             <% end %>
           </div>

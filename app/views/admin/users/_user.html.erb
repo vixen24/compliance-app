@@ -1,11 +1,7 @@
 <tr id=<%= dom_id(user) %> class="odd:bg-base-100 even:bg-base-200 rounded-lg">
   <td class="p-2 pl-4 text-sm">
     <div class="flex items-center">
-      <div class="shrink-0 h-9 w-9 bg-linear-to-br from-red-100 to-red-200 rounded-lg flex items-center justify-center">
-        <span class="font-semibold text-red-700 tracking-wider">
-          <%= user&.name&.split&.map(&:first)&.first(2)&.join&.upcase %>
-        </span>
-      </div>
+      <%= render "icons/avatar", user: user %>
       <div class="ml-4 min-w-0">
         <div class="leading-tight font-medium"><%= user&.name %></div>
         <div class="text-base-content/95 leading-tight"><%= user.email_address %></div>

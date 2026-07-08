@@ -29,6 +29,8 @@ gem "tzinfo-data", platforms: %i[ windows jruby ]
 gem "postmark-rails"
 
 group :development do
+  gem "ruby-lsp", "~> 0.26.9"
+  gem "rbs", "~> 3.10"
   gem "pp"
   gem "letter_opener"
   gem "web-console"

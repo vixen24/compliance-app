@@ -24,7 +24,7 @@ class AnswersController < ApplicationController
     elsif @intent.in?(%w[Reject]) && @answer.rejected!
       @notice = "Answer rejected"
     else
-      @notice = answer.errors.full_messages.to_sentence
+      @notice = @answer.errors.full_messages.to_sentence
     end
 
     respond_to do |format|
@@ -40,7 +40,7 @@ class AnswersController < ApplicationController
   end
 
   def set_answer
-    @answer = Answer.find(params[:answer_id])
+    @answer = Answer.find(params[:id])
   end
 
   def ensure_answerable!

@@ -1,0 +1,41 @@
+<div class="dropdown dropdown-bottom dropdown-end">
+  <div tabindex="0" role="button">
+    <div class="avatar-group -space-x-4 cursor-pointer">
+
+      <% users = Current.team.users.to_a %>
+      <% visible_users = users.first(3) %>
+      <% label = users.size - visible_users.size %>
+
+      <% visible_users.each do |user| %>
+        <%= render "icons/avatar", user: user %>
+      <% end %>
+
+      <% if label > 0 %>
+        <%= render "icons/avatar", label: "+#{label}" %>
+      <% end %>
+
+    </div>
+  </div>
+  <ul tabindex="-1" 
+      class="dropdown-content menu bg-base-100 rounded-box 
+              z-1 w-72 mt-2 p-0 py-2 shadow-sm border border-base-200 rounded-lg">
+    <li>
+      <div class="font-semibold hover:bg-transparent 
+                  hover:shadow-none cursor-default">
+        People in <%= Current.team.name %>
+      </div>
+      <% Current.team.users.each do |user| %>
+        <div class="items-start hover:bg-transparent 
+                    hover:shadow-none cursor-default">
+          <%= render "icons/avatar", user: user %>
+          <div class="whitespace-nowrap truncate">
+            <div class="leading-4 font-medium"><%= user.name %></div>
+            <div class="leading-4 text-xs">
+              <%= user.role.capitalize%>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </li>
+  </ul>
+</div>

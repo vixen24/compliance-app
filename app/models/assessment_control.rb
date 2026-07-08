@@ -19,19 +19,18 @@ class AssessmentControl < ApplicationRecord
   scope :matching, ->(query) do
     return all if query.blank?
 
-    if connection.adapter_name == "PostgreSQL"
       ts_query = sanitize_sql_array([ "websearch_to_tsquery('english', ?)", query ])
 
-      select("#{table_name}.*, ts_rank_cd(search_vector, #{ts_query}) AS rank")
-        .where("search_vector @@ #{ts_query}")
-        .order("rank DESC")
-    # .limit(10) # Consider removinf due to .limit in paginate
-
-    else
-      # SQLite fallback
-      where("question LIKE ?", "%#{query}%")
-        .limit(10)
-    end
+    from(<<~SQL)
+      (
+        SELECT #{table_name}.*,
+               ts_rank_cd(search_vector, #{ts_query}) AS rank
+        FROM #{table_name}
+        WHERE search_vector @@ #{ts_query}
+      ) #{table_name}
+    SQL
+    .order(Arel.sql("rank DESC"))
+    # .limit(10) # Consider removing due to .limit in paginate
   end
 
   scope :for_account, ->(account) {

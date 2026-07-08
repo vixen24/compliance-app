@@ -27,7 +27,7 @@
                     border-b border-base-200 px-8 py-2 hover:bg-base-200">
           <div><%= control.control_id %></div>
           <div class="">
-            <div class="font-semibold"> <%= control.question %> </div>
+            <div> <%= control.question %> </div>
             <div class="flex flex-wrap gap-2 py-2">
               <%= render_full_framework_code_badges(@metrics.assessment, control, @metrics.framework_controls_by_control) %>
             </div>

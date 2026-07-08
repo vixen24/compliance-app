@@ -3,6 +3,10 @@
     Subsidiary
   </label>
   <%= form_tag current_team_path, method: :patch, class: "contents", local: true do %>
+    <%= hidden_field_tag :status, @status if @status %>
+    <%= hidden_field_tag :id, @assessment.id if @assessment %>
+    <%= hidden_field_tag :framework, @framework.id if @framework %>
+  
     <%= select_tag :team_slug,                                    
         options_from_collection_for_select(
           Current.user.teams.order(:name), 
@@ -10,7 +14,7 @@
           :name, 
           Current.team&.slug
         ),
-        class: "select mt-1 w-full font-semibold",
+        class: "select mt-1 w-full",
         onchange: "this.form.submit()" %>
   <% end %>
 </div>

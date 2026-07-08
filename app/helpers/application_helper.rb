@@ -15,6 +15,19 @@ module ApplicationHelper
     content.present? ? "#{content}#{separator}#{name}" : name
   end
 
+  def initials(name, limit: 2)
+    return "" if name.blank?
+
+    name
+      .to_s
+      .split
+      .first(limit)
+      .map(&:first)
+      .join
+      .upcase
+  end
+
+
   # def svg_tag(filename, options = {})
   #   asset = Rails.application.assets.load_path.find(filename)
   #   return unless asset && File.exist?(asset.path)
